@@ -1,0 +1,318 @@
+    1  ls /etc/init.d/
+    2  sudo service vboxadd
+    3  sudo service vboxadd setup
+    4  exit
+    5  svn --version
+    6  exit
+    7  muscle
+    8  muscle -version
+    9  Gblocks 
+   10  PhyML-3.1_
+   11  PhyML-3.1_linux64 
+   12  clear
+   13  treedyn
+   14  phylip 
+   15  sage 
+   16  exit
+   17  groovy --version
+   18  scala --version
+   19  scala -help
+   20  scalac -version
+   21  gradle --version
+   22  sbt
+   23  sbt --version
+   24  clear
+   25  exit
+   26  sudo vi /etc/apt/sources.list.d/cartnum.list
+   27  cd /etc/apt/sources.list.d/
+   28  l
+   29  less cartnum.list
+   30  cat cartnum.list*
+   31  less oraclejdk.list
+   32  less oraclejdk.list.save 
+   33  sudo rm *.save
+   34  ls
+   35  sudo vi cartnum.list 
+   36  cd
+   37  sudo aptitude update
+   38  sudo aptitude
+   39  clear
+   40  history
+   41  exit
+   42  sudo aptitude
+   43  df -h
+   44  sudo aptitude
+   45  ls
+   46  clear
+   47  dd if=/dev/zero of=EMPTY bs=1M; rm -f EMPTY
+   48  exit
+   49  pwd
+   50  ls
+   51  whereis 
+   52  whereis ls
+   53  ls
+   54  cd Bureau/
+   55  pwd
+   56  mkdir essai
+   57  ls
+   58  pwd
+   59  ls
+   60  cd ..
+   61  pwd
+   62  ls
+   63  cd Bureau
+   64  pwd
+   65  ls
+   66  cd essai/
+   67  pwd
+   68  ls
+   69  geany fic1 &
+   70  ls
+   71  pwd
+   72  ls
+   73  geany fic1 &
+   74  ls
+   75  cd ..
+   76  ls
+   77  cd essai/
+   78  pwd
+   79  ls
+   80  geany fic1 &
+   81  ls
+   82  geany fic1 &
+   83  ls
+   84  geany fic1 &
+   85  ls
+   86  cp fic1 fic2
+   87  ls
+   88  mv fic2 fic3
+   89  ls
+   90  rm fic1
+   91  ls
+   92  rm fic3
+   93  ls
+   94  ./debug.c
+   95  pwd
+   96  su
+   97  ls
+   98  man mv
+   99  man rm
+  100  man wc
+  101  man cat
+  102  ls
+  103  cat debug.c 
+  104  man cat
+  105  cat n debug.c 
+  106  cat -n debug.c 
+  107  cat -b debug.c 
+  108  man cat
+  109  man wc
+  110  wc -m debug.c 
+  111  gcc debug.c 
+  112  ls
+  113  ./a.out
+  114  gcc -o debug debug.c
+  115  ls
+  116  ./debug
+  117  gcc -o debug -wall debug.c
+  118  gcc -o debug -Wall debug.c
+  119  ls
+  120  gcc -o debug -Wall debug.c -lm
+  121  pwd
+  122  cd ..
+  123  ls
+  124  cd DOCUMENTS
+  125  ls
+  126  git clone https://github.com/pepnou/IN301
+  127  ls
+  128  cd IN301/
+  129  ls
+  130  pwd
+  131  mkdir td0
+  132  ls
+  133  cd td0/
+  134  touch essai
+  135  ls
+  136  git add essai
+  137  git commit essai
+  138  git config --global user.email pepnou1@gmail.com
+  139  git config --global user.name pepnou
+  140  git commit essai
+  141  git push
+  142  git push -u origin master
+  143  git add debug.c 
+  144  git commit -a
+  145  git push -u origin master
+  146  pwd
+  147  cd ..
+  148  ls
+  149  rm -rf IN30
+  150  ls
+  151  rm -rf IN301
+  152  ls
+  153  git clone https://github.com/pepnou/IN301
+  154  ls
+  155  git status
+  156  cd IN301/
+  157  pwd
+  158  ls
+  159  cd td0/
+  160  ls
+  161  git status
+  162  git commit -a
+  163  git push -u origin master
+  164  git status
+  165  cd ..
+  166  git status
+  167  git commit -a
+  168  git push -u origin master
+  169  git status
+  170  git add poly_td_2016-2017.pdf 
+  171  git status
+  172  git commit -a
+  173  git push -u origin master
+  174  git status
+  175  ls
+  176  pwd
+  177  cd td0
+  178  ls
+  179  gcc debug.c 
+  180  ls
+  181  man rm
+  182  man mv
+  183  mv a.out debug
+  184  ls
+  185  pwd
+  186  cd Bureau/
+  187  ls
+  188  cd DOCUMENTS
+  189  ls
+  190  cd IN301/
+  191  ls
+  192  cd td0/
+  193  ls
+  194  gdb ./debug
+  195  man gdb
+  196  man gcc
+  197  gcc -g debug.c
+  198  ls
+  199  man rm
+  200  rm debug
+  201  ls
+  202  man mv
+  203  mv a.out debug
+  204  ls
+  205  gdb ./debug
+  206  geany debug.c
+  207  ls
+  208  man gcc
+  209  gcc -go debug debug.c
+  210  gcc -o debug debug.c
+  211  ls
+  212  ./debug
+  213  geany debug.c
+  214  gcc -o debug debug.c
+  215  ./debug
+  216  git status
+  217  git add debug
+  218  commit -a
+  219  git commit -a
+  220  git push
+  221  ./debug
+  222  ls
+  223  git status
+  224  cd ..
+  225  git status
+  226  cd td0/
+  227  pwd
+  228  cd ..
+  229  ls
+  230  mkdir td2
+  231  ls
+  232  man mv
+  233  mv td0 td1
+  234  ls
+  235  cd td1
+  236  ls
+  237  cd ..
+  238  cd td2
+  239  geany etoile &
+  240  ls
+  241  man rm
+  242  rm etoile 
+  243  ls
+  244  geany etoile.c &
+  245  geany debug.c
+  246  cd ..
+  247  cd td1
+  248  geany debug.c
+  249  cd ..*
+  250  ls
+  251  cd td2
+  252  ls
+  253  gcc -o etoile etoile.c 
+  254  ls
+  255  ./etoile
+  256  geany conversion_seconde.c &
+  257  geany conversion_seconde.c 
+  258  geany etoile.c
+  259  gcc -o conversion_seconde conversion_seconde.c 
+  260  ./conversion_seconde
+  261  ls
+  262  cd ..
+  263  ls
+  264  git status
+  265  git add td1
+  266  git add td2
+  267  git commit -a
+  268  git push
+  269  pwd
+  270  cd td1
+  271  ls
+  272  geany debug.c
+  273  cd ..
+  274  cd td2
+  275  ls
+  276  gcc -o conversion_seconde conversion_seconde.c
+  277  ls
+  278  ./conversion_seconde
+  279  geany conversion_seconde.c
+  280  gcc -o conversion_seconde conversion_seconde.c
+  281  ./conversion_seconde
+  282  geany conversion_seconde.c
+  283  gcc -o conversion_seconde conversion_seconde.c
+  284  ./conversion_seconde
+  285  geany conversion_seconde.c
+  286  geany multiplication_egyptienne.c &
+  287  gcc -o multiplication_egyptienne multiplication_egyptienne.c 
+  288  ls
+  289  ./multiplication_egyptienne
+  290  geany multiplication_egyptienne.c
+  291  gcc -o multiplication_egyptienne multiplication_egyptienne.c 
+  292  ./multiplication_egyptienne
+  293  geany multiplication_egyptienne.c
+  294  gcc -o multiplication_egyptienne multiplication_egyptienne.c 
+  295  ./multiplication_egyptienne
+  296  geany multiplication_egyptienne.c
+  297  gcc -o multiplication_egyptienne multiplication_egyptienne.c 
+  298  ./multiplication_egyptienne
+  299  geany multiplication_egyptienne.c
+  300  gcc -o multiplication_egyptienne multiplication_egyptienne.c 
+  301  ./multiplication_egyptienne
+  302  cd .
+  303  cd ..
+  304  ls
+  305  git status
+  306  git add td2
+  307  git commit -a
+  308  git push
+  309  geany multiplication_egyptienne.c
+  310  ls
+  311  cd td2
+  312  ls
+  313  gcc -o multiplication_egyptienne multiplication_egyptienne.c 
+  314  ./multiplication_egyptienne
+  315  ls
+  316  cd ..
+  317  ls
+  318  history > sauvegarde_commande

@@ -9,10 +9,10 @@ int main()
 	reste = 0;
 	
 	srand(time(NULL));
-	//X = rand();
-	//Y = rand();
-	X=23;
-	Y=87;
+	X = rand()%100;
+	Y = rand()%100;
+	//X=23;
+	//Y=87;
 	
 	printf("%d x %d\n",X,Y);
 	
