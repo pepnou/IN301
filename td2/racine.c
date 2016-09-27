@@ -1,20 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-//#include <math.h>
 
 int main()
 {
+	int truc_inutile;
+	
 	float a;
 	float err;
 	float deb=0;
 	float fin=a;
-	float res=(deb+fin)/2;
 	
 	printf("veuillez entrer l'entier positif : "); 
 	scanf("%f",&a);
 	printf("veuillez entrer l'erreur : "); 
 	scanf("%f",&err);
+	
+	float res=(deb+fin)/2;
+//	printf("%f\n",res);
+//	scanf("%d",&truc_inutile);
 	
 	while((res*res>a+err)||(res*res<a-err))
 	{
@@ -38,9 +42,12 @@ int main()
 			deb=res;
 		}
 		res=(deb+fin)/2;
+		
+//		printf("%f\n",res);
+//		scanf("%d",&truc_inutile);
 	}
 	
-	printf("%f",res);
+	printf("%f\n",res);
 	
 	return 0;
 }
