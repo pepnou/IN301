@@ -8,7 +8,7 @@ int main()
 	
 	float a;
 	float err;
-	float deb=0;
+	float deb=0.0;
 	float fin=a;
 	
 	printf("veuillez entrer l'entier positif : "); 
@@ -16,7 +16,7 @@ int main()
 	printf("veuillez entrer l'erreur : "); 
 	scanf("%f",&err);
 	
-	float res=(deb+fin)/2;
+	float res=(deb+fin)/2.0;
 //	printf("%f\n",res);
 //	scanf("%d",&truc_inutile);
 	
@@ -41,7 +41,7 @@ int main()
 		{
 			deb=res;
 		}
-		res=(deb+fin)/2;
+		res=(deb+fin)/2.0;
 		
 //		printf("%f\n",res);
 //		scanf("%d",&truc_inutile);
