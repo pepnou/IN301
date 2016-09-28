@@ -6,7 +6,7 @@ float racine(int x)
 {	
 	float err=0.01;
 	float deb=0.0;
-	float fin=a;
+	float fin=x;
 	float res=(deb+fin)/2.0;
 		
 	while((res*res>x+err)||(res*res<x-err))
@@ -25,7 +25,7 @@ float racine(int x)
 	return res;
 }
 
-void calcul_suite(int nmax,int n)
+float calcul_suite(int nmax,int n)
 {	
 	if(n==nmax)
 	{
@@ -40,11 +40,15 @@ void calcul_suite(int nmax,int n)
 int main()
 {
 	int a;
+	int i;
 	
 	printf("veuillez entrer le rang max de la suite : "); 
 	scanf("%d",&a);
 	
-	calcul_suite(a);
+	for(i=1;i<=a;i++)
+	{
+		printf("rang %d : %f\n",i,calcul_suite(i,1));
+	}
 	
 	printf("fait\n");
 	return 0;
