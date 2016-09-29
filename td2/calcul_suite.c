@@ -1,14 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 float racine(int x)
 {	
-	float err=0.01;
+	float err=0.000001;
 	float deb=0.0;
 	float fin=x;
 	float res=(deb+fin)/2.0;
-		
+	
+	if((deb*deb<x+err)&&(deb*deb>x-err)) return deb;
+	if((fin*fin<x+err)&&(fin*fin>x-err)) return fin;
+	
 	while((res*res>x+err)||(res*res<x-err))
 	{
 		if(res*res>x+err)
@@ -29,11 +33,11 @@ float calcul_suite(int nmax,int n)
 {	
 	if(n==nmax)
 	{
-		return racine(n);
+		return sqrt(n);
 	}
 	else
 	{
-		return racine(n+calcul_suite(nmax,n+1));
+		return sqrt(n+calcul_suite(nmax,(n+1)));
 	}	
 }
 
