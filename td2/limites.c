@@ -1,24 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 int main()
 {
-	float prec = 0.01;
-	float lim = 0;
+	double prec = 0.01;
+	double lim = 0;
 	int i = 1;
-	
-	
 	
 	//printf("precision : %f\n",prec);
 	printf("veuillez entrer la precision : ");
-	scanf("%f",&prec);
+	scanf("%lf",&prec);
 	
-	float test = ((i+1)*(i+1))*prec;
-	
-	while(1>test)
+	while(1.0/(pow(i+1.0,2.0))>prec)
 	{
-		lim = lim + (1/((i+1)*(i+1)));
+		lim = lim + (1.0/pow(i,2));
 		i++;
 	}
 	
