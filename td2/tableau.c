@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+int taille = 5;
+
 void init_tab(int *tab,int a)
 {
-	int taille;
-	taille=sizeof(tab);
 	int j;
 	
 	for(j=0;j<taille;j++)
@@ -17,8 +17,6 @@ void init_tab(int *tab,int a)
 
 int prod_elem_tab(int *tab)
 {
-	int taille;
-	taille=sizeof(tab);
 	int j;
 	int res = 1;
 	
@@ -31,8 +29,6 @@ int prod_elem_tab(int *tab)
 
 int prod_elem_tab_modif(int *tab,int i,int pos)
 {
-	int taille;
-	taille=sizeof(tab);
 	int j;
 	int res = 1;
 	int k = 1;
@@ -58,8 +54,6 @@ int prod_elem_tab_modif(int *tab,int i,int pos)
 
 int min_tab(int *tab)
 {
-	int taille;
-	taille=sizeof(tab);
 	int j;
 	int min = tab[0];
 	
@@ -72,20 +66,18 @@ int min_tab(int *tab)
 
 void decal_tab(int *tab,int i)
 {
-	int taille;
-	taille=sizeof(tab)-1;
+	int taille2=taille-1;
 	
-	while(taille>i)
+	while(taille2>i)
 	{
-		tab[taille]=tab[taille-1];
+		tab[taille2]=tab[taille2-1];
+		taille2--;
 	}
 	tab[i]=0;
 }
 
-void insert_tab(int *tab,int i)
+int insert_tab(int *tab,int i)
 {
-	int taille;
-	taille=sizeof(tab);
 	int j;
 	
 	for(j=0;j<taille;j++)
@@ -94,14 +86,14 @@ void insert_tab(int *tab,int i)
 		{
 			decal_tab(tab,j);
 			tab[j]=i;
+			return 0;
 		}
 	}
+	return 0;
 }
 
 void invert_tab(int *tab)
 {
-	int taille;
-	taille=sizeof(tab);
 	int j;
 	int temp;
 	
@@ -115,8 +107,6 @@ void invert_tab(int *tab)
 
 void elim_double_tab(int *tab)
 {
-	int taille;
-	taille=sizeof(tab);
 	int j;
 	int i;
 	
@@ -132,18 +122,18 @@ void elim_double_tab(int *tab)
 	}
 }
 
-int moy_section_tab(int *tab)
+float moy_section_tab(int *tab)
 {
 	int pos = 0;
-	int taille;
-	taille=sizeof(tab);
+	int a;
 	int j=0;
-	int res = 0;
-	
+	float res = 0;
 	
 	while(j<taille)
 	{
+		a = prod_elem_tab_modif(tab,j,pos);
 		j = j + prod_elem_tab_modif(tab,j,pos);
+		if(a>1) pos++;
 	}
 	
 	j=0;
@@ -152,16 +142,50 @@ int moy_section_tab(int *tab)
 		res = res+tab[j];
 		j++;
 	}
-	res=res/(j-1);
+	res=res/(j);
+	
+	return res;
 }
 
-
+void affiche_tab(int *tab)
+{
+	int i;
+	
+	for(i=0;i<taille;i++)
+	{
+		printf("%d : %d\n",i,tab[i]);
+	}
+}
 
 int main(void)
 {	
-	int tab[50];
+	int tab[taille];
 	
-	init_tab(tab,0);
+	//init_tab(tab,0);
+	tab[0]=3;
+	tab[1]=4;
+	tab[2]=0;
+	tab[3]=0;
+	tab[4]=10;
+	
+	affiche_tab(tab);
+	
+	//printf("%d\n",prod_elem_tab(tab));
+	//printf("%d\n",min_tab(tab));
+	
+	//decal_tab(tab,2);
+	
+	//insert_tab(tab,3);
+	
+	//elim_double_tab(tab);
+	
+	//invert_tab(tab);
+	
+	printf("%f\n",moy_section_tab(tab));
+	
+	affiche_tab(tab);
+	
+	
 	
 	return 0;
 }
