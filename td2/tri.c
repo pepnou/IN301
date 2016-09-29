@@ -73,6 +73,16 @@ int nombre_valeur_inter_tab(int *tab,int min,int max)
 	return res;
 }
 
+void affiche_tab(int *tab, int taille2)
+{
+	int i;
+	
+	for(i=0;i<taille2;i++)
+	{
+		printf("%d : %d\n",i,tab[i]);
+	}
+}
+
 int main()
 {
 	int i;
@@ -90,10 +100,12 @@ int main()
 	
 	printf("nombre de valeur dans le tableau : %d\n",nombre_valeur_tab(tab));
 	
-	for(i=0;j=0;i<taille;i=i+10;j++)
+	for(i=0,j=0;i<taille;i=i+10,j++)
 	{
 		tab[j]=nombre_valeur_inter_tab(tab,i,i+10);
 	}
+	
+	affiche_tab(tab2,10);
 	
 	return 0;
 }
