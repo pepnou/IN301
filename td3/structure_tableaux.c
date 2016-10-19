@@ -9,6 +9,14 @@ struct tableau
 	};
 typedef struct tableau tableau;
 
+struct acces
+	{
+		int ecriture;
+		int lecture;
+	};
+
+typedef struct acces acces;
+
 int alea(int n)
 {
 	return rand()%n;
@@ -163,78 +171,136 @@ void elim_doublon_tableau_struct_tab(tableau *j)
 	}
 }
 
-void min_tableau_struct_tab_modif(tableau *d,int debut,int fin)
+acces min_tableau_struct_tab_modif(tableau *d,int debut,int fin)
 {
+	acces b;
+	b.lecture=0;
+	b.ecriture=0;
+	
 	int min=debut;
 	int i;
 	int tmp;
+	b.lecture++;
 	for(i=debut+1;i<(*d).taille;i++)
 	{
+		b.lecture+=3;
 		if((*d).T[i]<(*d).T[min]) min=i;
 	}
+	b.lecture+=2;
+	b.ecriture+=2;
+	
 	tmp=(*d).T[debut];
 	(*d).T[debut]=(*d).T[min];
 	(*d).T[min]=tmp;
+	
+	return b;
 }
 
-void tri_selection_tableau_struct_tab(tableau *k,int debut,int fin)
+acces add(acces a,acces b)
 {
+	acces c;
+	c.lecture = a.lecture + b.lecture;
+	c.ecriture = a.ecriture + b.ecriture;
+	return c;
+}
+
+acces tri_selection_tableau_struct_tab(tableau *k,int debut,int fin)
+{
+	acces a;
+	a.lecture=0;
+	a.ecriture=0;
+	
 	if(debut == fin);
 	else
 	{
-		min_tableau_struct_tab_modif(k,debut,fin);
-		tri_selection_tableau_struct_tab(k,debut+1,fin);
+		a=add(min_tableau_struct_tab_modif(k,debut,fin),a);
+		a=add(tri_selection_tableau_struct_tab(k,debut+1,fin),a);
 		
 		//affiche_tableau_struct_tab(*k);
 	}
+	return a;
 }
 
-int inser_tableau_struct_tab_modif(tableau *g,int x,int fin)
+acces inser_tableau_struct_tab_modif(tableau *g,int x)
 {
-	int i;
-	for(i=0;i<=fin;i++)
+	acces w;
+	w.lecture=0;
+	w.ecriture=0;
+	
+	int a = (*g).T[x];
+	w.lecture++;
+	int i,j;
+	for(i=0;i<x;i++)
 	{
-		if((*g).T[i]>x)
+		w.lecture +=2;
+		if((*g).T[i]>(*g).T[x])
 		{
-			decale_droite_tableau_struct_tab_modif(g,i);
-			(*g).T[i]=x;
-			return 1;
+			for(j=x;j>i;j--)
+			{
+				w.lecture++;
+				w.ecriture++;
+				(*g).T[j] = (*g).T[j-1];
+			}
+			w.ecriture++;
+			(*g).T[i]=a;
+			return w;
 		}
 	}
-	decale_droite_tableau_struct_tab_modif(g,i);
-	(*g).T[i]=x;
-	(*g).taille++;
-	return 1;
-	
+	return w;
 }
 
-void tri_insertion_tableau_struct_tab(tableau *l,int n)
+acces tri_insertion_tableau_struct_tab(tableau *l,int n)
 {
-	if(n==((*l).taille-1));
-	else
+	acces z;
+	z.lecture=0;
+	z.ecriture=0;
+	z.lecture++;
+	if(!(n>((*l).taille-1)))
 	{
-		inser_tableau_struct_tab_modif(l,(*l).T[n+1],n);
-		decale_gauche_tableau_struct_tab_modif(l,n+2);
-		tri_insertion_tableau_struct_tab(l,n+1);
+		z = add(inser_tableau_struct_tab_modif(l,n),z);
+		
+		z = add(tri_insertion_tableau_struct_tab(l,n+1),z);
 	}
+	return z;
 }
 
-void tri_bulle_tableau_struct_tab(tableau *m)
+acces tri_bulle_tableau_struct_tab(tableau *m)
 {
+	acces z;
+	z.lecture=0;
+	z.ecriture=0;
+	
 	int tmp;
 	int i,j;
+	
+	z.lecture++;
 	for(i=0;i<(*m).taille;i++)
 	{
+		z.lecture +=2;
 		for(j=0;j<(*m).taille-1;j++)
 		{
+			z.lecture++;
+			z.lecture+=2;
 			if((*m).T[j]>(*m).T[j+1])
 			{
+				z.lecture++;
 				tmp=(*m).T[j];
+				z.lecture++;
+				z.ecriture++;
 				(*m).T[j]=(*m).T[j+1];
+				z.ecriture++;
 				(*m).T[j+1]=tmp;
 			}
 		}
 	}
+	
+	return z;
+}
+
+void afficher_acces(acces a)
+{
+	printf("acces lecture : %d\n",a.lecture);
+	printf("acces ecriture : %d\n",a.ecriture);
 }
 
 int main()
@@ -275,13 +341,13 @@ int main()
 	//elim_doublon_tableau_struct_tab(&tab);
 	//affiche_tableau_struct_tab(tab);
 	
-	//tri_selection_tableau_struct_tab(&tab,0,tab.taille-1);
+	afficher_acces(tri_selection_tableau_struct_tab(&tab,0,tab.taille-1));
 	//affiche_tableau_struct_tab(tab);
 	
-	tri_insertion_tableau_struct_tab(&tab,0);
-	affiche_tableau_struct_tab(tab);
+	afficher_acces(tri_insertion_tableau_struct_tab(&tab,1));
+	//affiche_tableau_struct_tab(tab);
 	
-	//tri_bulle_tableau_struct_tab(&tab);
+	afficher_acces(tri_bulle_tableau_struct_tab(&tab));
 	//affiche_tableau_struct_tab(tab);
 	
 	
