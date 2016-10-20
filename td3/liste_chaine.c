@@ -34,15 +34,21 @@ void afficher_liste(liste a)
 
 void lib_mem(liste a)
 {
-	if((a->suiv->suiv)==NULL)
-	{
-		free(a->suiv);
-		a.suiv=NULL;
-	}
-	else
+	if(!est_vide(a))
 	{
 		lib_mem(a->suiv);
 		free(a);
+	}
+}
+
+void lib_mem2(liste a)
+{
+	liste b;
+	while(!est_vide(l))
+	{
+		b=a->suiv;
+		free(a);
+		a=b;
 	}
 }
 
@@ -55,11 +61,17 @@ liste ajout_debut(liste a,int c)
 	return b;
 }
 
-liste ajout_fin(liste a,int c)
+void ajout_fin(liste a,int c)
 {
 	liste b;
 	if(!(b=malloc(sizeof(elem)))) exit(EXIT_FAILURE);
-	while
+	b->val=c;
+	b->suiv=NULL;
+	while(a->suiv !=NULL)
+	{
+		a=a->suiv;
+	}
+	a->suiv=b;
 }
 
 int main()
