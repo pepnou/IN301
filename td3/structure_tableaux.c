@@ -356,7 +356,7 @@ void tri_rapide_tableau_struct_tab(tableau *p,int deb,int fin)
 {
 	int i;
 	
-	if((!(deb==fin))&&(fin<(*p).taille)&&(deb>=0))
+	if((!(deb==fin))&&(deb<fin))
 	{
 		int x=deb;
 		int y=fin;
@@ -371,7 +371,6 @@ void tri_rapide_tableau_struct_tab(tableau *p,int deb,int fin)
 				suppr(p,i+1);
 			}
 		}
-		
 		tri_rapide_tableau_struct_tab(p,deb,x);
 		tri_rapide_tableau_struct_tab(p,x+1,fin);
 	}
