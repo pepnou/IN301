@@ -5,13 +5,13 @@
 struct tableau
 	{
 		int taille;
-		int T[100];
+		int T[1500];
 	};
 typedef struct tableau tableau;
 
-int comp_selection = 0;
-int comp_insertion = 0;
-int comp_bulle = 0;
+int comp_selection;
+int comp_insertion;
+int comp_bulle;
 
 int alea(int n)
 {
@@ -70,8 +70,12 @@ void min_tableau_struct_tab_modif(tableau *d,int debut,int fin)
 	int min=debut;
 	int i;
 	int tmp;
+	
+	comp_selection++;
+	
 	for(i=debut+1;i<(*d).taille;i++)
 	{
+		comp_selection+=2;
 		if((*d).T[i]<(*d).T[min]) min=i;
 	}
 	
@@ -82,6 +86,8 @@ void min_tableau_struct_tab_modif(tableau *d,int debut,int fin)
 
 void tri_selection_tableau_struct_tab(tableau *k,int debut,int fin)
 {
+	comp_selection++;
+	
 	if(debut == fin);
 	else
 	{
@@ -96,12 +102,18 @@ void inser_tableau_struct_tab_modif(tableau *g,int x)
 {
 	int a = (*g).T[x];
 	int i,j;
+	
+	comp_insertion++;
+	
 	for(i=0;i<x;i++)
 	{
+		comp_insertion+=2;
 		if((*g).T[i]>(*g).T[x])
 		{
+			comp_insertion++;
 			for(j=x;j>i;j--)
 			{
+				comp_insertion++;
 				(*g).T[j] = (*g).T[j-1];
 			}
 			(*g).T[i]=a;
@@ -111,6 +123,7 @@ void inser_tableau_struct_tab_modif(tableau *g,int x)
 
 void tri_insertion_tableau_struct_tab(tableau *l,int n)
 {
+	comp_insertion++;
 	if(!(n>((*l).taille-1)))
 	{
 		inser_tableau_struct_tab_modif(l,n);
@@ -123,10 +136,14 @@ void tri_bulle_tableau_struct_tab(tableau *m)
 	int tmp;
 	int i,j;
 	
+	comp_bulle++;
+	
 	for(i=0;i<(*m).taille;i++)
 	{
+		comp_bulle+=2;
 		for(j=0;j<(*m).taille-1;j++)
 		{
+			comp_bulle+=2;
 			if((*m).T[j]>(*m).T[j+1])
 			{
 				tmp=(*m).T[j];
@@ -137,27 +154,64 @@ void tri_bulle_tableau_struct_tab(tableau *m)
 	}
 }
 
+void re_init_cont()
+{
+	comp_selection = 0;
+	comp_insertion = 0;
+	comp_bulle = 0;
+}
+
+void affiche_comp()
+{
+	printf("nombre de comparaison moyen du tri par selection : %d\n",comp_selection);
+	printf("nombre de comparaison moyen du tri par insertion : %d\n",comp_insertion);
+	printf("nombre de comparaison moyen du tri a bulle : %d\n",comp_bulle);
+}
+
+void moy_comp(int n)
+{
+	comp_selection /= n;
+	comp_insertion /= n;
+	comp_bulle /= n;
+}
 
 int main()
 {
 	srand(time(NULL));
 	
 	tableau tab;
+	int nombre_tri = 10;
+	int i,j;
+	
 	
 	
 	printf("sizeof(tableau) : %lu\n\n",sizeof(tableau));
 	
 	//printf("%d\n",alea(100));
 	
-	ini_struct_tab(&tab,10);
-	affiche_tableau_struct_tab(tab);
-
+	//ini_struct_tab(&tab,10);
+	//affiche_tableau_struct_tab(tab);
 	
-	tri_selection_tableau_struct_tab(&tab,0,tab.taille-1);	
-	tri_insertion_tableau_struct_tab(&tab,1);
-	tri_bulle_tableau_struct_tab(&tab);
-
+	printf("taille\ttri_selection\ttri_insertion\ttri_bulle\n");
+	printf("\n");
 	
+	for(j=100;j<=1500;j+=100)
+	{
+		re_init_cont();
+		
+		for(i=0;i<nombre_tri;i++)
+		{
+			ini_struct_tab(&tab,j);
+			tri_selection_tableau_struct_tab(&tab,0,tab.taille-1);	
+			ini_struct_tab(&tab,j);
+			tri_insertion_tableau_struct_tab(&tab,1);
+			ini_struct_tab(&tab,j);
+			tri_bulle_tableau_struct_tab(&tab);
+		}
+		moy_comp(i);
+		
+		printf("%d\t%d\t%d\t%d\n",j,comp_selection,comp_insertion,comp_bulle);
+	}
 	
 	printf("\n");
 	return 0;

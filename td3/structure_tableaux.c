@@ -26,7 +26,7 @@ void ini_struct_tab(tableau *a)
 {
 	int i;
 	(*a).taille=10;
-	for(i=0;i<(*a).taille;i++) (*a).T[i]=alea(20);
+	for(i=0;i<(*a).taille;i++) (*a).T[i]=alea(100);
 }
 
 void affiche_tableau_struct_tab(tableau b)
@@ -64,10 +64,10 @@ int min_tableau_struct_tab(tableau d)
 
 void decale_droite_tableau_struct_tab(tableau *e)
 {
-	int i;
-	for(i=(*e).taille;i>0;i--)
+	int j;
+	for(j=(*e).taille;j>0;j--)
 	{
-		(*e).T[i]=(*e).T[i-1];
+		(*e).T[j]=(*e).T[j-1];
 	}
 	(*e).T[0]=0;
 	(*e).taille++;
@@ -303,6 +303,80 @@ void afficher_acces(acces a)
 	printf("acces ecriture : %d\n",a.ecriture);
 }
 
+void tri_lineaire_tableau_struct_tab(tableau *o)
+{
+	int i;
+	int j=0;
+	int tab[100];
+
+	for(i=0;i<100;i++)
+	{
+		tab[i]=0;
+	}
+
+	for(i=0;i<(*o).taille;i++)
+	{
+		tab[(*o).T[i]]++;
+	}
+
+	i=0;
+	while(i<100)
+	{
+		if(tab[i]!=0)
+		{
+			(*o).T[j]=i;
+			tab[i]--;
+			j++;
+		}
+		else
+		{
+			i++;
+		}
+	}
+}
+
+void swap(tableau *q,int a,int b)
+{
+	int tmp=(*q).T[a];
+	(*q).T[a]=(*q).T[b];
+	(*q).T[b]=tmp;
+}
+
+void suppr(tableau *q,int n)
+{
+	int k;
+	for(k=n;k<(*q).taille-1;k++)
+	{
+		(*q).T[k]=(*q).T[k+1];
+	}
+	(*q).taille--;
+}
+
+void tri_rapide_tableau_struct_tab(tableau *p,int deb,int fin)
+{
+	int i;
+	
+	if((!(deb==fin))&&(fin<(*p).taille)&&(deb>=0))
+	{
+		int x=deb;
+		int y=fin;
+		
+		for(i=x+1;i<=y;i++)
+		{
+			if((*p).T[x]>(*p).T[i])
+			{
+				decale_droite_tableau_struct_tab(p);
+				x++;
+				(*p).T[0]=(*p).T[i+1];
+				suppr(p,i+1);
+			}
+		}
+		
+		tri_rapide_tableau_struct_tab(p,deb,x);
+		tri_rapide_tableau_struct_tab(p,x+1,fin);
+	}
+}
+
 int main()
 {
 	srand(time(NULL));
@@ -310,12 +384,13 @@ int main()
 	tableau tab;
 	
 	
-	printf("sizeof(tableau) : %lu\n\n",sizeof(tableau));
+	//printf("sizeof(tableau) : %lu\n\n",sizeof(tableau));
 	
 	//printf("%d\n",alea(100));
 	
 	ini_struct_tab(&tab);
 	affiche_tableau_struct_tab(tab);
+	printf("\n");
 	
 	//prod_tableau_struct_tab(tab);
 	//min_tableau_struct_tab(tab);
@@ -341,15 +416,20 @@ int main()
 	//elim_doublon_tableau_struct_tab(&tab);
 	//affiche_tableau_struct_tab(tab);
 	
-	afficher_acces(tri_selection_tableau_struct_tab(&tab,0,tab.taille-1));
+	//afficher_acces(tri_selection_tableau_struct_tab(&tab,0,tab.taille-1));
 	//affiche_tableau_struct_tab(tab);
 	
-	afficher_acces(tri_insertion_tableau_struct_tab(&tab,1));
+	//afficher_acces(tri_insertion_tableau_struct_tab(&tab,1));
 	//affiche_tableau_struct_tab(tab);
 	
-	afficher_acces(tri_bulle_tableau_struct_tab(&tab));
+	//afficher_acces(tri_bulle_tableau_struct_tab(&tab));
 	//affiche_tableau_struct_tab(tab);
 	
+	//tri_lineaire_tableau_struct_tab(&tab);
+	//affiche_tableau_struct_tab(tab);
+	
+	tri_rapide_tableau_struct_tab(&tab,0,tab.taille-1);
+	affiche_tableau_struct_tab(tab);
 	
 	printf("\n");
 	return 0;
