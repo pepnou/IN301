@@ -21,6 +21,7 @@ int est_vide(liste a)
 	return a==NULL;
 }
 
+/*
 void afficher_liste(liste a)
 {
 	liste b=a;
@@ -30,6 +31,16 @@ void afficher_liste(liste a)
 		b=(*b).suiv;
 	}
 	printf("%d\n",(*a).val);
+}
+*/
+
+void afficher_liste(liste a)
+{
+	while(!(a==NULL))
+	{
+		printf("%d\n",a->val);
+		a=a->suiv;
+	}
 }
 
 void lib_mem(liste a)
@@ -154,8 +165,67 @@ liste suppr_elem(liste a,int b)
 liste suppr_elem2(liste a,int b)
 {
 	if(est_vide(a)) return a;
-	if(a->val==b) return suppr_elem(a->suiv,b);
-	a->suiv=suppr_elem(a->suiv,b);
+	if(a->val==b) return suppr_elem2(a->suiv,b);
+	a->suiv=suppr_elem2(a->suiv,b);
+	return a;
+}
+
+liste concat_liste(liste l1,liste l2)
+{
+	liste a=l1;
+	while(!(l1->suiv == NULL)) l1 = l1->suiv;
+	l1->suiv=l2;
+	return a;
+}
+
+liste entrela_liste_trie(liste l1,liste l2)
+{
+	liste l3=NULL;
+	
+	if(l1==NULL)return l2;
+	if(l2==NULL)return l1;
+	if(l1->val<=l2->val)
+	{
+		if(!(l3=malloc(sizeof(elem)))) exit(EXIT_FAILURE);
+		l3->val=l1->val;
+		l3->suiv=entrela_liste_trie(l1->suiv,l2);
+		return l3;
+	}
+	else
+	{
+		if(!(l3=malloc(sizeof(elem)))) exit(EXIT_FAILURE);
+		l3->val=l2->val;
+		l3->suiv=entrela_liste_trie(l1,l2->suiv);
+		return l3;
+	}
+}
+
+liste crea_liste_trie(int n)
+{
+	int i;
+	liste a=NULL;
+	
+	for(i=0;i<n;i++)
+	{
+		a = ajout_fin(a,10*i+((rand()%10)));
+	}
+	return a;
+}
+
+liste tri_bulle_liste(liste a)
+{
+	liste e=a;
+	liste temp;
+	while(!(a->suiv==NULL))
+	{
+		if(a->val>a->suiv->val)
+		{
+			temp=a->suiv->suiv;
+			a->suiv->suiv=a;
+			a->suiv=temp;
+			a=e;
+		}
+	}
 	return a;
 }
 
@@ -163,7 +233,9 @@ int main()
 {
 	srand(time(NULL));
 	liste li;
-	li=liste_alea(50);
+	li=liste_alea(20);
+	
+	/*
 	afficher_liste(li);
 	printf("est trié ? : %d\nnbr element : %d\n",est_trie(li),nbr_elem(li));
 	int c = rand()%50;
@@ -174,8 +246,24 @@ int main()
 		printf("\n");
 		afficher_liste(li);
 	}
+	*/
 	
+	/*
+	li=crea_liste_trie(10);
+	liste li2;
+	li2=crea_liste_trie(10);
+	liste li3;
+	li3=entrela_liste_trie(li,li2);
 	
+	afficher_liste(li);
+	printf("\n");
+	afficher_liste(li2);
+	printf("\n");
+	afficher_liste(li3);
+	*/
+	
+	li=tri_bulle_liste(li);
+	afficher_liste(li);
 	
 	return EXIT_SUCCESS;
 }
