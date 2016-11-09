@@ -5,6 +5,8 @@
 #include <SDL_ttf.h>
 #include <SDL/SDL_ttf.h>
 
+//a revoir : les define sont a coté de la plaque
+
 #define VIDE 0
 #define MUR 1
 #define CAISSE 2
@@ -35,6 +37,7 @@ typedef struct level LEVEL;
 void affichelvl(SDL_Surface *ecran,LEVEL niveau);
 LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);
 POS attendre_evenement();
+int victoire(LEVEL niveau);
 
 int main()
 {
@@ -69,12 +72,12 @@ int main()
 	lvl.joueur.x=alea_int(lvl.width-2)+1;
 	lvl.joueur.y=alea_int(lvl.height-2)+1;
     lvl.T[lvl.joueur.x][lvl.joueur.y]=2;
-    
+    lvl.T[alea_int(lvl.width-2)+1][alea_int(lvl.height-2)+1] = 4;
     
 	affichelvl(ecran,lvl);
 	//POS postest;
 	
-	while(1)
+	while(!victoire(lvl))
 	{
 		lvl = deplacer_joueur(lvl,attendre_evenement());
 		
@@ -88,7 +91,7 @@ int main()
 		*/
 	}
 	
-	
+	printf("you win\n");
 	
 	
 	TTF_Quit();
@@ -97,20 +100,40 @@ int main()
     return EXIT_SUCCESS;
 }
 
+int victoire(LEVEL niveau)
+{
+	int i,j;
+	
+	for(i=1;i<niveau.width-1;i++)
+    {
+		for(j=1;j<niveau.height-1;j++)
+		{
+			if(niveau.T[i][j]==4)return 0;
+		}
+	}
+	return 1;
+}
+
 void affichelvl(SDL_Surface *ecran,LEVEL niveau)
 {
 	SDL_Surface *vide = NULL;
 	SDL_Surface *mur = NULL;
 	SDL_Surface *caisse = NULL;
 	SDL_Surface *joueur = NULL;
+	SDL_Surface *arrive = NULL;
+	SDL_Surface *caisse_arrive = NULL;
 	vide = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
 	mur = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
 	caisse = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
 	joueur = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
+	arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
+	caisse_arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
 	SDL_FillRect(vide, NULL, SDL_MapRGB(ecran->format, 100, 247, 255));
 	SDL_FillRect(mur, NULL, SDL_MapRGB(ecran->format, 142, 142, 142));
 	SDL_FillRect(caisse, NULL, SDL_MapRGB(ecran->format, 237, 161, 55));
 	SDL_FillRect(joueur, NULL, SDL_MapRGB(ecran->format, 58, 255, 77));
+	SDL_FillRect(arrive, NULL, SDL_MapRGB(ecran->format, 228, 0, 8));
+	SDL_FillRect(caisse_arrive, NULL, SDL_MapRGB(ecran->format, 0, 53, 1));
 	SDL_Rect positionCase;
 	
 	int i,j;
@@ -139,6 +162,15 @@ void affichelvl(SDL_Surface *ecran,LEVEL niveau)
 				case 3:
 					SDL_BlitSurface(mur,NULL,ecran,&positionCase);
 					SDL_Flip(ecran);
+					break;
+				case 4:
+					SDL_BlitSurface(arrive,NULL,ecran,&positionCase);
+					SDL_Flip(ecran);
+					break;
+				case 5:
+					SDL_BlitSurface(caisse_arrive,NULL,ecran,&positionCase);
+					SDL_Flip(ecran);
+					break;
 					/*
 				default :
 					printf("you forgot to blit a surface");
@@ -172,13 +204,22 @@ LEVEL deplacer_joueur(LEVEL niveau,POS deplacement)
 	//printf("T[x][y]':%d\n",niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y]);
 	else
 	{
-		if((niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] == 1)&&(niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] == 0))
+		switch(niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y])
 		{
-			niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = 2;
-			niveau.T[niveau.joueur.x][niveau.joueur.y] = 0;
-			niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = 1;
-			niveau.joueur.x=niveau.joueur.x + deplacement.x;
-			niveau.joueur.y=niveau.joueur.y + deplacement.y;
+			case 0:
+				niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = 2;
+				niveau.T[niveau.joueur.x][niveau.joueur.y] = 0;
+				niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = 1;
+				niveau.joueur.x=niveau.joueur.x + deplacement.x;
+				niveau.joueur.y=niveau.joueur.y + deplacement.y;
+				break;
+			case 4:
+				niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = 2;
+				niveau.T[niveau.joueur.x][niveau.joueur.y] = 0;
+				niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = 5;
+				niveau.joueur.x=niveau.joueur.x + deplacement.x;
+				niveau.joueur.y=niveau.joueur.y + deplacement.y;
+				break;
 		}
 	}
 	return niveau;
