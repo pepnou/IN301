@@ -13,16 +13,28 @@
 #define CAISSE_ARRIVE 5
 #define JOUEUR_ARRIVE 6
 
+#define largeur 400
+#define hauteur 400
+
+struct pos
+{
+	int x;
+	int y;
+};
+typedef struct pos POS;
+
 struct level
 {
 	int width;
 	int height;
 	int T[100][100];
+	POS joueur;
 };
 typedef struct level LEVEL;
 
-void affiche_lvl(SDL_Surface *ecran);
-
+void affichelvl(SDL_Surface *ecran,LEVEL niveau);
+LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);
+POS attendre_evenement();
 
 int main()
 {
@@ -33,25 +45,49 @@ int main()
 
     SDL_WM_SetCaption("Test",NULL);
 
-    ecran = SDL_SetVideoMode(400,400,32,SDL_HWSURFACE);
-    
+    ecran = SDL_SetVideoMode(largeur,hauteur,32,SDL_HWSURFACE);
     
     
     int i,j;
     LEVEL lvl;
     lvl.width = 10;
     lvl.height = 10;
-    for(i=0;i<10;i++)
+    for(i=0;i<lvl.width;i++)
     {
-		for(j=0;j<10;j++)
+		for(j=0;j<lvl.height;j++)
 		{
-			lvl.T[i][j]=alea_int(2);
+			if((i==0)||(i==lvl.width-1)||(j==0)||(j==lvl.height-1))
+			{
+				lvl.T[i][j]=3;
+			}
+			else
+			{
+				lvl.T[i][j]=alea_int(2);
+			}
 		}
 	}
+	lvl.joueur.x=alea_int(lvl.width-2)+1;
+	lvl.joueur.y=alea_int(lvl.height-2)+1;
+    lvl.T[lvl.joueur.x][lvl.joueur.y]=2;
     
     
+	affichelvl(ecran,lvl);
+	//POS postest;
 	
-	affiche_lvl(ecran);
+	while(1)
+	{
+		lvl = deplacer_joueur(lvl,attendre_evenement());
+		
+		affichelvl(ecran,lvl);
+		
+		
+		
+		/*
+		postest = attendre_evenement();
+		printf("x:%d y:%d\n",postest.x,postest.y);
+		*/
+	}
+	
 	
 	
 	
@@ -61,21 +97,143 @@ int main()
     return EXIT_SUCCESS;
 }
 
-void affiche_lvl(SDL_Surface *ecran,LEVEL niveau)
+void affichelvl(SDL_Surface *ecran,LEVEL niveau)
 {
 	SDL_Surface *vide = NULL;
+	SDL_Surface *mur = NULL;
 	SDL_Surface *caisse = NULL;
-	vide = SDL_CreateRGBSurface(SDL_HWSURFACE, 40, 40, 32, 0, 0, 0, 0);
-	caisse = SDL_CreateRGBSurface(SDL_HWSURFACE, 40, 40, 32, 0, 0, 0, 0);
+	SDL_Surface *joueur = NULL;
+	vide = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
+	mur = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
+	caisse = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
+	joueur = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur/niveau.width, hauteur/niveau.height, 32, 0, 0, 0, 0);
+	SDL_FillRect(vide, NULL, SDL_MapRGB(ecran->format, 100, 247, 255));
+	SDL_FillRect(mur, NULL, SDL_MapRGB(ecran->format, 142, 142, 142));
+	SDL_FillRect(caisse, NULL, SDL_MapRGB(ecran->format, 237, 161, 55));
+	SDL_FillRect(joueur, NULL, SDL_MapRGB(ecran->format, 58, 255, 77));
+	SDL_Rect positionCase;
 	
+	int i,j;
 	
+	for(i=0;i<niveau.width;i++)
+    {
+		for(j=0;j<niveau.height;j++)
+		{
+			positionCase.x=i*(largeur/niveau.width);
+			positionCase.y=j*(hauteur/niveau.height);
+			
+			switch(niveau.T[i][j])
+			{
+				case 0:
+					SDL_BlitSurface(vide,NULL,ecran,&positionCase);
+					SDL_Flip(ecran);
+					break;
+				case 1:
+					SDL_BlitSurface(caisse,NULL,ecran,&positionCase);
+					SDL_Flip(ecran);
+					break;
+				case 2:
+					SDL_BlitSurface(joueur,NULL,ecran,&positionCase);
+					SDL_Flip(ecran);
+					break;
+				case 3:
+					SDL_BlitSurface(mur,NULL,ecran,&positionCase);
+					SDL_Flip(ecran);
+					/*
+				default :
+					printf("you forgot to blit a surface");
+					break;
+					*/
+			}
+		}
+	}
 	
-	
-	wait_clic();
 	
 	SDL_FreeSurface(vide);
 	SDL_FreeSurface(caisse);
+	SDL_FreeSurface(joueur);
 }
+
+
+LEVEL deplacer_joueur(LEVEL niveau,POS deplacement)
+{
+	//printf("x:%d\n",niveau.joueur.x + deplacement.x);
+	//printf("y:%d\n",niveau.joueur.y + deplacement.y);
+	//printf("T[x][y]:%d\n",niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y]);
+	
+	if(niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] == 0)
+	{
+		niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = 2;
+		niveau.T[niveau.joueur.x][niveau.joueur.y] = 0;
+		niveau.joueur.x=niveau.joueur.x + deplacement.x;
+		niveau.joueur.y=niveau.joueur.y + deplacement.y;
+	}
+	
+	//printf("T[x][y]':%d\n",niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y]);
+	else
+	{
+		if((niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] == 1)&&(niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] == 0))
+		{
+			niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = 2;
+			niveau.T[niveau.joueur.x][niveau.joueur.y] = 0;
+			niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = 1;
+			niveau.joueur.x=niveau.joueur.x + deplacement.x;
+			niveau.joueur.y=niveau.joueur.y + deplacement.y;
+		}
+	}
+	return niveau;
+}
+
+POS attendre_evenement()
+{
+	POS deplacement_joueur;
+	deplacement_joueur.x=0;
+	deplacement_joueur.y=0;
+	
+	SDL_EnableKeyRepeat(10, 10);
+	
+	SDL_Event action;
+	int continuer=1;
+	
+	while(continuer)
+	{
+		SDL_WaitEvent(&action);
+		if(action.type==SDL_KEYDOWN)
+        {
+			switch(action.key.keysym.sym)
+            {
+				case SDLK_UP:
+					continuer = 0;
+					deplacement_joueur.y=-1;
+					break;
+				case SDLK_DOWN:
+                    continuer = 0;
+                    deplacement_joueur.y=1;
+                    break;
+				case SDLK_RIGHT:
+                    continuer = 0;
+                    deplacement_joueur.x=1;
+                    break;
+                case SDLK_LEFT:
+                    continuer = 0;
+                    deplacement_joueur.x=-1;
+                    break;
+                default:
+					break;
+            }
+		}
+	}
+	
+	
+	return deplacement_joueur;
+}
+
+
+
+
+
+
+
 
 
 
@@ -449,7 +607,7 @@ void ecran_ajout(SDL_Surface *ecran)
 //                    continuer = 0;
 
 //                    break;
-/*
+
                 case SDLK_BACKSPACE:
                     if(positioncurseur!=0)
                     {
@@ -477,7 +635,9 @@ void ecran_ajout(SDL_Surface *ecran)
                     }
 
                     break;
-*/
+
+
+
                 case SDLK_KP_PERIOD:
                     if((positionvirgule == 7)&&(positioncurseur != 0))
                     {
@@ -690,7 +850,7 @@ void ecran_depense(SDL_Surface *ecran)
         {
             switch(event.key.keysym.sym)
             {
-/*
+
                 case SDLK_RETURN:
                     if(positionvirgule==7)
                     {
@@ -729,7 +889,7 @@ void ecran_depense(SDL_Surface *ecran)
                     }
 
                     break;
-*/
+
                 case SDLK_KP_PERIOD:
                     if((positionvirgule == 7)&&(positioncurseur != 0))
                     {
@@ -948,7 +1108,7 @@ void ecran_date(SDL_Surface *ecran)
         {
             switch(event.key.keysym.sym)
             {
-/*
+
                 case SDLK_RETURN:
                     continuer = 0;
                     break;
@@ -974,7 +1134,7 @@ void ecran_date(SDL_Surface *ecran)
 
                     }
                     break;
-*/
+
                 case SDLK_SPACE:
                     tab[positioncurseur] = ' ';
                     positioncurseur++;
@@ -1175,7 +1335,7 @@ void ecran_commentaire(SDL_Surface *ecran)
         {
             switch(event.key.keysym.sym)
             {
-/*
+
                 case SDLK_RETURN:
                     continuer = 0;
                     break;
@@ -1200,7 +1360,7 @@ void ecran_commentaire(SDL_Surface *ecran)
                         positionTexte.y = (Y/2)-15;
                     }
                     break;
-*/
+
                 case SDLK_SPACE:
                     tab[positioncurseur] = ' ';
                     positioncurseur++;
@@ -1570,7 +1730,6 @@ void ecran_historique(SDL_Surface *ecran)
 
 
 
-/*
      if(fichier_h != NULL)
     {
         fgets(tab5,19,fichier_h);
@@ -1599,7 +1758,7 @@ void ecran_historique(SDL_Surface *ecran)
         SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
 
     }
-*/
+
 
 
 
@@ -1658,7 +1817,7 @@ void ecran_historique(SDL_Surface *ecran)
                     SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
 
                 }
-/*                if(fichier_h != NULL)
+                if(fichier_h != NULL)
                 {
                     fgets(tab5,19,fichier_h);
                     fgets(tab6,19,fichier_h);
@@ -1686,7 +1845,7 @@ void ecran_historique(SDL_Surface *ecran)
                     SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
 
                 }
-*/
+
                 SDL_Flip(ecran);
             }
             if((event.button.x> X-(30+10))&&(event.button.x< X-10)&&(event.button.y>90)&&(event.button.y<120))
@@ -1942,5 +2101,5 @@ void pause()
 }
 }
 
-/*
+*/
 
