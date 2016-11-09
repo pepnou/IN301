@@ -77,7 +77,8 @@ int main()
 	affichelvl(ecran,lvl);
 	//POS postest;
 	
-	while(!victoire(lvl))
+	//while(!victoire(lvl))
+	while(1)
 	{
 		lvl = deplacer_joueur(lvl,attendre_evenement());
 		
@@ -193,6 +194,35 @@ LEVEL deplacer_joueur(LEVEL niveau,POS deplacement)
 	//printf("y:%d\n",niveau.joueur.y + deplacement.y);
 	//printf("T[x][y]:%d\n",niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y]);
 	
+	switch(niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y])
+	{
+		case 0:
+			niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = 2;
+			niveau.T[niveau.joueur.x][niveau.joueur.y] = 0;
+			niveau.joueur.x=niveau.joueur.x + deplacement.x;
+			niveau.joueur.y=niveau.joueur.y + deplacement.y;
+			break;
+		case 1:
+			switch(niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y])
+			{
+				case 0:
+					niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = 2;
+					niveau.T[niveau.joueur.x][niveau.joueur.y] = 0;
+					niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = 1;
+					niveau.joueur.x=niveau.joueur.x + deplacement.x;
+					niveau.joueur.y=niveau.joueur.y + deplacement.y;
+					break;
+				case 4:
+					niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = 2;
+					niveau.T[niveau.joueur.x][niveau.joueur.y] = 0;
+					niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = 5;
+					niveau.joueur.x=niveau.joueur.x + deplacement.x;
+					niveau.joueur.y=niveau.joueur.y + deplacement.y;
+					break;
+			}
+			break;
+	}
+	/*
 	if(niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] == 0)
 	{
 		niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = 2;
@@ -204,6 +234,7 @@ LEVEL deplacer_joueur(LEVEL niveau,POS deplacement)
 	//printf("T[x][y]':%d\n",niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y]);
 	else
 	{
+		
 		switch(niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y])
 		{
 			case 0:
@@ -220,8 +251,11 @@ LEVEL deplacer_joueur(LEVEL niveau,POS deplacement)
 				niveau.joueur.x=niveau.joueur.x + deplacement.x;
 				niveau.joueur.y=niveau.joueur.y + deplacement.y;
 				break;
+			default:
+				break;
 		}
 	}
+	*/
 	return niveau;
 }
 
