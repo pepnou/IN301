@@ -185,6 +185,9 @@ void affichelvl(SDL_Surface *ecran,LEVEL niveau)
 	SDL_FreeSurface(vide);
 	SDL_FreeSurface(caisse);
 	SDL_FreeSurface(joueur);
+	SDL_FreeSurface(mur);
+	SDL_FreeSurface(arrive);
+	SDL_FreeSurface(caisse_arrive);
 }
 
 
