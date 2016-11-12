@@ -30,7 +30,6 @@ struct level
 	int T[100][100];
 	POS joueur;
 };
-
 typedef struct level LEVEL;
 
 void affichelvl(SDL_Surface *ecran,LEVEL niveau);
