@@ -26,8 +26,8 @@ void affichelvl(SDL_Surface *ecran,LEVEL niveau)
 	SDL_FillRect(caisse, NULL, SDL_MapRGB(ecran->format, 237, 161, 55));
 	SDL_FillRect(joueur, NULL, SDL_MapRGB(ecran->format, 58, 255, 77));
 	SDL_FillRect(arrive, NULL, SDL_MapRGB(ecran->format, 228, 0, 8));
-	SDL_FillRect(joueur_arrive, NULL, SDL_MapRGB(ecran->format, 228, 0, 8));
-	SDL_FillRect(caisse_arrive, NULL, SDL_MapRGB(ecran->format, 228, 0, 8));
+	SDL_FillRect(joueur_arrive, NULL, SDL_MapRGB(ecran->format, 255, 255, 0));
+	SDL_FillRect(caisse_arrive, NULL, SDL_MapRGB(ecran->format, 255, 0, 255));
 	
 	SDL_Rect positionCase;
 	

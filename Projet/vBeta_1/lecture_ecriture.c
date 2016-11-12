@@ -30,7 +30,7 @@ LEVEL lecture_fichier(int num_lvl)
 		{
 			switch(fgetc(fichier_lvl))
 			{
-				case ' ':
+				case '-':
 					niveau.T[i][j]=VIDE;
 					break;
 				case '#':
@@ -59,6 +59,30 @@ LEVEL lecture_fichier(int num_lvl)
 	return niveau;
 }
 
+int lecture_nbr_lvl()
+{
+	FILE* fichier_nbr_lvl = fopen("fichier_nbr_niveaux.txt","r");
+	if(fichier_nbr_lvl == NULL) exit(-1);
+	
+	int tmp;
+	fscanf(fichier_nbr_lvl,"%d",&tmp);
+	
+	fclose(fichier_nbr_lvl);
+	
+	return tmp;
+}
+
+void ecriture_nbr_lvl(int nbr_LVL)
+{
+	//printf("%d\n",nbr_LVL);
+	
+	FILE* fichier_nbr_lvl = fopen("fichier_nbr_niveaux.txt","w+");
+	if(fichier_nbr_lvl == NULL) exit(-1);
+	
+	fprintf(fichier_nbr_lvl,"%d",nbr_LVL);
+	
+	fclose(fichier_nbr_lvl);
+}
 
 void enregistrer_lvl(LEVEL lvl)
 {
@@ -76,7 +100,7 @@ void enregistrer_lvl(LEVEL lvl)
 			switch(lvl.T[i][j])
 			{
 				case VIDE:
-					fputc(' ',fichier_lvl);
+					fputc('-',fichier_lvl);
 					break;
 				case MUR:
 					fputc('#',fichier_lvl);

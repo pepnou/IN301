@@ -8,14 +8,19 @@
 #include "affichage.h"
 #include "lecture_ecriture.h"
 
+int NBR_NIVEAUX = 0;
+
 LEVEL creation_lvl(SDL_Surface *ecran);
 LEVEL init_lvl(LEVEL niveau);
 void main_menu(SDL_Surface *ecran);
 void play_menu(SDL_Surface *ecran);
 void editor_menu(SDL_Surface *ecran);
+void affiche_play_menu(SDL_Surface *ecran,int lvl_num);
 
 int main()
 {
+	//printf("1\n");
+	
 	SDL_Surface *ecran = NULL;
 
 	TTF_Init();
@@ -26,6 +31,11 @@ int main()
 
     ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
 	
+	//printf("2\n");
+	
+	NBR_NIVEAUX = lecture_nbr_lvl();
+	
+	//printf("3\n");
 	
 	main_menu(ecran);
 	
@@ -115,6 +125,8 @@ LEVEL init_lvl(LEVEL niveau)
 
 void main_menu(SDL_Surface *ecran)
 {
+	
+	
 	SDL_Surface *texte = NULL;
 
     TTF_Font *police = NULL;
@@ -158,8 +170,41 @@ void main_menu(SDL_Surface *ecran)
 
 void play_menu(SDL_Surface *ecran)
 {
+	
+	
 	LEVEL lvl;
-	lvl = lecture_fichier(1);
+	
+	int niveau_a_lire = 1;
+	
+	affiche_play_menu(ecran,niveau_a_lire);
+	
+	int continuer = 1;
+	SDL_Event event;
+    
+    while(continuer)
+    {
+		SDL_WaitEvent(&event);
+		if((event.type ==SDL_KEYDOWN)&&(event.key.keysym.sym == SDLK_RETURN)) continuer = 0;
+		if(event.type == SDL_MOUSEBUTTONUP)
+		{
+			if(encadrement(event.button.x,0,largeur_fenetre/2))
+			{
+				if(niveau_a_lire>1) niveau_a_lire --;
+			}
+			else
+			{
+				if(niveau_a_lire<NBR_NIVEAUX) niveau_a_lire ++;
+			}
+			
+			affiche_play_menu(ecran,niveau_a_lire);
+		}
+		
+		
+	}
+	
+	
+	
+	lvl = lecture_fichier(niveau_a_lire);
 	affichelvl(ecran,lvl);
 	pause();
 }
@@ -169,9 +214,62 @@ void editor_menu(SDL_Surface *ecran)
 	LEVEL niveau;
 	niveau=creation_lvl(ecran);
 	enregistrer_lvl(niveau);
+	
+	//printf("%d\n",NBR_NIVEAUX);
+	NBR_NIVEAUX++;
+	//printf("%d\n",NBR_NIVEAUX);
+	
+	ecriture_nbr_lvl(NBR_NIVEAUX);
 }
 
+void affiche_play_menu(SDL_Surface *ecran,int lvl_num)
+{
+	SDL_Surface *fond = NULL;
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre, hauteur_fenetre, 32, 0, 0, 0, 0);
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
+	SDL_Rect positionCase;
+	positionCase.x=0;
+	positionCase.y=0;
+	
+	SDL_BlitSurface(fond,NULL,ecran,&positionCase);
+	
+	SDL_Surface *texte = NULL;
+	
+    TTF_Font *police = NULL;
 
+    police = TTF_OpenFont("unispace_rg.ttf",30);
+
+    SDL_Color couleurblanche = {255,255,255};
+
+    SDL_Rect positionTexte;
+
+    texte = TTF_RenderText_Blended(police,"+",couleurblanche);
+
+    positionTexte.x = largeur_fenetre*3/4 -15;
+    positionTexte.y = hauteur_fenetre/2 - 15;
+
+    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+    
+    texte = TTF_RenderText_Blended(police,"-",couleurblanche);
+
+    positionTexte.x = largeur_fenetre/4 -15;
+    positionTexte.y = hauteur_fenetre/2 - 15;
+
+    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+    
+    
+    char Tmp[10] = "";
+    sprintf(Tmp,"%d",lvl_num);
+    
+    texte = TTF_RenderText_Blended(police,Tmp,couleurblanche);
+
+    positionTexte.x = largeur_fenetre/2 - 15;
+    positionTexte.y = hauteur_fenetre/2 - 15;
+
+    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+    
+    SDL_Flip(ecran);
+}
 
 
 
