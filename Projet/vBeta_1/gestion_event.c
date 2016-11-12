@@ -21,8 +21,8 @@ SDL_Event attendre_clic_gauche()
 		SDL_WaitEvent(&event_clic);
 		if((event_clic.type == SDL_MOUSEBUTTONUP)&&(event_clic.button.button == SDL_BUTTON_LEFT)) continuer = 0;
 	}
-	return event_clic;
 	
+	return event_clic;
 }
 
 int encadrement(int x,int x1,int x2)

@@ -23,7 +23,8 @@ LEVEL lecture_fichier(int num_lvl)
 	
 	fscanf(fichier_lvl, "%d %d\n", &niveau.width, &niveau.height);
 	
-	for(j=0;j<niveau.height+1;j++)
+	//for(j=0;j<niveau.height+1;j++)
+	for(j=0;j<niveau.height;j++)
 	{
 		for(i=0;i<niveau.width+1;i++)
 		{
@@ -44,10 +45,62 @@ LEVEL lecture_fichier(int num_lvl)
 				case '.':
 					niveau.T[i][j]=ARRIVE;
 					break;
+				case '*':
+					niveau.T[i][j]=JOUEUR_ARRIVE;
+					break;
+				case '+':
+					niveau.T[i][j]=CAISSE_ARRIVE;
+					break;
 			}
 		}
 	}
 	
 	fclose(fichier_lvl);
 	return niveau;
+}
+
+
+void enregistrer_lvl(LEVEL lvl)
+{
+	FILE* fichier_lvl = fopen("fichier_niveaux.txt","a");
+	if(fichier_lvl == NULL) exit(-1);
+	
+	fprintf(fichier_lvl,"%d %d\n",lvl.width,lvl.height);
+	
+	int i,j;
+	
+	for(j=0;j<lvl.height;j++)
+	{
+		for(i=0;i<lvl.width;i++)
+		{
+			switch(lvl.T[i][j])
+			{
+				case VIDE:
+					fputc(' ',fichier_lvl);
+					break;
+				case MUR:
+					fputc('#',fichier_lvl);
+					break;
+				case CAISSE:
+					fputc('&',fichier_lvl);
+					break;
+				case JOUEUR:
+					fputc('@',fichier_lvl);
+					break;
+				case ARRIVE:
+					fputc('.',fichier_lvl);
+					break;
+				case JOUEUR_ARRIVE:
+					fputc('*',fichier_lvl);
+					break;
+				case CAISSE_ARRIVE:
+					fputc('+',fichier_lvl);
+					break;
+			}
+		}
+		fprintf(fichier_lvl,"\n");
+	}
+	
+	
+	fclose(fichier_lvl);
 }
