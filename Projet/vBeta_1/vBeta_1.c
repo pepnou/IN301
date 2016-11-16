@@ -33,7 +33,7 @@ int main()
 	
 	//printf("2\n");
 	
-	NBR_NIVEAUX = lecture_nbr_lvl();
+	//NBR_NIVEAUX = lecture_nbr_lvl();
 	
 	//printf("3\n");
 	
@@ -125,7 +125,14 @@ LEVEL init_lvl(LEVEL niveau)
 
 void main_menu(SDL_Surface *ecran)
 {
+	SDL_Surface *fond = NULL;
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre, hauteur_fenetre, 32, 0, 0, 0, 0);
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
+	SDL_Rect positionCase;
+	positionCase.x=0;
+	positionCase.y=0;
 	
+	SDL_BlitSurface(fond,NULL,ecran,&positionCase);
 	
 	SDL_Surface *texte = NULL;
 
@@ -154,6 +161,7 @@ void main_menu(SDL_Surface *ecran)
     
     SDL_Flip(ecran);
     
+    /*
     SDL_Event event;
     event = attendre_clic_gauche();
     
@@ -165,12 +173,44 @@ void main_menu(SDL_Surface *ecran)
 	{
 		editor_menu(ecran);
 	}
+	*/
 	
+	int continuer = 1;
+	SDL_Event event;
+    
+    while(continuer)
+    {
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_ESCAPE:
+						continuer = 0;
+						break;	
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if(encadrement(event.button.x,0,largeur_fenetre/2))
+				{
+					play_menu(ecran);
+				}
+				else
+				{
+					editor_menu(ecran);
+				}
+				break;
+			case SDL_QUIT:
+					continuer = 0;
+					break;
+		}
+	}
 }
 
 void play_menu(SDL_Surface *ecran)
 {
-	
+	NBR_NIVEAUX = lecture_nbr_lvl();
 	
 	LEVEL lvl;
 	
@@ -219,7 +259,8 @@ void editor_menu(SDL_Surface *ecran)
 	NBR_NIVEAUX++;
 	//printf("%d\n",NBR_NIVEAUX);
 	
-	ecriture_nbr_lvl(NBR_NIVEAUX);
+	//ecriture_nbr_lvl(NBR_NIVEAUX);
+	main_menu(ecran);
 }
 
 void affiche_play_menu(SDL_Surface *ecran,int lvl_num)
