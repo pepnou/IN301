@@ -79,23 +79,32 @@ int lecture_nbr_lvl()
 	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
 	if(fichier_lvl == NULL) exit(-1);
 	
+	//printf("2\n");
+	
 	int nbr_lvl = 0;
 	int tmp1,tmp2;
 	int i,j;
 	
+	//printf("3\n");
+	
 	while(!(fscanf(fichier_lvl,"%d %d\n",&tmp1,&tmp2) == EOF))
 	{
+		//printf("tmp1:%d tmp2:%d\n",tmp1,tmp2);
 		for(j=0;j<tmp2;j++) 
 		{
 			for(i=0;i<tmp1+1;i++)
 			{
-				;
+				fgetc(fichier_lvl);
 			}
 		}
 		nbr_lvl++;
 	}
 	
+	//printf("7\n");
+	
 	fclose(fichier_lvl);
+	
+	//printf("8\n");
 	
 	return nbr_lvl;
 }
@@ -154,5 +163,11 @@ void enregistrer_lvl(LEVEL lvl)
 	}
 	
 	
+	fclose(fichier_lvl);
+}
+
+void efface_lvl()
+{
+	FILE* fichier_lvl = fopen("fichier_niveaux.txt","w+");
 	fclose(fichier_lvl);
 }
