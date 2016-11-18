@@ -15,6 +15,7 @@ LEVEL lecture_fichier(int num_lvl)
 	for(i=1;i<num_lvl;i++)
 	{
 		fscanf(fichier_lvl, "%d %d\n", &j, &height_tmp);
+		fgets(tmp,101,fichier_lvl);
 		for(j=0;j<height_tmp;j++)
 		{
 			fgets(tmp,101,fichier_lvl);
@@ -22,8 +23,8 @@ LEVEL lecture_fichier(int num_lvl)
 	}
 	
 	fscanf(fichier_lvl, "%d %d\n", &niveau.width, &niveau.height);
-	
-	//for(j=0;j<niveau.height+1;j++)
+	fscanf(fichier_lvl, "%d %d\n", &niveau.joueur.x, &niveau.joueur.y);
+
 	for(j=0;j<niveau.height;j++)
 	{
 		for(i=0;i<niveau.width+1;i++)
@@ -59,60 +60,31 @@ LEVEL lecture_fichier(int num_lvl)
 	return niveau;
 }
 
-/*
-int lecture_nbr_lvl()
-{
-	FILE* fichier_nbr_lvl = fopen("fichier_nbr_niveaux.txt","r");
-	if(fichier_nbr_lvl == NULL) exit(-1);
-	
-	int tmp;
-	fscanf(fichier_nbr_lvl,"%d",&tmp);
-	
-	fclose(fichier_nbr_lvl);
-	
-	return tmp;
-}
-*/
-
 int lecture_nbr_lvl()
 {
 	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
 	if(fichier_lvl == NULL) exit(-1);
 	
-	//printf("2\n");
-	
 	int nbr_lvl = 0;
 	int tmp1,tmp2;
-	int i,j;
-	
-	//printf("3\n");
+	int j;
+	char tmp[101];
 	
 	while(!(fscanf(fichier_lvl,"%d %d\n",&tmp1,&tmp2) == EOF))
 	{
-		//printf("tmp1:%d tmp2:%d\n",tmp1,tmp2);
-		for(j=0;j<tmp2;j++) 
+		for(j=0;j<tmp2+1;j++) 
 		{
-			for(i=0;i<tmp1+1;i++)
-			{
-				fgetc(fichier_lvl);
-			}
+			fgets(tmp,101,fichier_lvl);
 		}
 		nbr_lvl++;
 	}
-	
-	//printf("7\n");
-	
 	fclose(fichier_lvl);
-	
-	//printf("8\n");
-	
+
 	return nbr_lvl;
 }
 
 void ecriture_nbr_lvl(int nbr_LVL)
 {
-	//printf("%d\n",nbr_LVL);
-	
 	FILE* fichier_nbr_lvl = fopen("fichier_nbr_niveaux.txt","w+");
 	if(fichier_nbr_lvl == NULL) exit(-1);
 	
@@ -127,6 +99,7 @@ void enregistrer_lvl(LEVEL lvl)
 	if(fichier_lvl == NULL) exit(-1);
 	
 	fprintf(fichier_lvl,"%d %d\n",lvl.width,lvl.height);
+	fprintf(fichier_lvl,"%d %d\n",lvl.joueur.x,lvl.joueur.y);
 	
 	int i,j;
 	

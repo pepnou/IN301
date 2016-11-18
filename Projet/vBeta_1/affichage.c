@@ -87,3 +87,102 @@ void affichelvl(SDL_Surface *ecran,LEVEL niveau)
 	SDL_FreeSurface(joueur_arrive);
 	SDL_FreeSurface(caisse_arrive);
 }
+
+void affiche_play_menu(SDL_Surface *ecran,int lvl_num)
+{
+	SDL_Surface *fond = NULL;
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre, hauteur_fenetre, 32, 0, 0, 0, 0);
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
+	SDL_Rect positionCase;
+	positionCase.x=0;
+	positionCase.y=0;
+	
+	SDL_BlitSurface(fond,NULL,ecran,&positionCase);
+	
+	SDL_Surface *texte = NULL;
+	
+    TTF_Font *police = NULL;
+
+    police = TTF_OpenFont("unispace_rg.ttf",30);
+
+    SDL_Color couleurblanche = {255,255,255};
+
+    SDL_Rect positionTexte;
+	
+	if(lvl_num == 0)
+    {
+		texte = TTF_RenderText_Blended(police,"aucun niveau dispo",couleurblanche);
+		positionTexte.x = largeur_fenetre/2 - (18/2*30/2);
+	}
+	
+	else
+	{
+		texte = TTF_RenderText_Blended(police,"+",couleurblanche);
+
+		positionTexte.x = largeur_fenetre*3/4 -15;
+		positionTexte.y = hauteur_fenetre/2 - 15;
+
+		SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+		
+		texte = TTF_RenderText_Blended(police,"-",couleurblanche);
+
+		positionTexte.x = largeur_fenetre/4 -15;
+		positionTexte.y = hauteur_fenetre/2 - 15;
+
+		SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+		
+		
+		char Tmp[10] = "";
+		sprintf(Tmp,"%d",lvl_num);
+		
+		
+		texte = TTF_RenderText_Blended(police,Tmp,couleurblanche);
+		positionTexte.x = largeur_fenetre/2 - 15;
+	}
+	positionTexte.y = hauteur_fenetre/2 - 15;
+
+    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+    
+    SDL_Flip(ecran);
+}
+
+void affiche_main_menu(SDL_Surface *ecran)
+{
+	SDL_Surface *fond = NULL;
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre, hauteur_fenetre, 32, 0, 0, 0, 0);
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
+	SDL_Rect positionCase;
+	positionCase.x=0;
+	positionCase.y=0;
+	
+	SDL_BlitSurface(fond,NULL,ecran,&positionCase);
+	
+	SDL_Surface *texte = NULL;
+
+    TTF_Font *police = NULL;
+
+    police = TTF_OpenFont("unispace_rg.ttf",30);
+
+    SDL_Color couleurblanche = {255,255,255};
+
+    SDL_Rect positionTexte;
+
+
+    texte = TTF_RenderText_Blended(police,"PLAY",couleurblanche);
+
+    positionTexte.x = 0 + (largeur_fenetre/2-(2*30))/2;
+    positionTexte.y = hauteur_fenetre/2 - 15;
+
+    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+    
+    texte = TTF_RenderText_Blended(police,"EDIT LVL",couleurblanche);
+
+    positionTexte.x = largeur_fenetre/2 + (largeur_fenetre/2-4*30)/2;
+    positionTexte.y = hauteur_fenetre/2 - 15;
+
+    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+    
+	SDL_Flip(ecran);
+}
+
+
