@@ -22,7 +22,7 @@ void play_mode(SDL_Surface *ecran,LEVEL lvl);
 
 LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);
 Play_Event attendre_evenement();
-LEVEL action(LEVEL lvl,Play_Event PE);
+Tab_Dyn action(Tab_Dyn lvl,Play_Event PE);
 
 int main()
 {	
@@ -213,13 +213,36 @@ void play_menu(SDL_Surface *ecran)
 
 void play_mode(SDL_Surface *ecran,LEVEL lvl)
 {
-	affichelvl(ecran,lvl);
+	Tab_Dyn coup;
 	
+	coup.tour = malloc(10 * sizeof(LEVEL));
+	if(coup.tour == NULL) exit(EXIT_FAILURE);
+	
+	coup.tour[0] = lvl;
+	coup.taille = 10;
+	coup.compteur = 0;
+	
+	affichelvl(ecran,coup.tour[0]);
+	
+	LEVEL* ptrtmp = NULL;
 	
 	while(!(victoire(lvl)))
 	{
-		lvl = action(lvl,attendre_evenement());
-		affichelvl(ecran,lvl);
+		
+		if(coup.taille - 1 == coup.compteur)
+		{
+			/*
+			ptrtmp = realloc(coup.tour,coup.taille*2);
+			if(ptrtmp == NULL) exit(EXIT_FAILURE);
+			coup.tour = ptrtmp;
+			*/
+			
+			coup.tour = realloc(coup.tour,coup.taille*2);
+			if(coup.tour == NULL) exit(EXIT_FAILURE);
+		}
+ 		
+		coup = action(coup,attendre_evenement());
+		affichelvl(ecran,coup.tour[coup.compteur]);
 	}
 }
 
@@ -362,13 +385,14 @@ Play_Event attendre_evenement()
 	return evenement;
 }
 
-LEVEL action(LEVEL lvl,Play_Event PE)
+Tab_Dyn action(Tab_Dyn coup,Play_Event PE)
 {
 	
 	switch(PE.event)
 	{
 		case E_MOVE:
-			lvl = deplacer_joueur(lvl,PE.deplacement);
+			coup.compteur ++;
+			coup.tour[coup.compteur] = deplacer_joueur(coup.tour[coup.compteur - 1],PE.deplacement);
 			break;
 		case E_UNDO:
 			
@@ -390,7 +414,7 @@ LEVEL action(LEVEL lvl,Play_Event PE)
 			break;
 	}
 	
-	return lvl;
+	return coup;
 }
 
 

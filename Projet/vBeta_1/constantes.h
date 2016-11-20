@@ -43,3 +43,15 @@ struct Play_Event
 };
 typedef struct Play_Event Play_Event;
 
+struct Tab_Dyn
+{
+	LEVEL* tour;
+	int taille;
+	int compteur;
+};
+typedef struct Tab_Dyn Tab_Dyn;
+
+
+
+
+
