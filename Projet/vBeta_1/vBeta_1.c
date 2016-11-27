@@ -25,6 +25,11 @@ LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);
 Play_Event attendre_evenement();
 TOUR action(TOUR coup,Play_Event PE);
 
+int lvl_correct(LEVEL lvl);
+int* contenu_lvl(LEVEL lvl);
+POS recherche_joueur(LEVEL lvl);
+int joueur_encadre(LEVEL lvl,int x,int y);
+
 int main()
 {	
 	SDL_Surface *ecran = NULL;
@@ -67,8 +72,13 @@ void creation_lvl(SDL_Surface *ecran)
 				switch(event.key.keysym.sym)
 				{
 					case SDLK_RETURN:
-						continuer = 0;
-						enregistrer_lvl(niveau);
+						if(lvl_correct(niveau))
+						{
+							niveau.joueur = recherche_joueur(niveau);
+							enregistrer_lvl(niveau);
+							continuer = 0;
+							
+						}
 						break;
 					case SDLK_ESCAPE:
 						continuer = 0;
@@ -80,13 +90,11 @@ void creation_lvl(SDL_Surface *ecran)
 				tmp_j = event.button.y/(hauteur_fenetre/niveau.height);
 				
 				niveau.T[tmp_i][tmp_j] = (niveau.T[tmp_i][tmp_j] + 1 ) % 7;
-				if(niveau.T[tmp_i][tmp_j] == JOUEUR)
-				{
-					niveau.joueur.x = tmp_i;
-					niveau.joueur.y = tmp_j;
-				}
-				
-				//niveau.T[event.button.x/(largeur_fenetre/niveau.width)][event.button.y/(hauteur_fenetre/niveau.height)] = (niveau.T[event.button.x/(largeur_fenetre/niveau.width)][event.button.y/(hauteur_fenetre/niveau.height)] + 1 ) % 7;
+				//~ if(niveau.T[tmp_i][tmp_j] == JOUEUR)
+				//~ {
+					//~ niveau.joueur.x = tmp_i;
+					//~ niveau.joueur.y = tmp_j;
+				//~ }
 				
 				affichelvl(ecran,niveau);
 				break;
@@ -95,6 +103,98 @@ void creation_lvl(SDL_Surface *ecran)
 		}
 	}
 	main_menu(ecran);
+}
+
+POS recherche_joueur(LEVEL lvl)
+{
+	POS res;
+	int i,j;
+	
+	for(i=0;i<lvl.width;i++)
+	{
+		for(j=0;j<lvl.height;j++)
+		{
+			if(lvl.T[i][j]== JOUEUR)
+			{
+				res.x = i;
+				res.y = j;
+			}
+		}
+	}
+	
+	return res;
+}
+
+int lvl_correct(LEVEL lvl)
+{
+	int correct = 1;
+	POS pos_j;
+	
+	int* contenu = NULL;
+	contenu = contenu_lvl(lvl);
+	
+	if(contenu[JOUEUR] != 1)
+	{
+		printf("probleme sur le nombre de joueur : %d joueur(s)\n",contenu[JOUEUR]);
+		correct = 0;
+	}
+	if(contenu[ARRIVE] == 0)
+	{
+		printf("probleme : aucune zone de depot\n");
+		correct = 0;
+	}
+	if(contenu[ARRIVE] + contenu[JOUEUR_ARRIVE] > contenu[CAISSE])
+	{
+		printf("probleme sur le nombre de zone de depot et de caisse : %d depot(s) pour %d caisse\n",contenu[ARRIVE] + contenu[JOUEUR_ARRIVE],contenu[CAISSE]);
+		correct = 0;
+	}
+	if(contenu[JOUEUR] == 1)
+	{
+		pos_j = recherche_joueur(lvl);
+		if(!(joueur_encadre(lvl,pos_j.x,pos_j.y)))
+		{
+			printf("probleme :le joueur n est pas encadré par des murs\n");
+			correct = 0;
+		}
+	}
+	
+	return correct;
+}
+
+int joueur_encadre(LEVEL lvl,int x,int y)
+{	
+	return joueur_encadre_etape_2(&lvl,x,y);
+}
+
+int joueur_encadre_etape_2(LEVEL* lvl,int x,int y)
+{	
+	if((x == 0)||(x == (*lvl).width-1)) return 0;
+	if((y == 0)||(y == (*lvl).height-1)) return 0;
+	
+	if((*lvl).T[x][y] == MUR) return 1;
+	
+	(*lvl).T[x][y] = MUR;
+	
+	return((joueur_encadre_etape_2(lvl,x-1,y))&(joueur_encadre_etape_2(lvl,x+1,y))&(joueur_encadre_etape_2(lvl,x,y-1))&(joueur_encadre_etape_2(lvl,x,y+1)));
+}
+
+int* contenu_lvl(LEVEL lvl)
+{
+	int* content;
+	
+	if(!(content = calloc(7 , sizeof(int)))) exit(EXIT_FAILURE);
+	
+	int i,j;
+	
+	for(i=0;i<lvl.width;i++)
+	{
+		for(j=0;j<lvl.height;j++)
+		{
+			content[lvl.T[i][j]]++;
+		}
+	}
+	
+	return content;
 }
 
 LEVEL init_lvl(LEVEL niveau)
@@ -144,10 +244,12 @@ void main_menu(SDL_Surface *ecran)
 				if(encadrement(event.button.x,0,largeur_fenetre/2))
 				{
 					play_menu(ecran);
+					continuer = 0;
 				}
 				else
 				{
 					creation_lvl(ecran);
+					continuer = 0;
 					//editor_menu(ecran);
 				}
 				break;
@@ -186,7 +288,6 @@ void play_menu(SDL_Surface *ecran)
 					switch(event.key.keysym.sym)
 					{
 						case SDLK_RETURN:
-							//play_mode(ecran,lecture_fichier(niveau_a_lire));
 							play_mode(ecran,niveau_a_lire);
 							continuer = 0;
 							break;
@@ -216,9 +317,13 @@ void play_menu(SDL_Surface *ecran)
 void play_mode(SDL_Surface *ecran,int num_lvl)
 {
 	TOUR coup;
+	
+	
 	coup = init_tour(coup,num_lvl);
 	
+	
 	affichelvl(ecran,coup.fait -> val);
+	
 	
 	while(coup.continuer)
 	{

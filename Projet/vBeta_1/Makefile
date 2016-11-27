@@ -5,7 +5,7 @@ run: all
 	./vBeta_1
 
 vBeta_1: gestion_event.o affichage.o lecture_ecriture.o manipulation_liste.o vBeta_1.o
-	gcc -g -o vBeta_1 vBeta_1.o gestion_event.o affichage.o lecture_ecriture.o manipulation_liste.o `sdl-config --libs` -lm -lSDL_ttf
+	gcc -Wall -g -o vBeta_1 vBeta_1.o gestion_event.o affichage.o lecture_ecriture.o manipulation_liste.o `sdl-config --libs` -lm -lSDL_ttf
 
 vBeta_1.o: vBeta_1.c constantes.h
 	gcc -c `sdl-config --cflags` vBeta_1.c
