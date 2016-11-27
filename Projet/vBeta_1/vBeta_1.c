@@ -7,6 +7,7 @@
 #include "gestion_event.h"
 #include "affichage.h"
 #include "lecture_ecriture.h"
+#include "manipulation_liste.h"
 
 int NBR_NIVEAUX = 0;
 
@@ -22,7 +23,7 @@ void play_mode(SDL_Surface *ecran,LEVEL lvl);
 
 LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);
 Play_Event attendre_evenement();
-Tab_Dyn action(Tab_Dyn lvl,Play_Event PE);
+TOUR action(TOUR coup,Play_Event PE);
 
 int main()
 {	
@@ -213,36 +214,17 @@ void play_menu(SDL_Surface *ecran)
 
 void play_mode(SDL_Surface *ecran,LEVEL lvl)
 {
-	Tab_Dyn coup;
+	TOUR coup;
+	coup = init_tour(coup);
+	coup.fait = insere_debut(coup.fait,lvl);
 	
-	coup.tour = malloc(10 * sizeof(LEVEL));
-	if(coup.tour == NULL) exit(EXIT_FAILURE);
 	
-	coup.tour[0] = lvl;
-	coup.taille = 10;
-	coup.compteur = 0;
-	
-	affichelvl(ecran,coup.tour[0]);
-	
-	LEVEL* ptrtmp = NULL;
+	affichelvl(ecran,coup.fait -> val);
 	
 	while(!(victoire(lvl)))
-	{
-		
-		if(coup.taille - 1 == coup.compteur)
-		{
-			/*
-			ptrtmp = realloc(coup.tour,coup.taille*2);
-			if(ptrtmp == NULL) exit(EXIT_FAILURE);
-			coup.tour = ptrtmp;
-			*/
-			
-			coup.tour = realloc(coup.tour,coup.taille*2);
-			if(coup.tour == NULL) exit(EXIT_FAILURE);
-		}
- 		
+	{ 		
 		coup = action(coup,attendre_evenement());
-		affichelvl(ecran,coup.tour[coup.compteur]);
+		affichelvl(ecran,coup.fait -> val);
 	}
 }
 
@@ -360,9 +342,11 @@ Play_Event attendre_evenement()
                     evenement.deplacement.y=0;
                     break;
 				case SDLK_u:
+					continuer = 0;
 					evenement.event = E_UNDO;
 					break;
 				case SDLK_r:
+					continuer = 0;
 					evenement.event = E_REDO;
 					break;
 				case SDLK_i:
@@ -385,20 +369,21 @@ Play_Event attendre_evenement()
 	return evenement;
 }
 
-Tab_Dyn action(Tab_Dyn coup,Play_Event PE)
+TOUR action(TOUR coup,Play_Event PE)
 {
 	
 	switch(PE.event)
 	{
 		case E_MOVE:
-			coup.compteur ++;
-			coup.tour[coup.compteur] = deplacer_joueur(coup.tour[coup.compteur - 1],PE.deplacement);
+			coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
+			suppr_liste(coup.deplace);
+			coup.deplace = NULL;
 			break;
 		case E_UNDO:
-			
+			if(coup.fait ->suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
 			break;
 		case E_REDO:
-			
+			if(coup.deplace != NULL) coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
 			break;
 		case E_INIT:
 			

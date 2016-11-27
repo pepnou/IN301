@@ -43,15 +43,18 @@ struct Play_Event
 };
 typedef struct Play_Event Play_Event;
 
-struct Tab_Dyn
+struct elem
 {
-	LEVEL* tour;
-	int taille;
-	int compteur;
+	LEVEL val;
+	struct elem* suiv;
 };
-typedef struct Tab_Dyn Tab_Dyn;
+typedef struct elem* liste;
 
-
-
+struct tour
+{
+	liste fait;
+	liste deplace;
+};
+typedef struct tour TOUR;
 
 
