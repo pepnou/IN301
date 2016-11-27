@@ -19,7 +19,7 @@ int victoire(LEVEL niveau);
 void main_menu(SDL_Surface *ecran);
 void play_menu(SDL_Surface *ecran);
 void editor_menu(SDL_Surface *ecran);
-void play_mode(SDL_Surface *ecran,LEVEL lvl);
+void play_mode(SDL_Surface *ecran,int num_lvl);
 
 LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);
 Play_Event attendre_evenement();
@@ -186,7 +186,8 @@ void play_menu(SDL_Surface *ecran)
 					switch(event.key.keysym.sym)
 					{
 						case SDLK_RETURN:
-							play_mode(ecran,lecture_fichier(niveau_a_lire));
+							//play_mode(ecran,lecture_fichier(niveau_a_lire));
+							play_mode(ecran,niveau_a_lire);
 							continuer = 0;
 							break;
 						case SDLK_ESCAPE:
@@ -212,17 +213,17 @@ void play_menu(SDL_Surface *ecran)
 	}
 }
 
-void play_mode(SDL_Surface *ecran,LEVEL lvl)
+void play_mode(SDL_Surface *ecran,int num_lvl)
 {
 	TOUR coup;
-	coup = init_tour(coup);
-	coup.fait = insere_debut(coup.fait,lvl);
-	
+	coup = init_tour(coup,num_lvl);
 	
 	affichelvl(ecran,coup.fait -> val);
 	
-	while(!(victoire(lvl)))
-	{ 		
+	while(coup.continuer)
+	{
+		coup.continuer = (victoire(coup.fait -> val) + 1) % 2;
+		
 		coup = action(coup,attendre_evenement());
 		affichelvl(ecran,coup.fait -> val);
 	}
@@ -350,12 +351,15 @@ Play_Event attendre_evenement()
 					evenement.event = E_REDO;
 					break;
 				case SDLK_i:
+					continuer = 0;
 					evenement.event = E_INIT;
 					break;
 				case SDLK_p:
+					continuer = 0;
 					evenement.event = E_PREVIOUS;
 					break;
 				case SDLK_s:
+					continuer = 0;
 					evenement.event = E_NEXT;
 					break;
 				case SDLK_q: case SDLK_ESCAPE:
@@ -386,16 +390,16 @@ TOUR action(TOUR coup,Play_Event PE)
 			if(coup.deplace != NULL) coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
 			break;
 		case E_INIT:
-			
+			coup.fait = insere_debut(coup.fait,coup.base_lvl);
 			break;
 		case E_PREVIOUS:
-			
+			if(coup.num_level > 1) coup = init_tour(coup,coup.num_level-1);
 			break;
 		case E_NEXT:
-			
+			if(coup.num_level < NBR_NIVEAUX) coup = init_tour(coup,coup.num_level+1);
 			break;
 		case E_QUIT:
-			exit(EXIT_SUCCESS);
+			coup.continuer = 0;
 			break;
 	}
 	

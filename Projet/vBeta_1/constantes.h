@@ -54,6 +54,9 @@ struct tour
 {
 	liste fait;
 	liste deplace;
+	int continuer;
+	int num_level;
+	LEVEL base_lvl;
 };
 typedef struct tour TOUR;
 

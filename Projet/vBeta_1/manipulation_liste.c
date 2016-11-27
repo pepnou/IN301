@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "constantes.h"
+#include "lecture_ecriture.h"
 
 liste insere_debut(liste l,LEVEL lvl)
 {
@@ -23,10 +24,15 @@ LEVEL suppr_debut(liste* l)
 	return tmp;
 }
 
-TOUR init_tour(TOUR coup)
+TOUR init_tour(TOUR coup , int num_lvl)
 {
 	coup.fait = NULL;
 	coup.deplace = NULL;
+	coup.continuer = 1;
+	coup.num_level = num_lvl;
+	coup.base_lvl = lecture_fichier(num_lvl);
+	
+	coup.fait = insere_debut(coup.fait,coup.base_lvl);
 	
 	return coup;
 }
