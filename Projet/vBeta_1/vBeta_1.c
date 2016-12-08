@@ -167,11 +167,11 @@ int joueur_encadre(LEVEL lvl,int x,int y)
 }
 
 int joueur_encadre_etape_2(LEVEL* lvl,int x,int y)
-{	
+{
+	if((*lvl).T[x][y] == MUR) return 1;
+	
 	if((x == 0)||(x == (*lvl).width-1)) return 0;
 	if((y == 0)||(y == (*lvl).height-1)) return 0;
-	
-	if((*lvl).T[x][y] == MUR) return 1;
 	
 	(*lvl).T[x][y] = MUR;
 	
@@ -327,10 +327,10 @@ void play_mode(SDL_Surface *ecran,int num_lvl)
 	
 	while(coup.continuer)
 	{
-		coup.continuer = (victoire(coup.fait -> val) + 1) % 2;
-		
 		coup = action(coup,attendre_evenement());
 		affichelvl(ecran,coup.fait -> val);
+		
+		coup.continuer = (victoire(coup.fait -> val) + 1) % 2;
 	}
 }
 
@@ -345,6 +345,8 @@ int victoire(LEVEL niveau)
 			if((niveau.T[i][j] == ARRIVE)||(niveau.T[i][j] == JOUEUR_ARRIVE))return 0;
 		}
 	}
+	
+	printf("yeah ...\n\n");
 	return 1;
 }
 
