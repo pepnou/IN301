@@ -22,8 +22,11 @@ LEVEL lecture_fichier(int num_lvl)
 		}
 	}
 	
-	fscanf(fichier_lvl, "%d %d\n", &niveau.width, &niveau.height);
-	fscanf(fichier_lvl, "%d %d\n", &niveau.joueur.x, &niveau.joueur.y);
+	//fscanf(fichier_lvl, "%d %d\n", &niveau.width, &niveau.height);
+	//fscanf(fichier_lvl, "%d %d\n", &niveau.joueur.x, &niveau.joueur.y);
+	
+	fscanf(fichier_lvl, "%d %d", &niveau.width, &niveau.height);fgetc(fichier_lvl);
+	fscanf(fichier_lvl, "%d %d", &niveau.joueur.x, &niveau.joueur.y);fgetc(fichier_lvl);
 
 	for(j=0;j<niveau.height;j++)
 	{
@@ -31,7 +34,7 @@ LEVEL lecture_fichier(int num_lvl)
 		{
 			switch(fgetc(fichier_lvl))
 			{
-				case '-':
+				case ' ':
 					niveau.T[i][j]=VIDE;
 					break;
 				case '#':
@@ -110,7 +113,7 @@ void enregistrer_lvl(LEVEL lvl)
 			switch(lvl.T[i][j])
 			{
 				case VIDE:
-					fputc('-',fichier_lvl);
+					fputc(' ',fichier_lvl);
 					break;
 				case MUR:
 					fputc('#',fichier_lvl);

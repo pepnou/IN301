@@ -10,6 +10,9 @@
 #include "manipulation_liste.h"
 
 int NBR_NIVEAUX = 0;
+int largeur_fenetre = 300;
+int hauteur_fenetre = 150;
+
 
 LEVEL init_lvl(LEVEL niveau);
 void creation_lvl(SDL_Surface *ecran);
@@ -30,6 +33,9 @@ int* contenu_lvl(LEVEL lvl);
 POS recherche_joueur(LEVEL lvl);
 int joueur_encadre(LEVEL lvl,int x,int y);
 
+void choix_resolution(SDL_Surface *ecran);
+void affiche_resolution(SDL_Surface *ecran);
+
 int main()
 {	
 	SDL_Surface *ecran = NULL;
@@ -41,10 +47,129 @@ int main()
     SDL_WM_SetCaption("Sokoban vAlpha2",NULL);
 
     ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
+	choix_resolution(ecran);
+	ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
 	
 	main_menu(ecran);
 	
+	SDL_Quit();
+	
 	exit(EXIT_SUCCESS);
+}
+
+void choix_resolution(SDL_Surface *ecran)
+{		
+	affiche_resolution(ecran);
+	
+	int continuer = 1;
+	
+	SDL_Event event;
+	
+	while(continuer)
+	{
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_RETURN:
+						continuer = 0;
+						break;
+					case SDLK_ESCAPE:
+						exit(EXIT_SUCCESS);
+						break;
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if(position_clic_encadre(0,150,50,100,event))
+				{
+					if(largeur_fenetre >100) largeur_fenetre -= 50;
+				}
+				if(position_clic_encadre(150,300,50,100,event))
+				{
+					largeur_fenetre += 50;
+				}
+				if(position_clic_encadre(0,150,100,150,event))
+				{
+					if(hauteur_fenetre >100) hauteur_fenetre -= 50;
+				}
+				if(position_clic_encadre(150,300,100,150,event))
+				{
+					hauteur_fenetre += 50;
+				}
+				
+				affiche_resolution(ecran);
+				break;
+			}
+		}
+}
+
+void affiche_resolution(SDL_Surface *ecran)
+{
+	SDL_Surface *fond = NULL;
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre, hauteur_fenetre, 32, 0, 0, 0, 0);
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
+	SDL_Rect positionCase;
+	positionCase.x=0;
+	positionCase.y=0;
+	
+	SDL_BlitSurface(fond,NULL,ecran,&positionCase);
+	
+	SDL_Surface *texte = NULL;
+	
+    TTF_Font *police = NULL;
+
+    police = TTF_OpenFont("unispace_rg.ttf",30);
+
+    SDL_Color couleurblanche = {255,255,255};
+
+    SDL_Rect positionTexte;
+	
+	texte = TTF_RenderText_Blended(police,"-",couleurblanche);
+
+	positionTexte.x = 75;
+	positionTexte.y = 60;
+
+	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+	
+	positionTexte.x = 75;
+	positionTexte.y = 110;
+
+	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+		
+	texte = TTF_RenderText_Blended(police,"+",couleurblanche);
+
+	positionTexte.x = 225;
+	positionTexte.y = 60;
+
+	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+	
+	positionTexte.x = 225;
+	positionTexte.y = 110;
+
+	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+		
+	char Tmp[10] = "";
+	sprintf(Tmp,"%d",largeur_fenetre);	
+		
+	texte = TTF_RenderText_Blended(police,Tmp,couleurblanche);
+	
+	positionTexte.x = 150;
+	positionTexte.y = 60;
+
+    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+    
+    sprintf(Tmp,"%d",hauteur_fenetre);	
+		
+	texte = TTF_RenderText_Blended(police,Tmp,couleurblanche);
+	
+	positionTexte.x = 150;
+	positionTexte.y = 110;
+
+    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+    
+    SDL_Flip(ecran);
 }
 
 void creation_lvl(SDL_Surface *ecran)
@@ -325,12 +450,10 @@ void play_mode(SDL_Surface *ecran,int num_lvl)
 	affichelvl(ecran,coup.fait -> val);
 	
 	
-	while(coup.continuer)
+	while((coup.continuer) && (!(victoire(coup.fait -> val))))
 	{
 		coup = action(coup,attendre_evenement());
 		affichelvl(ecran,coup.fait -> val);
-		
-		coup.continuer = (victoire(coup.fait -> val) + 1) % 2;
 	}
 }
 
