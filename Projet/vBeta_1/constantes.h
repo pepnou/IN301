@@ -14,9 +14,6 @@
 #define E_NEXT 5
 #define E_QUIT 6
 
-//~ #define largeur_fenetre 300
-//~ #define hauteur_fenetre 150
-
 extern int largeur_fenetre;
 extern int hauteur_fenetre;
 

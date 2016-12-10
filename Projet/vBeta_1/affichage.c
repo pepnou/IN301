@@ -37,8 +37,8 @@ void affichelvl(SDL_Surface *ecran,LEVEL niveau)
     {
 		for(j=0;j<niveau.height;j++)
 		{
-			positionCase.x=i*(largeur_fenetre/niveau.width);
-			positionCase.y=j*(hauteur_fenetre/niveau.height);
+			positionCase.x=i*(largeur_fenetre/niveau.width) + (largeur_fenetre%niveau.width)/2;
+			positionCase.y=j*(hauteur_fenetre/niveau.height) + (hauteur_fenetre%niveau.height)/2;
 			
 			switch(niveau.T[i][j])
 			{

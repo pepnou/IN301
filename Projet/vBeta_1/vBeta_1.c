@@ -34,7 +34,7 @@ POS recherche_joueur(LEVEL lvl);
 int joueur_encadre(LEVEL lvl,int x,int y);
 
 void choix_resolution(SDL_Surface *ecran);
-void affiche_resolution(SDL_Surface *ecran);
+void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph);
 
 int main()
 {	
@@ -59,7 +59,10 @@ int main()
 
 void choix_resolution(SDL_Surface *ecran)
 {		
-	affiche_resolution(ecran);
+	int largeur_fenetre_tmp = largeur_fenetre;
+	int hauteur_fenetre_tmp = hauteur_fenetre;
+	
+	affiche_resolution(ecran,largeur_fenetre_tmp,hauteur_fenetre_tmp);
 	
 	int continuer = 1;
 	
@@ -74,6 +77,8 @@ void choix_resolution(SDL_Surface *ecran)
 				switch(event.key.keysym.sym)
 				{
 					case SDLK_RETURN:
+						largeur_fenetre = largeur_fenetre_tmp;
+						hauteur_fenetre = hauteur_fenetre_tmp;
 						continuer = 0;
 						break;
 					case SDLK_ESCAPE:
@@ -82,30 +87,30 @@ void choix_resolution(SDL_Surface *ecran)
 				}
 				break;
 			case SDL_MOUSEBUTTONUP:
-				if(position_clic_encadre(0,150,50,100,event))
+				if(position_clic_encadre(0,largeur_fenetre/2,hauteur_fenetre/3,hauteur_fenetre*2/3,event))
 				{
-					if(largeur_fenetre >100) largeur_fenetre -= 50;
+					if(largeur_fenetre_tmp >100) largeur_fenetre_tmp -= 50;
 				}
-				if(position_clic_encadre(150,300,50,100,event))
+				if(position_clic_encadre(largeur_fenetre/2,largeur_fenetre,hauteur_fenetre/3,hauteur_fenetre*2/3,event))
 				{
-					largeur_fenetre += 50;
+					largeur_fenetre_tmp += 50;
 				}
-				if(position_clic_encadre(0,150,100,150,event))
+				if(position_clic_encadre(0,largeur_fenetre/2,hauteur_fenetre*2/3,hauteur_fenetre,event))
 				{
-					if(hauteur_fenetre >100) hauteur_fenetre -= 50;
+					if(hauteur_fenetre_tmp >100) hauteur_fenetre_tmp -= 50;
 				}
-				if(position_clic_encadre(150,300,100,150,event))
+				if(position_clic_encadre(largeur_fenetre/2,largeur_fenetre,hauteur_fenetre*2/3,hauteur_fenetre,event))
 				{
-					hauteur_fenetre += 50;
+					hauteur_fenetre_tmp += 50;
 				}
 				
-				affiche_resolution(ecran);
+				affiche_resolution(ecran,largeur_fenetre_tmp,hauteur_fenetre_tmp);
 				break;
 			}
 		}
 }
 
-void affiche_resolution(SDL_Surface *ecran)
+void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph)
 {
 	SDL_Surface *fond = NULL;
 	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre, hauteur_fenetre, 32, 0, 0, 0, 0);
@@ -128,46 +133,50 @@ void affiche_resolution(SDL_Surface *ecran)
 	
 	texte = TTF_RenderText_Blended(police,"-",couleurblanche);
 
-	positionTexte.x = 75;
-	positionTexte.y = 60;
+	positionTexte.x = largeur_fenetre/4 - 15;
+	positionTexte.y = hauteur_fenetre/3 + 10;
 
 	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
 	
-	positionTexte.x = 75;
-	positionTexte.y = 110;
+	positionTexte.y = hauteur_fenetre*2/3 + 10;
 
 	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
 		
 	texte = TTF_RenderText_Blended(police,"+",couleurblanche);
 
-	positionTexte.x = 225;
-	positionTexte.y = 60;
+	positionTexte.x = largeur_fenetre*3/4 - 15;
+	positionTexte.y = hauteur_fenetre/3 + 10;
 
 	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
 	
-	positionTexte.x = 225;
-	positionTexte.y = 110;
+	positionTexte.y = hauteur_fenetre*2/3 + 10;
 
 	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
 		
 	char Tmp[10] = "";
-	sprintf(Tmp,"%d",largeur_fenetre);	
+	sprintf(Tmp,"%d",tmpw);	
 		
 	texte = TTF_RenderText_Blended(police,Tmp,couleurblanche);
 	
-	positionTexte.x = 150;
-	positionTexte.y = 60;
+	positionTexte.x = largeur_fenetre/2 - 35;
+	positionTexte.y = hauteur_fenetre/3 + 10;
 
     SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
     
-    sprintf(Tmp,"%d",hauteur_fenetre);	
+    sprintf(Tmp,"%d",tmph);	
 		
 	texte = TTF_RenderText_Blended(police,Tmp,couleurblanche);
 	
-	positionTexte.x = 150;
-	positionTexte.y = 110;
+	positionTexte.y = hauteur_fenetre*2/3 + 10;
 
     SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+    
+    texte = TTF_RenderText_Blended(police,"Resolution",couleurblanche);
+
+	positionTexte.x = largeur_fenetre/2 - 100;
+	positionTexte.y = 10;
+
+	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
     
     SDL_Flip(ecran);
 }
@@ -384,6 +393,7 @@ void main_menu(SDL_Surface *ecran)
 
 void play_menu(SDL_Surface *ecran)
 {
+	/*
 	NBR_NIVEAUX = lecture_nbr_lvl();
 	SDL_Event event;
 	
@@ -437,6 +447,9 @@ void play_menu(SDL_Surface *ecran)
 			}
 		}
 	}
+	*/
+	
+	play_mode(ecran,2);
 }
 
 void play_mode(SDL_Surface *ecran,int num_lvl)

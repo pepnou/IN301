@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "constantes.h"
 
+
+/*
 LEVEL lecture_fichier(int num_lvl)
 {
 	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
@@ -62,6 +66,96 @@ LEVEL lecture_fichier(int num_lvl)
 	fclose(fichier_lvl);
 	return niveau;
 }
+*/
+
+LEVEL lecture_fichier(int num_lvl)
+{
+	//FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
+	
+	FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	if(fichier_lvl == NULL) exit(-1);
+	
+	int i,j,w_tmp,h_tmp,continuer;
+	LEVEL niveau;
+
+	niveau.width = 0;
+	
+	char* tmp;
+	if(!(tmp=malloc(100 * sizeof(char)))) exit(EXIT_FAILURE);
+	
+	int lvl_courant = 0;
+	
+	continuer = 1;
+	char c = ' ';
+	
+	while(num_lvl != lvl_courant)
+	{
+		while(c != ';')
+		{
+			c = fgetc(fichier_lvl);
+		}
+		c = 'y';
+		fscanf(fichier_lvl,"%d",&lvl_courant);
+	}
+	
+	while((c != ' ')&&(c != '#')) c = fgetc(fichier_lvl);
+	ungetc(c,fichier_lvl);
+	
+	i = 0;
+	j = 0;
+	
+	while(c != ';')
+	{
+		while(c != '\n')
+		{
+			c = fgetc(fichier_lvl);
+			switch(c)
+			{
+				case ' ':
+					niveau.T[i][j]=VIDE;
+					break;
+				case '#':
+					niveau.T[i][j]=MUR;
+					break;
+				case '$':
+					niveau.T[i][j]=CAISSE;
+					break;
+				case '@':
+					niveau.T[i][j]=JOUEUR;
+					niveau.joueur.x = i;
+					niveau.joueur.y = j;
+					break;
+				case '.':
+					niveau.T[i][j]=ARRIVE;
+					break;
+				case '+':
+					niveau.T[i][j]=JOUEUR_ARRIVE;
+					break;
+				case '*':
+					niveau.T[i][j]=CAISSE_ARRIVE;
+					break;
+				default:
+					i--;
+					break;
+			}
+			i++;
+		}
+		if(i>niveau.width)
+		{
+			niveau.width = i;
+		}
+		i = 0;
+		j++;
+		
+		c = fgetc(fichier_lvl);
+		if(c == ';') j -= 1;
+		else ungetc(c,fichier_lvl);
+	}
+	niveau.height = j;
+	
+	fclose(fichier_lvl);
+	return niveau;
+}
 
 int lecture_nbr_lvl()
 {
@@ -84,16 +178,6 @@ int lecture_nbr_lvl()
 	fclose(fichier_lvl);
 
 	return nbr_lvl;
-}
-
-void ecriture_nbr_lvl(int nbr_LVL)
-{
-	FILE* fichier_nbr_lvl = fopen("fichier_nbr_niveaux.txt","w+");
-	if(fichier_nbr_lvl == NULL) exit(-1);
-	
-	fprintf(fichier_nbr_lvl,"%d",nbr_LVL);
-	
-	fclose(fichier_nbr_lvl);
 }
 
 void enregistrer_lvl(LEVEL lvl)
