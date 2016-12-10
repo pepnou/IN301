@@ -393,7 +393,7 @@ void main_menu(SDL_Surface *ecran)
 
 void play_menu(SDL_Surface *ecran)
 {
-	/*
+	
 	NBR_NIVEAUX = lecture_nbr_lvl();
 	SDL_Event event;
 	
@@ -447,9 +447,9 @@ void play_menu(SDL_Surface *ecran)
 			}
 		}
 	}
-	*/
 	
-	play_mode(ecran,2);
+	
+	//~ play_mode(ecran,50);
 }
 
 void play_mode(SDL_Surface *ecran,int num_lvl)

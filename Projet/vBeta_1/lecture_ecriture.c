@@ -70,7 +70,7 @@ LEVEL lecture_fichier(int num_lvl)
 
 LEVEL lecture_fichier(int num_lvl)
 {
-	//FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
+	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
 	
 	FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
 	if(fichier_lvl == NULL) exit(-1);
@@ -98,13 +98,26 @@ LEVEL lecture_fichier(int num_lvl)
 		fscanf(fichier_lvl,"%d",&lvl_courant);
 	}
 	
-	while((c != ' ')&&(c != '#')) c = fgetc(fichier_lvl);
+	fgetc(fichier_lvl);
+	
+	while((c != ' ')&&(c != '#'))
+	{
+		c = fgetc(fichier_lvl);
+		if(c == '\'') 
+		{
+			c = ' ';
+			while(c != '\'')
+			{
+				c = fgetc(fichier_lvl);
+			}
+		}
+	}
 	ungetc(c,fichier_lvl);
 	
 	i = 0;
 	j = 0;
-	
-	while(c != ';')
+		
+	while((c != EOF)&&(c != ';'))
 	{
 		while(c != '\n')
 		{
@@ -139,7 +152,7 @@ LEVEL lecture_fichier(int num_lvl)
 					break;
 			}
 			i++;
-		}
+		}		
 		if(i>niveau.width)
 		{
 			niveau.width = i;
@@ -148,7 +161,7 @@ LEVEL lecture_fichier(int num_lvl)
 		j++;
 		
 		c = fgetc(fichier_lvl);
-		if(c == ';') j -= 1;
+		if((c == EOF)||(c == ';')) j -= 1;
 		else ungetc(c,fichier_lvl);
 	}
 	niveau.height = j;
@@ -157,36 +170,37 @@ LEVEL lecture_fichier(int num_lvl)
 	return niveau;
 }
 
-int lecture_nbr_lvl()
-{
-	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
-	if(fichier_lvl == NULL) exit(-1);
-	
-	int nbr_lvl = 0;
-	int tmp1,tmp2;
-	int j;
-	char tmp[101];
-	
-	while(!(fscanf(fichier_lvl,"%d %d\n",&tmp1,&tmp2) == EOF))
-	{
-		for(j=0;j<tmp2+1;j++) 
-		{
-			fgets(tmp,101,fichier_lvl);
-		}
-		nbr_lvl++;
-	}
-	fclose(fichier_lvl);
-
-	return nbr_lvl;
-}
+//~ int lecture_nbr_lvl()
+//~ {
+	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
+	//~ if(fichier_lvl == NULL) exit(-1);
+	//~ 
+	//~ int nbr_lvl = 0;
+	//~ int tmp1,tmp2;
+	//~ int j;
+	//~ char tmp[101];
+	//~ 
+	//~ while(!(fscanf(fichier_lvl,"%d %d\n",&tmp1,&tmp2) == EOF))
+	//~ {
+		//~ for(j=0;j<tmp2+1;j++) 
+		//~ {
+			//~ fgets(tmp,101,fichier_lvl);
+		//~ }
+		//~ nbr_lvl++;
+	//~ }
+	//~ fclose(fichier_lvl);
+//~ 
+	//~ return nbr_lvl;
+//~ }
 
 void enregistrer_lvl(LEVEL lvl)
 {
 	FILE* fichier_lvl = fopen("fichier_niveaux.txt","a");
 	if(fichier_lvl == NULL) exit(-1);
 	
-	fprintf(fichier_lvl,"%d %d\n",lvl.width,lvl.height);
-	fprintf(fichier_lvl,"%d %d\n",lvl.joueur.x,lvl.joueur.y);
+	int nbr_lvl = lecture_nbr_lvl();
+	
+	fputc('\n',fichier_lvl);fputc(';',fichier_lvl);fputc(' ',fichier_lvl);fprintf(fichier_lvl,"%d",nbr_lvl + 1);fputc('\n',fichier_lvl);fputc('\n',fichier_lvl);
 	
 	int i,j;
 	
@@ -203,7 +217,7 @@ void enregistrer_lvl(LEVEL lvl)
 					fputc('#',fichier_lvl);
 					break;
 				case CAISSE:
-					fputc('&',fichier_lvl);
+					fputc('$',fichier_lvl);
 					break;
 				case JOUEUR:
 					fputc('@',fichier_lvl);
@@ -212,18 +226,82 @@ void enregistrer_lvl(LEVEL lvl)
 					fputc('.',fichier_lvl);
 					break;
 				case JOUEUR_ARRIVE:
-					fputc('*',fichier_lvl);
+					fputc('+',fichier_lvl);
 					break;
 				case CAISSE_ARRIVE:
-					fputc('+',fichier_lvl);
+					fputc('*',fichier_lvl);
 					break;
 			}
 		}
 		fprintf(fichier_lvl,"\n");
 	}
+	fclose(fichier_lvl);
+}
+
+//~ void enregistrer_lvl(LEVEL lvl)
+//~ {
+	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","a");
+	//~ if(fichier_lvl == NULL) exit(-1);
+		//~ 
+	//~ fprintf(fichier_lvl,"%d %d\n",lvl.width,lvl.height);
+	//~ fprintf(fichier_lvl,"%d %d\n",lvl.joueur.x,lvl.joueur.y);
+	//~ 
+	//~ int i,j;
+	//~ 
+	//~ for(j=0;j<lvl.height;j++)
+	//~ {
+		//~ for(i=0;i<lvl.width;i++)
+		//~ {
+			//~ switch(lvl.T[i][j])
+			//~ {
+				//~ case VIDE:
+					//~ fputc(' ',fichier_lvl);
+					//~ break;
+				//~ case MUR:
+					//~ fputc('#',fichier_lvl);
+					//~ break;
+				//~ case CAISSE:
+					//~ fputc('&',fichier_lvl);
+					//~ break;
+				//~ case JOUEUR:
+					//~ fputc('@',fichier_lvl);
+					//~ break;
+				//~ case ARRIVE:
+					//~ fputc('.',fichier_lvl);
+					//~ break;
+				//~ case JOUEUR_ARRIVE:
+					//~ fputc('*',fichier_lvl);
+					//~ break;
+				//~ case CAISSE_ARRIVE:
+					//~ fputc('+',fichier_lvl);
+					//~ break;
+			//~ }
+		//~ }
+		//~ fprintf(fichier_lvl,"\n");
+	//~ }
+	//~ 
+	//~ 
+	//~ fclose(fichier_lvl);
+//~ }
+
+int lecture_nbr_lvl()
+{
+	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
 	
+	FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	if(fichier_lvl == NULL) exit(-1);
+	
+	int nbr_lvl = 0;
+	char c = fgetc(fichier_lvl);
+	
+	while(c != EOF)
+	{
+		if(c == ';') fscanf(fichier_lvl,"%d",&nbr_lvl);
+		c = fgetc(fichier_lvl);
+	}
 	
 	fclose(fichier_lvl);
+	return nbr_lvl;
 }
 
 void efface_lvl()
