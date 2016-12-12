@@ -70,9 +70,9 @@ LEVEL lecture_fichier(int num_lvl)
 
 LEVEL lecture_fichier(int num_lvl)
 {
-	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
-	
-	FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
+	//~ FILE* fichier_lvl = fopen("sasquatch1.txt","r");
+	//~ FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
 	if(fichier_lvl == NULL) exit(-1);
 	
 	int i,j,w_tmp,h_tmp,continuer;
@@ -200,7 +200,8 @@ void enregistrer_lvl(LEVEL lvl)
 	
 	int nbr_lvl = lecture_nbr_lvl();
 	
-	fputc('\n',fichier_lvl);fputc(';',fichier_lvl);fputc(' ',fichier_lvl);fprintf(fichier_lvl,"%d",nbr_lvl + 1);fputc('\n',fichier_lvl);fputc('\n',fichier_lvl);
+	//~ fputc('\n',fichier_lvl);fputc(';',fichier_lvl);fputc(' ',fichier_lvl);fprintf(fichier_lvl,"%d",nbr_lvl + 1);fputc('\n',fichier_lvl);fputc('\n',fichier_lvl);
+	fputc(13,fichier_lvl);fputc(10,fichier_lvl);fputc(';',fichier_lvl);fputc(' ',fichier_lvl);fprintf(fichier_lvl,"%d",nbr_lvl + 1);fputc(13,fichier_lvl);fputc(10,fichier_lvl);fputc(13,fichier_lvl);fputc(10,fichier_lvl);
 	
 	int i,j;
 	
@@ -286,9 +287,9 @@ void enregistrer_lvl(LEVEL lvl)
 
 int lecture_nbr_lvl()
 {
-	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
-	
-	FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
+	//~ FILE* fichier_lvl = fopen("sasquatch1.txt","r");
+	//~ FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
 	if(fichier_lvl == NULL) exit(-1);
 	
 	int nbr_lvl = 0;
