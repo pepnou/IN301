@@ -4,7 +4,11 @@
 #include "constantes.h"
 
 void affichelvl(SDL_Surface *ecran,LEVEL niveau)
-{
+{	
+	int cote;
+	if(largeur_fenetre/niveau.width>=hauteur_fenetre/niveau.height) cote = hauteur_fenetre/niveau.height;
+	else cote = largeur_fenetre/niveau.width;
+	
 	SDL_Surface *vide = NULL;
 	SDL_Surface *mur = NULL;
 	SDL_Surface *caisse = NULL;
@@ -13,13 +17,21 @@ void affichelvl(SDL_Surface *ecran,LEVEL niveau)
 	SDL_Surface *joueur_arrive = NULL;
 	SDL_Surface *caisse_arrive = NULL;
 
-	vide = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
-	mur = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
-	caisse = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
-	joueur = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
-	arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
-	joueur_arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
-	caisse_arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
+	//~ vide = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
+	//~ mur = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
+	//~ caisse = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
+	//~ joueur = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
+	//~ arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
+	//~ joueur_arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
+	//~ caisse_arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre/niveau.width, hauteur_fenetre/niveau.height, 32, 0, 0, 0, 0);
+	
+	vide = SDL_CreateRGBSurface(SDL_HWSURFACE, cote, cote, 32, 0, 0, 0, 0);
+	mur = SDL_CreateRGBSurface(SDL_HWSURFACE, cote, cote, 32, 0, 0, 0, 0);
+	caisse = SDL_CreateRGBSurface(SDL_HWSURFACE, cote, cote, 32, 0, 0, 0, 0);
+	joueur = SDL_CreateRGBSurface(SDL_HWSURFACE, cote, cote, 32, 0, 0, 0, 0);
+	arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, cote, cote, 32, 0, 0, 0, 0);
+	joueur_arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, cote, cote, 32, 0, 0, 0, 0);
+	caisse_arrive = SDL_CreateRGBSurface(SDL_HWSURFACE, cote, cote, 32, 0, 0, 0, 0);
 	
 	SDL_FillRect(vide, NULL, SDL_MapRGB(ecran->format, 100, 247, 255));
 	SDL_FillRect(mur, NULL, SDL_MapRGB(ecran->format, 142, 142, 142));
@@ -31,14 +43,24 @@ void affichelvl(SDL_Surface *ecran,LEVEL niveau)
 	
 	SDL_Rect positionCase;
 	
+	SDL_Surface *fond = NULL;
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre, hauteur_fenetre, 32, 0, 0, 0, 0);
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
+	positionCase.x=0;
+	positionCase.y=0;
+	SDL_BlitSurface(fond,NULL,ecran,&positionCase);
+	
 	int i,j;
 	
 	for(i=0;i<niveau.width;i++)
     {
 		for(j=0;j<niveau.height;j++)
 		{
-			positionCase.x=i*(largeur_fenetre/niveau.width) + (largeur_fenetre%niveau.width)/2;
-			positionCase.y=j*(hauteur_fenetre/niveau.height) + (hauteur_fenetre%niveau.height)/2;
+			//~ positionCase.x=i*(largeur_fenetre/niveau.width) + (largeur_fenetre%niveau.width)/2;
+			//~ positionCase.y=j*(hauteur_fenetre/niveau.height) + (hauteur_fenetre%niveau.height)/2;
+			
+			positionCase.x=i*(cote) + (largeur_fenetre%(cote*niveau.width))/2;
+			positionCase.y=j*(cote) + (hauteur_fenetre%(cote*niveau.height))/2;
 			
 			switch(niveau.T[i][j])
 			{
@@ -86,6 +108,7 @@ void affichelvl(SDL_Surface *ecran,LEVEL niveau)
 	SDL_FreeSurface(arrive);
 	SDL_FreeSurface(joueur_arrive);
 	SDL_FreeSurface(caisse_arrive);
+	SDL_FreeSurface(fond);
 }
 
 void affiche_play_menu(SDL_Surface *ecran,int lvl_num)

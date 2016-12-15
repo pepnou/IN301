@@ -454,9 +454,8 @@ void play_menu(SDL_Surface *ecran)
 }
 
 void play_mode(SDL_Surface *ecran,int num_lvl)
-{
+{	
 	TOUR coup;
-	
 	
 	coup = init_tour(coup,num_lvl);
 	

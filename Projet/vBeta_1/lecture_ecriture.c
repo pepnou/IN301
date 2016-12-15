@@ -6,9 +6,9 @@
 
 int lecture_nbr_lvl()
 {
-	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
+	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
 	//~ FILE* fichier_lvl = fopen("sasquatch1.txt","r");
-	//~ FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
 	if(fichier_lvl == NULL) exit(-1);
 	
 	int nbr_lvl = 0;
@@ -88,20 +88,22 @@ LEVEL lecture_fichier(int num_lvl)
 */
 
 LEVEL lecture_fichier(int num_lvl)
-{
-	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
-	//~ FILE* fichier_lvl = fopen("sasquatch1.txt","r");
-	//~ FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
-	if(fichier_lvl == NULL) exit(-1);
+{	
 	
+	
+	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
+	//~ FILE* fichier_lvl = fopen("sasquatch1.txt","r");
+	FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	if(fichier_lvl == NULL) exit(-1);
+		
 	int i,j,w_tmp,h_tmp,continuer;
 	LEVEL niveau;
 
 	niveau.width = 0;
-	
+		
 	char* tmp;
 	if(!(tmp=malloc(100 * sizeof(char)))) exit(EXIT_FAILURE);
-	
+		
 	int lvl_courant = 0;
 	
 	continuer = 1;
@@ -118,7 +120,7 @@ LEVEL lecture_fichier(int num_lvl)
 	}
 	
 	fgetc(fichier_lvl);
-	
+		
 	while((c != ' ')&&(c != '#'))
 	{
 		c = fgetc(fichier_lvl);
@@ -183,6 +185,7 @@ LEVEL lecture_fichier(int num_lvl)
 		if((c == EOF)||(c == ';')) j -= 1;
 		else ungetc(c,fichier_lvl);
 	}
+		
 	niveau.height = j;
 	
 	fclose(fichier_lvl);
