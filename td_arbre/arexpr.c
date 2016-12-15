@@ -85,9 +85,10 @@ arithExpr lire_chaine(char *s){
 	return arbre;
 }
 
-void affiche(arithExpr a)
+void affiche(arithExpr a,FILE* fichier)
 {
-	FILE* fichier = fopen("expr.txt","a");
+	//FILE* fichier = fopen("expr.txt","a");
+	
 	if(a->fg == NULL)
 	{
 		fprintf(fichier,"%f",a->val);
@@ -97,7 +98,7 @@ void affiche(arithExpr a)
 	{
 		fputc('(',fichier);
 		printf("(");
-		affiche(a->fg);
+		affiche(a->fg,fichier);
 		fputc(')',fichier);
 		printf(")");
 		
@@ -115,28 +116,69 @@ void affiche(arithExpr a)
 		
 		fputc('(',fichier);
 		printf("(");
-		affiche(a->fd);
+		affiche(a->fd,fichier);
 		fputc(')',fichier);
 		printf(")");
 	}
-	fclose(fichier);
 }
 
-double eval_arith(arithExpr a){
+double eval_arith(arithExpr a)
+{
+	if(a == NULL) return 0;
 	
- return 0;
+	switch(a->type)
+	{
+		case 0:
+			return a->val;
+			break;
+		case 1:
+			return eval_arith(a->fg) + eval_arith(a->fd);
+			break;
+		case 2:
+			return eval_arith(a->fg) * eval_arith(a->fd);
+			break;
+	}
+	printf("error in expression\n");
+	return -1;
+}
+
+int puissance(int a,int b)
+{
+	int i;int res = a;
+	for(i=1;i<=b;i++) res = res * a;
+	return res;
 }
 
 arithExpr rand_arith(int n, int m){
-	return NULL;
-	
+	arithExpr a;
+	if(!(a=malloc(sizeof(arithExpr)))) exit(EXIT_FAILURE);
+	if(n==1)
+	{
+		a->type = 0;
+		a->val = (rand() % m+1)*puissance((-1),rand()%2);
+		a->fg = NULL;
+		a->fd = NULL;
+	}
+	else
+	{
+		a->type = (rand() % 3) + 1;
+		a->fg = rand_arith(n-1,m);
+		a->fd = rand_arith(n-1,m);
+	}
+	return a;
 }
 
 void free_arith(arithExpr a){
-	
+	if(a != NULL)
+	{
+		free_arith(a->fg);
+		free_arith(a->fd);
+		free(a);
+	}
 }
 
-arithExpr simplifie(arithExpr a){
+arithExpr simplifie(arithExpr a)
+{
 	return NULL;
 }
 
@@ -149,26 +191,25 @@ int main(int argc, char **argv){
 		exit(1);
 	}
 	
-	FILE* f = fopen(argv[1],"w+");
+	FILE* f = fopen(argv[1],"r");
 	char buffer[300];
 	fscanf(f,"%s",buffer);
 	printf("Taille du fichier : %d\n",(int)strlen(buffer));
 	printf("Contenu du fichier %s\n",buffer);
+	fclose(f);
 	
 	////////////////// Test des fonctions ///////////////////////
 	
-	printf("1\n");
-	
 	arithExpr a = lire_chaine(buffer);
-	affiche(a);
-	/*
+	affiche(a,fopen("expr.txt","w+"));
 	printf("\nValeur de l'expression : %f\n",eval_arith(a));
 	free_arith(a);
 	a = rand_arith(5,100);
-	affiche(a);
+	affiche(a,fopen("expr.txt","w+"));
+	printf("\nValeur de l'expression 2 : %f\n",eval_arith(a));
 	free_arith(a);
-	*/
-	fclose(f);
+	
+	printf("\n");
 	exit(0);
 
 }
