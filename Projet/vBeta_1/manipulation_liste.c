@@ -14,16 +14,6 @@ liste insere_debut(liste l,LEVEL lvl)
 	return ltmp;
 }
 
-LEVEL suppr_debut(liste* l)
-{
-	LEVEL tmp = (*l)->val;
-	liste ltmp = *l;
-	(*l) = (*l)->suiv;
-	free(ltmp);
-	
-	return tmp;
-}
-
 TOUR init_tour(TOUR coup , int num_lvl)
 {
 	coup.fait = NULL;
@@ -33,6 +23,16 @@ TOUR init_tour(TOUR coup , int num_lvl)
 	coup.fait = insere_debut(coup.fait,coup.base_lvl);
 	coup.continuer = (victoire(coup.fait -> val) + 1) % 2;
 	return coup;
+}
+
+LEVEL suppr_debut(liste* l)
+{
+	LEVEL tmp = (*l)->val;
+	liste ltmp = *l;
+	(*l) = (*l)->suiv;
+	free(ltmp);
+	
+	return tmp;
 }
 
 void suppr_liste(liste l)

@@ -4,6 +4,25 @@
 #include <ctype.h>
 #include "constantes.h"
 
+int lecture_nbr_lvl()
+{
+	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
+	//~ FILE* fichier_lvl = fopen("sasquatch1.txt","r");
+	//~ FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	if(fichier_lvl == NULL) exit(-1);
+	
+	int nbr_lvl = 0;
+	char c = fgetc(fichier_lvl);
+	
+	while(c != EOF)
+	{
+		if(c == ';') fscanf(fichier_lvl,"%d",&nbr_lvl);
+		c = fgetc(fichier_lvl);
+	}
+	
+	fclose(fichier_lvl);
+	return nbr_lvl;
+}
 
 /*
 LEVEL lecture_fichier(int num_lvl)
@@ -285,25 +304,6 @@ void enregistrer_lvl(LEVEL lvl)
 	//~ fclose(fichier_lvl);
 //~ }
 
-int lecture_nbr_lvl()
-{
-	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
-	//~ FILE* fichier_lvl = fopen("sasquatch1.txt","r");
-	//~ FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
-	if(fichier_lvl == NULL) exit(-1);
-	
-	int nbr_lvl = 0;
-	char c = fgetc(fichier_lvl);
-	
-	while(c != EOF)
-	{
-		if(c == ';') fscanf(fichier_lvl,"%d",&nbr_lvl);
-		c = fgetc(fichier_lvl);
-	}
-	
-	fclose(fichier_lvl);
-	return nbr_lvl;
-}
 
 void efface_lvl()
 {
