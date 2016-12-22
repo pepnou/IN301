@@ -13,8 +13,6 @@ int NBR_NIVEAUX = 0;
 int largeur_fenetre = 300;
 int hauteur_fenetre = 150;
 
-
-LEVEL init_lvl(LEVEL niveau);
 void creation_lvl(SDL_Surface *ecran);
 
 int victoire(LEVEL niveau);
@@ -34,6 +32,7 @@ POS recherche_joueur(LEVEL lvl);
 int joueur_encadre(LEVEL lvl,int x,int y);
 int joueur_encadre_etape_2(LEVEL* lvl,int x,int y);
 
+void changement_resolution(SDL_Surface **ecran);
 void choix_resolution(SDL_Surface *ecran);
 void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph);
 
@@ -47,9 +46,11 @@ int main()
     
     SDL_WM_SetCaption("Sokoban vAlpha2",NULL);
 
-    ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
-	choix_resolution(ecran);
-	ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
+    //~ ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
+	//~ choix_resolution(ecran);
+	//~ ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
+	
+	changement_resolution(&ecran);
 	
 	main_menu(ecran);
 	
@@ -58,10 +59,38 @@ int main()
 	exit(EXIT_SUCCESS);
 }
 
+void changement_resolution(SDL_Surface **ecran)
+{
+	int i,j;
+	FILE* fichier = NULL;
+	
+	if((fichier = fopen("taille_fenetre.txt","r")) == NULL)
+	{
+		*ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
+		choix_resolution(*ecran);
+		*ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
+		i=largeur_fenetre;j=hauteur_fenetre;
+		
+		fichier = fopen("taille_fenetre.txt","w+");
+		fprintf(fichier,"%d %d",i,j);
+		fclose(fichier);
+	}
+	else
+	{
+		fscanf(fichier,"%d %d",&i,&j);
+		largeur_fenetre=i;hauteur_fenetre=j;
+		*ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
+		fclose(fichier);
+	}
+}
+
 void choix_resolution(SDL_Surface *ecran)
 {		
-	int largeur_fenetre_tmp = largeur_fenetre;
-	int hauteur_fenetre_tmp = hauteur_fenetre;
+	//~ int largeur_fenetre_tmp = largeur_fenetre;
+	//~ int hauteur_fenetre_tmp = hauteur_fenetre;
+	
+	int largeur_fenetre_tmp = 600;
+	int hauteur_fenetre_tmp = 600;
 	
 	affiche_resolution(ecran,largeur_fenetre_tmp,hauteur_fenetre_tmp);
 	
@@ -332,20 +361,6 @@ int* contenu_lvl(LEVEL lvl)
 	return content;
 }
 
-LEVEL init_lvl(LEVEL niveau)
-{
-	int i,j;
-	
-	for(j=0;j<niveau.height;j++)
-	{
-		for(i=0;i<niveau.width;i++)
-		{
-			niveau.T[i][j] = 0;
-		}
-	}
-	
-	return niveau;
-}
 
 void main_menu(SDL_Surface *ecran)
 {
