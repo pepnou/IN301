@@ -13,6 +13,7 @@
 #define E_PREVIOUS 4
 #define E_NEXT 5
 #define E_QUIT 6
+#define E_CONFIRM 7
 
 extern int largeur_fenetre;
 extern int hauteur_fenetre;

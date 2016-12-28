@@ -21,10 +21,16 @@ void main_menu(SDL_Surface *ecran);
 void play_menu(SDL_Surface *ecran);
 void editor_menu(SDL_Surface *ecran);
 void play_mode(SDL_Surface *ecran,int num_lvl);
+void play_mode_invert(SDL_Surface *ecran,LEVEL lvl);
 
 LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);
+LEVEL deplacer_joueur_invert(LEVEL niveau,POS deplacement);
 Play_Event attendre_evenement();
+Play_Event attendre_evenement_invert();
 TOUR action(TOUR coup,Play_Event PE);
+TOUR action_invert(TOUR coup,Play_Event PE);
+void modif_niveau(LEVEL niveau,SDL_Surface *ecran);
+void position_depart(LEVEL lvl,SDL_Surface *ecran);
 
 int lvl_correct(LEVEL lvl);
 int* contenu_lvl(LEVEL lvl);
@@ -217,8 +223,13 @@ void creation_lvl(SDL_Surface *ecran)
 	niveau.width=10;
 	niveau.height=10;
 	
-	niveau = init_lvl(niveau);
+	modif_niveau(init_lvl(niveau),ecran);
 	
+	main_menu(ecran);
+}
+
+void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
+{
 	affichelvl(ecran,niveau);
 	
 	SDL_Event event;
@@ -239,7 +250,8 @@ void creation_lvl(SDL_Surface *ecran)
 						if(lvl_correct(niveau))
 						{
 							niveau.joueur = recherche_joueur(niveau);
-							enregistrer_lvl(niveau);
+							position_depart(niveau,ecran);
+							//enregistrer_lvl(niveau);
 							continuer = 0;
 							
 						}
@@ -254,11 +266,6 @@ void creation_lvl(SDL_Surface *ecran)
 				tmp_j = event.button.y/(hauteur_fenetre/niveau.height);
 				
 				niveau.T[tmp_i][tmp_j] = (niveau.T[tmp_i][tmp_j] + 1 ) % 7;
-				//~ if(niveau.T[tmp_i][tmp_j] == JOUEUR)
-				//~ {
-					//~ niveau.joueur.x = tmp_i;
-					//~ niveau.joueur.y = tmp_j;
-				//~ }
 				
 				affichelvl(ecran,niveau);
 				break;
@@ -266,7 +273,11 @@ void creation_lvl(SDL_Surface *ecran)
 				break;
 		}
 	}
-	main_menu(ecran);
+}
+
+void position_depart(LEVEL lvl,SDL_Surface *ecran)
+{
+	play_mode_invert(ecran,lvl);
 }
 
 POS recherche_joueur(LEVEL lvl)
@@ -485,6 +496,21 @@ void play_mode(SDL_Surface *ecran,int num_lvl)
 	}
 }
 
+void play_mode_invert(SDL_Surface *ecran,LEVEL lvl)
+{	
+	TOUR coup;
+	
+	coup = init_tour_invert(coup,lvl);
+	
+	affichelvl(ecran,coup.fait -> val);
+	
+	while(coup.continuer)
+	{
+		coup = action_invert(coup,attendre_evenement_invert());
+		affichelvl(ecran,coup.fait -> val);
+	}
+}
+
 int victoire(LEVEL niveau)
 {
 	int i,j;
@@ -562,6 +588,56 @@ LEVEL deplacer_joueur(LEVEL niveau,POS deplacement)
 	return niveau;
 }
 
+LEVEL deplacer_joueur_invert(LEVEL niveau,POS deplacement)
+{
+	int ANCIENNE_CASE = VIDE;
+	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
+	
+	switch(niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y])
+	{
+		case VIDE:
+			niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR;
+			niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
+			
+			switch(niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y])
+			{
+				case CAISSE:
+					niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y] = VIDE;
+					niveau.T[niveau.joueur.x][niveau.joueur.y] = CAISSE + ANCIENNE_CASE;
+					break;
+				case CAISSE_ARRIVE:
+					niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y] = ARRIVE;
+					niveau.T[niveau.joueur.x][niveau.joueur.y] = CAISSE + ANCIENNE_CASE;
+					break;
+			}
+			
+			niveau.joueur.x=niveau.joueur.x + deplacement.x;
+			niveau.joueur.y=niveau.joueur.y + deplacement.y;
+			break;
+		case ARRIVE:
+			niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR_ARRIVE;
+			niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
+			
+			switch(niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y])
+			{
+				case CAISSE:
+					niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y] = VIDE;
+					niveau.T[niveau.joueur.x][niveau.joueur.y] = CAISSE + ANCIENNE_CASE;
+					break;
+				case CAISSE_ARRIVE:
+					niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y] = ARRIVE;
+					niveau.T[niveau.joueur.x][niveau.joueur.y] = CAISSE + ANCIENNE_CASE;
+					break;
+			}
+			
+			niveau.joueur.x=niveau.joueur.x + deplacement.x;
+			niveau.joueur.y=niveau.joueur.y + deplacement.y;
+			break;
+	}
+	
+	return niveau;
+}
+
 Play_Event attendre_evenement()
 {
 	Play_Event evenement;
@@ -631,13 +707,86 @@ Play_Event attendre_evenement()
 	return evenement;
 }
 
+Play_Event attendre_evenement_invert()
+{
+	Play_Event evenement;
+	evenement.event = E_MOVE;
+	
+	SDL_EnableKeyRepeat(10, 10);
+	
+	SDL_Event action;
+	int continuer=1;
+	
+	
+	while(continuer)
+	{
+		SDL_WaitEvent(&action);
+		if(action.type==SDL_KEYDOWN)
+        {
+			switch(action.key.keysym.sym)
+            {
+				case SDLK_UP:
+					continuer = 0;
+					evenement.deplacement.y=-1;
+					evenement.deplacement.x=0;
+					break;
+				case SDLK_DOWN:
+                    continuer = 0;
+                    evenement.deplacement.y=1;
+                    evenement.deplacement.x=0;
+                    break;
+				case SDLK_RIGHT:
+                    continuer = 0;
+                    evenement.deplacement.x=1;
+                    evenement.deplacement.y=0;
+                    break;
+                case SDLK_LEFT:
+                    continuer = 0;
+                    evenement.deplacement.x=-1;
+                    evenement.deplacement.y=0;
+                    break;
+				case SDLK_u:
+					continuer = 0;
+					evenement.event = E_UNDO;
+					break;
+				case SDLK_r:
+					continuer = 0;
+					evenement.event = E_REDO;
+					break;
+				case SDLK_i:
+					continuer = 0;
+					evenement.event = E_INIT;
+					break;
+				case SDLK_p:
+					continuer = 0;
+					evenement.event = E_PREVIOUS;
+					break;
+				case SDLK_s:
+					continuer = 0;
+					evenement.event = E_NEXT;
+					break;
+				case SDLK_q: case SDLK_ESCAPE:
+					continuer = 0;
+					evenement.event = E_QUIT;
+					break;
+				case SDLK_RETURN:
+					continuer = 0;
+					evenement.event = E_CONFIRM;
+					break;
+            }
+		}
+	}
+	
+	return evenement;
+}
+
 TOUR action(TOUR coup,Play_Event PE)
 {
-	
 	switch(PE.event)
 	{
 		case E_MOVE:
 			coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
+			//~ coup.fait = insere_debut(coup.fait,deplacer_joueur_invert(coup.fait -> val, PE.deplacement));
 			suppr_liste(coup.deplace);
 			coup.deplace = NULL;
 			break;
@@ -664,7 +813,42 @@ TOUR action(TOUR coup,Play_Event PE)
 	return coup;
 }
 
-
+TOUR action_invert(TOUR coup,Play_Event PE)
+{
+	switch(PE.event)
+	{
+		case E_MOVE:
+			//~ coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
+			coup.fait = insere_debut(coup.fait,deplacer_joueur_invert(coup.fait -> val, PE.deplacement));
+			suppr_liste(coup.deplace);
+			coup.deplace = NULL;
+			break;
+		case E_UNDO:
+			if(coup.fait ->suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
+			break;
+		case E_REDO:
+			if(coup.deplace != NULL) coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
+			break;
+		case E_INIT:
+			coup.fait = insere_debut(coup.fait,coup.base_lvl);
+			break;
+		case E_PREVIOUS:
+			if(coup.num_level > 1) coup = init_tour(coup,coup.num_level-1);
+			break;
+		case E_NEXT:
+			if(coup.num_level < NBR_NIVEAUX) coup = init_tour(coup,coup.num_level+1);
+			break;
+		case E_QUIT:
+			coup.continuer = 0;
+			break;
+		case E_CONFIRM:
+			enregistrer_lvl(coup.fait -> val);
+			coup.continuer = 0;
+			break;
+	}
+	
+	return coup;
+}
 
 
 

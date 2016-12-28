@@ -30,7 +30,8 @@ int lecture_nbr_lvl()
 	
 	while(c != EOF)
 	{
-		if(c == ';') fscanf(fichier_lvl,"%d",&nbr_lvl);
+		//~ if(c == ';') fscanf(fichier_lvl,"%d",&nbr_lvl);
+		if(c == ';') nbr_lvl ++;
 		c = fgetc(fichier_lvl);
 	}
 	
@@ -124,29 +125,45 @@ LEVEL lecture_fichier(int num_lvl)
 	continuer = 1;
 	char c = ' ';
 	
+	//~ while(num_lvl != lvl_courant)
+	//~ {
+		//~ while(c != ';')
+		//~ {
+			//~ c = fgetc(fichier_lvl);
+		//~ }
+		//~ c = 'y';
+		//~ fscanf(fichier_lvl,"%d",&lvl_courant);
+	//~ }
+	//~ 
+	//~ fgetc(fichier_lvl);
+		//~ 
+	//~ while((c != ' ')&&(c != '#'))
+	//~ {
+		//~ c = fgetc(fichier_lvl);
+		//~ if(c == '\'') 
+		//~ {
+			//~ c = ' ';
+			//~ while(c != '\'')
+			//~ {
+				//~ c = fgetc(fichier_lvl);
+			//~ }
+		//~ }
+	//~ }
+	//~ ungetc(c,fichier_lvl);
+	
 	while(num_lvl != lvl_courant)
 	{
-		while(c != ';')
-		{
-			c = fgetc(fichier_lvl);
-		}
-		c = 'y';
-		fscanf(fichier_lvl,"%d",&lvl_courant);
+		c = fgetc(fichier_lvl);
+		if(c == ';') lvl_courant++;
 	}
 	
-	fgetc(fichier_lvl);
-		
-	while((c != ' ')&&(c != '#'))
+	while(c != '\n')
 	{
 		c = fgetc(fichier_lvl);
-		if(c == '\'') 
-		{
-			c = ' ';
-			while(c != '\'')
-			{
-				c = fgetc(fichier_lvl);
-			}
-		}
+	}
+	while((c != '#')&&(c != ' '))
+	{
+		c = fgetc(fichier_lvl);
 	}
 	ungetc(c,fichier_lvl);
 	

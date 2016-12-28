@@ -25,6 +25,17 @@ TOUR init_tour(TOUR coup , int num_lvl)
 	return coup;
 }
 
+TOUR init_tour_invert(TOUR coup , LEVEL lvl)
+{
+	coup.fait = NULL;
+	coup.deplace = NULL;	
+	coup.num_level = 42;
+	coup.base_lvl = lvl;
+	coup.fait = insere_debut(coup.fait,coup.base_lvl);
+	coup.continuer = 1;
+	return coup;
+}
+
 LEVEL suppr_debut(liste* l)
 {
 	LEVEL tmp = (*l)->val;
