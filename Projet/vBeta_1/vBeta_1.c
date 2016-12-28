@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL/SDL_ttf.h>
+#include <time.h>
 #include "constantes.h"
 #include "gestion_event.h"
 #include "affichage.h"
@@ -22,6 +23,7 @@ void play_menu(SDL_Surface *ecran);
 void editor_menu(SDL_Surface *ecran);
 void play_mode(SDL_Surface *ecran,int num_lvl);
 void play_mode_invert(SDL_Surface *ecran,LEVEL lvl);
+void play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl);
 
 LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);
 LEVEL deplacer_joueur_invert(LEVEL niveau,POS deplacement);
@@ -43,16 +45,18 @@ void choix_resolution(SDL_Surface *ecran);
 void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph);
 
 int main()
-{	
+{
+	srand(time(NULL));
+	
 	SDL_Surface *ecran = NULL;
 
 	TTF_Init();
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_Init(SDL_INIT_AUDIO);
-    
-    SDL_WM_SetCaption("Sokoban vAlpha2",NULL);
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_AUDIO);
+	
+	SDL_WM_SetCaption("Sokoban vAlpha2",NULL);
 
-    //~ ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
+	//~ ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
 	//~ choix_resolution(ecran);
 	//~ ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
 	
@@ -159,13 +163,13 @@ void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph)
 	
 	SDL_Surface *texte = NULL;
 	
-    TTF_Font *police = NULL;
+	TTF_Font *police = NULL;
 
-    police = TTF_OpenFont("unispace_rg.ttf",30);
+	police = TTF_OpenFont("unispace_rg.ttf",30);
 
-    SDL_Color couleurblanche = {255,255,255};
+	SDL_Color couleurblanche = {255,255,255};
 
-    SDL_Rect positionTexte;
+	SDL_Rect positionTexte;
 	
 	texte = TTF_RenderText_Blended(police,"-",couleurblanche);
 
@@ -197,24 +201,24 @@ void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph)
 	positionTexte.x = largeur_fenetre/2 - 35;
 	positionTexte.y = hauteur_fenetre/3 + 10;
 
-    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-    
-    sprintf(Tmp,"%d",tmph);	
+	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+	
+	sprintf(Tmp,"%d",tmph);	
 		
 	texte = TTF_RenderText_Blended(police,Tmp,couleurblanche);
 	
 	positionTexte.y = hauteur_fenetre*2/3 + 10;
 
-    SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-    
-    texte = TTF_RenderText_Blended(police,"Resolution",couleurblanche);
+	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
+	
+	texte = TTF_RenderText_Blended(police,"Resolution",couleurblanche);
 
 	positionTexte.x = largeur_fenetre/2 - 100;
 	positionTexte.y = 10;
 
 	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-    
-    SDL_Flip(ecran);
+	
+	SDL_Flip(ecran);
 }
 
 void creation_lvl(SDL_Surface *ecran)
@@ -246,18 +250,18 @@ void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.sym)
 				{
+					case SDLK_ESCAPE:
+						continuer = 0;
+						break;
 					case SDLK_RETURN:
 						if(lvl_correct(niveau))
 						{
 							niveau.joueur = recherche_joueur(niveau);
-							position_depart(niveau,ecran);
-							//enregistrer_lvl(niveau);
-							continuer = 0;
+							//~ play_mode_invert(ecran,niveau);
+							play_mode_invert_auto(ecran,niveau);
 							
+							continuer = 0;
 						}
-						break;
-					case SDLK_ESCAPE:
-						continuer = 0;
 						break;
 				}
 				break;				
@@ -275,10 +279,10 @@ void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 	}
 }
 
-void position_depart(LEVEL lvl,SDL_Surface *ecran)
-{
-	play_mode_invert(ecran,lvl);
-}
+//~ void position_depart(LEVEL lvl,SDL_Surface *ecran)
+//~ {
+	//~ play_mode_invert(ecran,lvl);
+//~ }
 
 POS recherche_joueur(LEVEL lvl)
 {
@@ -289,7 +293,7 @@ POS recherche_joueur(LEVEL lvl)
 	{
 		for(j=0;j<lvl.height;j++)
 		{
-			if(lvl.T[i][j]== JOUEUR)
+			if((lvl.T[i][j]== JOUEUR)||(lvl.T[i][j]== JOUEUR_ARRIVE))
 			{
 				res.x = i;
 				res.y = j;
@@ -308,12 +312,12 @@ int lvl_correct(LEVEL lvl)
 	int* contenu = NULL;
 	contenu = contenu_lvl(lvl);
 	
-	if(contenu[JOUEUR] != 1)
+	if(contenu[JOUEUR] + contenu[JOUEUR_ARRIVE] != 1)
 	{
 		printf("probleme sur le nombre de joueur : %d joueur(s)\n",contenu[JOUEUR]);
 		correct = 0;
 	}
-	if(contenu[ARRIVE] == 0)
+	if(contenu[ARRIVE] +  contenu[JOUEUR_ARRIVE] + contenu[CAISSE_ARRIVE] == 0)
 	{
 		printf("probleme : aucune zone de depot\n");
 		correct = 0;
@@ -323,7 +327,7 @@ int lvl_correct(LEVEL lvl)
 		printf("probleme sur le nombre de zone de depot et de caisse : %d depot(s) pour %d caisse\n",contenu[ARRIVE] + contenu[JOUEUR_ARRIVE],contenu[CAISSE]);
 		correct = 0;
 	}
-	if(contenu[JOUEUR] == 1)
+	if(contenu[JOUEUR] + contenu[JOUEUR_ARRIVE] == 1)
 	{
 		pos_j = recherche_joueur(lvl);
 		if(!(joueur_encadre(lvl,pos_j.x,pos_j.y)))
@@ -379,9 +383,9 @@ void main_menu(SDL_Surface *ecran)
 	
 	int continuer = 1;
 	SDL_Event event;
-    
-    while(continuer)
-    {
+	
+	while(continuer)
+	{
 		SDL_WaitEvent(&event);
 		switch(event.type)
 		{
@@ -499,6 +503,7 @@ void play_mode(SDL_Surface *ecran,int num_lvl)
 void play_mode_invert(SDL_Surface *ecran,LEVEL lvl)
 {	
 	TOUR coup;
+	Play_Event evenement;
 	
 	coup = init_tour_invert(coup,lvl);
 	
@@ -506,9 +511,49 @@ void play_mode_invert(SDL_Surface *ecran,LEVEL lvl)
 	
 	while(coup.continuer)
 	{
-		coup = action_invert(coup,attendre_evenement_invert());
+		evenement = attendre_evenement_invert();
+		coup = action_invert(coup,evenement);
 		affichelvl(ecran,coup.fait -> val);
 	}
+}
+
+void play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl)
+{	
+	TOUR coup;
+	int tmp;
+	Play_Event evenement;
+	evenement.event = E_MOVE;
+	
+	coup = init_tour_invert(coup,lvl);
+	
+	int i;
+	
+	for(i=0;i<50;i++)
+	{
+		tmp = rand() % 4;
+		switch(tmp)
+		{
+			case 0:
+				evenement.deplacement.y=-1;
+				evenement.deplacement.x=0;
+				break;
+			case 1:
+				evenement.deplacement.y=1;
+				evenement.deplacement.x=0;
+				break;
+			case 2:
+				evenement.deplacement.x=1;
+				evenement.deplacement.y=0;
+				break;
+			case 3:
+				evenement.deplacement.x=-1;
+				evenement.deplacement.y=0;
+				break;
+		}
+		coup = action_invert(coup,evenement);
+	}
+	affichelvl(ecran,coup.fait -> val);
+	attendre_clic_gauche();
 }
 
 int victoire(LEVEL niveau)
@@ -516,7 +561,7 @@ int victoire(LEVEL niveau)
 	int i,j;
 	
 	for(i=1;i<niveau.width-1;i++)
-    {
+	{
 		for(j=1;j<niveau.height-1;j++)
 		{
 			if((niveau.T[i][j] == ARRIVE)||(niveau.T[i][j] == JOUEUR_ARRIVE))return 0;
@@ -653,29 +698,29 @@ Play_Event attendre_evenement()
 	{
 		SDL_WaitEvent(&action);
 		if(action.type==SDL_KEYDOWN)
-        {
+		{
 			switch(action.key.keysym.sym)
-            {
+			{
 				case SDLK_UP:
 					continuer = 0;
 					evenement.deplacement.y=-1;
 					evenement.deplacement.x=0;
 					break;
 				case SDLK_DOWN:
-                    continuer = 0;
-                    evenement.deplacement.y=1;
-                    evenement.deplacement.x=0;
-                    break;
+					continuer = 0;
+					evenement.deplacement.y=1;
+					evenement.deplacement.x=0;
+					break;
 				case SDLK_RIGHT:
-                    continuer = 0;
-                    evenement.deplacement.x=1;
-                    evenement.deplacement.y=0;
-                    break;
-                case SDLK_LEFT:
-                    continuer = 0;
-                    evenement.deplacement.x=-1;
-                    evenement.deplacement.y=0;
-                    break;
+					continuer = 0;
+					evenement.deplacement.x=1;
+					evenement.deplacement.y=0;
+					break;
+				case SDLK_LEFT:
+					continuer = 0;
+					evenement.deplacement.x=-1;
+					evenement.deplacement.y=0;
+					break;
 				case SDLK_u:
 					continuer = 0;
 					evenement.event = E_UNDO;
@@ -700,7 +745,7 @@ Play_Event attendre_evenement()
 					continuer = 0;
 					evenement.event = E_QUIT;
 					break;
-            }
+			}
 		}
 	}
 	
@@ -722,29 +767,29 @@ Play_Event attendre_evenement_invert()
 	{
 		SDL_WaitEvent(&action);
 		if(action.type==SDL_KEYDOWN)
-        {
+		{
 			switch(action.key.keysym.sym)
-            {
+			{
 				case SDLK_UP:
 					continuer = 0;
 					evenement.deplacement.y=-1;
 					evenement.deplacement.x=0;
 					break;
 				case SDLK_DOWN:
-                    continuer = 0;
-                    evenement.deplacement.y=1;
-                    evenement.deplacement.x=0;
-                    break;
+					continuer = 0;
+					evenement.deplacement.y=1;
+					evenement.deplacement.x=0;
+					break;
 				case SDLK_RIGHT:
-                    continuer = 0;
-                    evenement.deplacement.x=1;
-                    evenement.deplacement.y=0;
-                    break;
-                case SDLK_LEFT:
-                    continuer = 0;
-                    evenement.deplacement.x=-1;
-                    evenement.deplacement.y=0;
-                    break;
+					continuer = 0;
+					evenement.deplacement.x=1;
+					evenement.deplacement.y=0;
+					break;
+				case SDLK_LEFT:
+					continuer = 0;
+					evenement.deplacement.x=-1;
+					evenement.deplacement.y=0;
+					break;
 				case SDLK_u:
 					continuer = 0;
 					evenement.event = E_UNDO;
@@ -773,7 +818,7 @@ Play_Event attendre_evenement_invert()
 					continuer = 0;
 					evenement.event = E_CONFIRM;
 					break;
-            }
+			}
 		}
 	}
 	
@@ -849,6 +894,7 @@ TOUR action_invert(TOUR coup,Play_Event PE)
 	
 	return coup;
 }
+
 
 
 
