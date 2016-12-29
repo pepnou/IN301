@@ -234,7 +234,7 @@ void creation_lvl(SDL_Surface *ecran)
 
 void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 {
-	affichelvl(ecran,niveau);
+	affichelvl(&ecran,niveau);
 	
 	SDL_Event event;
 	int continuer = 1;
@@ -271,7 +271,7 @@ void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 				
 				niveau.T[tmp_i][tmp_j] = (niveau.T[tmp_i][tmp_j] + 1 ) % 7;
 				
-				affichelvl(ecran,niveau);
+				affichelvl(&ecran,niveau);
 				break;
 			default:
 				break;
@@ -490,13 +490,13 @@ void play_mode(SDL_Surface *ecran,int num_lvl)
 	coup = init_tour(coup,num_lvl);
 	
 	
-	affichelvl(ecran,coup.fait -> val);
+	affichelvl(&ecran,coup.fait -> val);
 	
 	
 	while((coup.continuer) && (!(victoire(coup.fait -> val))))
 	{
 		coup = action(coup,attendre_evenement());
-		affichelvl(ecran,coup.fait -> val);
+		affichelvl(&ecran,coup.fait -> val);
 	}
 }
 
@@ -507,13 +507,13 @@ void play_mode_invert(SDL_Surface *ecran,LEVEL lvl)
 	
 	coup = init_tour_invert(coup,lvl);
 	
-	affichelvl(ecran,coup.fait -> val);
+	affichelvl(&ecran,coup.fait -> val);
 	
 	while(coup.continuer)
 	{
 		evenement = attendre_evenement_invert();
 		coup = action_invert(coup,evenement);
-		affichelvl(ecran,coup.fait -> val);
+		affichelvl(&ecran,coup.fait -> val);
 	}
 }
 
@@ -552,7 +552,7 @@ void play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl)
 		}
 		coup = action_invert(coup,evenement);
 	}
-	affichelvl(ecran,coup.fait -> val);
+	affichelvl(&ecran,coup.fait -> val);
 	attendre_clic_gauche();
 }
 
