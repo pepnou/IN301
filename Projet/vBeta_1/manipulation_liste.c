@@ -6,7 +6,7 @@
 liste insere_debut(liste l,LEVEL lvl)
 {
 	liste ltmp;
-	if(!(ltmp=malloc(sizeof(LEVEL)))) exit(EXIT_FAILURE);
+	if(!(ltmp = malloc(sizeof(struct elem)))) exit(EXIT_FAILURE);
 	
 	ltmp->val = lvl;
 	ltmp->suiv = l;

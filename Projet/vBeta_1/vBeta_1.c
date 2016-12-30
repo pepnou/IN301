@@ -66,6 +66,8 @@ int main()
 	
 	main_menu(ecran);
 	
+	SDL_FreeSurface(ecran);
+	
 	SDL_Quit();
 	
 	exit(EXIT_SUCCESS);
@@ -634,6 +636,9 @@ LEVEL deplacer_joueur(LEVEL niveau,POS deplacement)
 			niveau.joueur.y=niveau.joueur.y + deplacement.y;
 			break;
 	}
+	
+	niveau.direction_joueur = 2*deplacement.x + deplacement.y;
+	
 	return niveau;
 }
 
@@ -683,6 +688,9 @@ LEVEL deplacer_joueur_invert(LEVEL niveau,POS deplacement)
 			niveau.joueur.y=niveau.joueur.y + deplacement.y;
 			break;
 	}
+	
+	niveau.direction_joueur = (-2)*deplacement.x - deplacement.y;
+	
 	
 	return niveau;
 }

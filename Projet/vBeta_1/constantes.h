@@ -32,6 +32,7 @@ typedef struct pos POS;
 
 struct level
 {
+	int direction_joueur;
 	int width;
 	int height;
 	int T[largeur_max][hauteur_max];

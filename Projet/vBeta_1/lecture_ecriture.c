@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "constantes.h"
 
+
 LEVEL init_lvl(LEVEL niveau)
 {
 	int i,j;
@@ -15,6 +16,8 @@ LEVEL init_lvl(LEVEL niveau)
 			niveau.T[i][j] = 0;
 		}
 	}
+	
+	niveau.direction_joueur = 1;
 	
 	return niveau;
 }

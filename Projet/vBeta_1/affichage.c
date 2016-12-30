@@ -10,16 +10,33 @@ void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 	int largeur = niveau.width*32 + 40;
 	int hauteur = niveau.height*32 + 120;
 	
-	
 	*ecran = SDL_SetVideoMode(largeur,hauteur,32,SDL_HWSURFACE);
-	
 	SDL_Surface *vide = SDL_LoadBMP("parquet_32.bmp");
 	SDL_Surface *mur = SDL_LoadBMP("mur_haut_32.bmp");
 	SDL_Surface *caisse = SDL_LoadBMP("caisse_2.bmp");
-	SDL_Surface *joueur = SDL_LoadBMP("perso1_bas.bmp");
 	SDL_Surface *arrive = SDL_LoadBMP("tapis.bmp");
 	SDL_Surface *caisse_arrive = SDL_LoadBMP("caisse_2_arrive.bmp");
+	
+	SDL_Surface *joueur = NULL;
 	SDL_Surface *bandeau = NULL;
+	
+	switch(niveau.direction_joueur)
+	{
+		case -2:
+			joueur = SDL_LoadBMP("perso1_gauche.bmp");
+			break;
+		case -1:
+			joueur = SDL_LoadBMP("perso1_haut.bmp");
+			break;
+		case 2:
+			joueur = SDL_LoadBMP("perso1_droite.bmp");
+			break;
+		case 1:
+			joueur = SDL_LoadBMP("perso1_bas.bmp");
+			break;
+	}
+	
+	
 	
 	switch(invert)
 	{
