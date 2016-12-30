@@ -15,6 +15,8 @@
 #define E_QUIT 6
 #define E_CONFIRM 7
 
+#define COULEUR_FOND 254,185,24
+
 extern int largeur_fenetre;
 extern int hauteur_fenetre;
 

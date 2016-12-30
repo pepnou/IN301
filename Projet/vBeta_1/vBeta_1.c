@@ -40,9 +40,9 @@ POS recherche_joueur(LEVEL lvl);
 int joueur_encadre(LEVEL lvl,int x,int y);
 int joueur_encadre_etape_2(LEVEL* lvl,int x,int y);
 
-void changement_resolution(SDL_Surface **ecran);
-void choix_resolution(SDL_Surface *ecran);
-void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph);
+//~ void changement_resolution(SDL_Surface **ecran);
+//~ void choix_resolution(SDL_Surface *ecran);
+//~ void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph);
 
 int main()
 {
@@ -55,12 +55,14 @@ int main()
 	SDL_Init(SDL_INIT_AUDIO);
 	
 	SDL_WM_SetCaption("Sokoban vAlpha2",NULL);
-
+	
+	ecran = SDL_SetVideoMode(600,600,32,SDL_HWSURFACE);
+	
 	//~ ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
 	//~ choix_resolution(ecran);
 	//~ ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
 	
-	changement_resolution(&ecran);
+	//~ changement_resolution(&ecran);
 	
 	main_menu(ecran);
 	
@@ -69,6 +71,7 @@ int main()
 	exit(EXIT_SUCCESS);
 }
 
+/*
 void changement_resolution(SDL_Surface **ecran)
 {
 	int i,j;
@@ -220,6 +223,7 @@ void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph)
 	
 	SDL_Flip(ecran);
 }
+*/
 
 void creation_lvl(SDL_Surface *ecran)
 {	
@@ -234,7 +238,7 @@ void creation_lvl(SDL_Surface *ecran)
 
 void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 {
-	affichelvl(&ecran,niveau);
+	affichelvl(&ecran,niveau,2);
 	
 	SDL_Event event;
 	int continuer = 1;
@@ -271,7 +275,7 @@ void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 				
 				niveau.T[tmp_i][tmp_j] = (niveau.T[tmp_i][tmp_j] + 1 ) % 7;
 				
-				affichelvl(&ecran,niveau);
+				affichelvl(&ecran,niveau,2);
 				break;
 			default:
 				break;
@@ -379,7 +383,7 @@ int* contenu_lvl(LEVEL lvl)
 
 void main_menu(SDL_Surface *ecran)
 {
-	affiche_main_menu(ecran);
+	affiche_main_menu(&ecran);
 	
 	int continuer = 1;
 	SDL_Event event;
@@ -432,7 +436,7 @@ void play_menu(SDL_Surface *ecran)
 	
 	if(NBR_NIVEAUX == 0)
 	{
-		affiche_play_menu(ecran,NBR_NIVEAUX);
+		affiche_play_menu(&ecran,NBR_NIVEAUX);
 		SDL_Delay(2000);
 		main_menu(ecran);
 	}
@@ -440,7 +444,7 @@ void play_menu(SDL_Surface *ecran)
 	{
 		int niveau_a_lire = 1;
 		
-		affiche_play_menu(ecran,niveau_a_lire);
+		affiche_play_menu(&ecran,niveau_a_lire);
 		
 		int continuer = 1;
 		
@@ -473,7 +477,7 @@ void play_menu(SDL_Surface *ecran)
 						if(niveau_a_lire<NBR_NIVEAUX) niveau_a_lire ++;
 					}
 					
-					affiche_play_menu(ecran,niveau_a_lire);
+					affiche_play_menu(&ecran,niveau_a_lire);
 					break;
 			}
 		}
@@ -490,13 +494,13 @@ void play_mode(SDL_Surface *ecran,int num_lvl)
 	coup = init_tour(coup,num_lvl);
 	
 	
-	affichelvl(&ecran,coup.fait -> val);
+	affichelvl(&ecran,coup.fait -> val,0);
 	
 	
 	while((coup.continuer) && (!(victoire(coup.fait -> val))))
 	{
 		coup = action(coup,attendre_evenement());
-		affichelvl(&ecran,coup.fait -> val);
+		affichelvl(&ecran,coup.fait -> val,0);
 	}
 }
 
@@ -507,13 +511,13 @@ void play_mode_invert(SDL_Surface *ecran,LEVEL lvl)
 	
 	coup = init_tour_invert(coup,lvl);
 	
-	affichelvl(&ecran,coup.fait -> val);
+	affichelvl(&ecran,coup.fait -> val,1);
 	
 	while(coup.continuer)
 	{
 		evenement = attendre_evenement_invert();
 		coup = action_invert(coup,evenement);
-		affichelvl(&ecran,coup.fait -> val);
+		affichelvl(&ecran,coup.fait -> val,1);
 	}
 }
 
@@ -552,7 +556,7 @@ void play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl)
 		}
 		coup = action_invert(coup,evenement);
 	}
-	affichelvl(&ecran,coup.fait -> val);
+	affichelvl(&ecran,coup.fait -> val,1);
 	attendre_clic_gauche();
 }
 
