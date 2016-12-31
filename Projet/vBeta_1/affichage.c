@@ -230,7 +230,7 @@ void affiche_play_menu(SDL_Surface **ecran,int lvl_num)
 	
 	if(lvl_num == 0)
     {
-		menu = SDL_LoadBMP("play_menu.bmp");
+		menu = SDL_LoadBMP("boutons_menu_niveau_indisponible.bmp");
 		
 		*ecran = SDL_SetVideoMode(menu -> w,menu -> h,32,SDL_HWSURFACE);
 		
@@ -277,6 +277,57 @@ void affiche_main_menu(SDL_Surface **ecran)
 	
 	SDL_Flip(*ecran);
 }
+
+void affiche_menu_taille_lvl(SDL_Surface **ecran, int width, int height)
+{
+	SDL_Surface *menu = NULL;
+	
+	SDL_Rect position;
+	position.x=0;
+	position.y=0;
+	
+	menu = SDL_LoadBMP("creation_menu.bmp");
+	
+	*ecran = SDL_SetVideoMode(menu -> w,menu -> h,32,SDL_HWSURFACE);
+	
+	SDL_BlitSurface(menu,NULL,*ecran,&position);
+	
+	
+	SDL_Surface *texte = NULL;
+	
+	TTF_Font *police = TTF_OpenFont("unispace_rg.ttf",30);
+	SDL_Color couleurnoire = {0,0,0};
+	
+	char Tmp[10] = "";
+	
+	sprintf(Tmp,"%d",width);
+	texte = TTF_RenderText_Blended(police,Tmp,couleurnoire);
+	
+	position.x = 153 + 50;
+	position.y = 200;
+
+	SDL_BlitSurface(texte,NULL,*ecran,&position);
+	
+	sprintf(Tmp,"%d",height);
+	texte = TTF_RenderText_Blended(police,Tmp,couleurnoire);
+	
+	position.y = 270;
+
+	SDL_BlitSurface(texte,NULL,*ecran,&position);
+	
+	SDL_Flip(*ecran);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

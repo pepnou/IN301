@@ -17,11 +17,16 @@
 
 #define COULEUR_FOND 254,185,24
 
-extern int largeur_fenetre;
-extern int hauteur_fenetre;
+#define extension_fichier ".xsb"
 
-#define largeur_max 100
-#define hauteur_max 100
+//extern int largeur_fenetre;
+//extern int hauteur_fenetre;
+
+extern char* fichier_a_lire;
+extern char* fichier_pour_ecrire;
+
+#define largeur_max 56
+#define hauteur_max 30
 
 struct pos
 {

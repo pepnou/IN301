@@ -25,7 +25,8 @@ LEVEL init_lvl(LEVEL niveau)
 int lecture_nbr_lvl()
 {
 	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
-	FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	//~ FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	FILE* fichier_lvl = fopen(fichier_a_lire,"r");
 	if(fichier_lvl == NULL) exit(-1);
 	
 	int nbr_lvl = 0;
@@ -46,7 +47,8 @@ LEVEL lecture_fichier(int num_lvl)
 	
 	
 	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
-	FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	//~ FILE* fichier_lvl = fopen("sasquatch1.xsb","r");
+	FILE* fichier_lvl = fopen(fichier_a_lire,"r");
 	if(fichier_lvl == NULL) exit(-1);
 		
 	int i,j,w_tmp,h_tmp,continuer;
@@ -144,6 +146,7 @@ LEVEL lecture_fichier(int num_lvl)
 					break;
 			}
 			i++;
+			if(i>largeur_max-1) exit(EXIT_FAILURE);
 		}
 		
 		if(i>niveau.width)
@@ -152,6 +155,7 @@ LEVEL lecture_fichier(int num_lvl)
 		}
 		i = 0;
 		j++;
+		if(j>hauteur_max-1) exit(EXIT_FAILURE);
 		
 		c = fgetc(fichier_lvl);
 		//~ if((c == EOF)||(c == ';')) j -= 1;
@@ -167,7 +171,8 @@ LEVEL lecture_fichier(int num_lvl)
 
 void enregistrer_lvl(LEVEL lvl)
 {
-	FILE* fichier_lvl = fopen("fichier_niveaux.txt","a");
+	//~ FILE* fichier_lvl = fopen("fichier_niveaux.txt","a");
+	FILE* fichier_lvl = fopen(fichier_pour_ecrire,"a");
 	if(fichier_lvl == NULL) exit(-1);
 	
 	int nbr_lvl = lecture_nbr_lvl();
