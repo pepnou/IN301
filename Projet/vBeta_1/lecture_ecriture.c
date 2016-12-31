@@ -33,7 +33,6 @@ int lecture_nbr_lvl()
 	
 	while(c != EOF)
 	{
-		//~ if(c == ';') fscanf(fichier_lvl,"%d",&nbr_lvl);
 		if(c == ';') nbr_lvl ++;
 		c = fgetc(fichier_lvl);
 	}
@@ -41,69 +40,6 @@ int lecture_nbr_lvl()
 	fclose(fichier_lvl);
 	return nbr_lvl;
 }
-
-/*
-LEVEL lecture_fichier(int num_lvl)
-{
-	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
-	if(fichier_lvl == NULL) exit(-1);
-	
-	LEVEL niveau;
-	int i,j,height_tmp;
-	
-	char tmp[101];
-	
-	for(i=1;i<num_lvl;i++)
-	{
-		fscanf(fichier_lvl, "%d %d\n", &j, &height_tmp);
-		fgets(tmp,101,fichier_lvl);
-		for(j=0;j<height_tmp;j++)
-		{
-			fgets(tmp,101,fichier_lvl);
-		}
-	}
-	
-	//fscanf(fichier_lvl, "%d %d\n", &niveau.width, &niveau.height);
-	//fscanf(fichier_lvl, "%d %d\n", &niveau.joueur.x, &niveau.joueur.y);
-	
-	fscanf(fichier_lvl, "%d %d", &niveau.width, &niveau.height);fgetc(fichier_lvl);
-	fscanf(fichier_lvl, "%d %d", &niveau.joueur.x, &niveau.joueur.y);fgetc(fichier_lvl);
-
-	for(j=0;j<niveau.height;j++)
-	{
-		for(i=0;i<niveau.width+1;i++)
-		{
-			switch(fgetc(fichier_lvl))
-			{
-				case ' ':
-					niveau.T[i][j]=VIDE;
-					break;
-				case '#':
-					niveau.T[i][j]=MUR;
-					break;
-				case '&':
-					niveau.T[i][j]=CAISSE;
-					break;
-				case '@':
-					niveau.T[i][j]=JOUEUR;
-					break;
-				case '.':
-					niveau.T[i][j]=ARRIVE;
-					break;
-				case '*':
-					niveau.T[i][j]=JOUEUR_ARRIVE;
-					break;
-				case '+':
-					niveau.T[i][j]=CAISSE_ARRIVE;
-					break;
-			}
-		}
-	}
-	
-	fclose(fichier_lvl);
-	return niveau;
-}
-*/
 
 LEVEL lecture_fichier(int num_lvl)
 {	
@@ -177,10 +113,7 @@ LEVEL lecture_fichier(int num_lvl)
 	{
 		while(c != '\n')
 		{
-			c = fgetc(fichier_lvl);
-			
-			//~ printf("%c",c);
-			
+			c = fgetc(fichier_lvl);			
 			switch(c)
 			{
 				case ' ':
@@ -212,7 +145,6 @@ LEVEL lecture_fichier(int num_lvl)
 			}
 			i++;
 		}
-		//~ printf("\n");
 		
 		if(i>niveau.width)
 		{
@@ -233,31 +165,6 @@ LEVEL lecture_fichier(int num_lvl)
 	return niveau;
 }
 
-/*
-int lecture_nbr_lvl()
-{
-	FILE* fichier_lvl = fopen("fichier_niveaux.txt","r");
-	if(fichier_lvl == NULL) exit(-1);
-	
-	int nbr_lvl = 0;
-	int tmp1,tmp2;
-	int j;
-	char tmp[101];
-	
-	while(!(fscanf(fichier_lvl,"%d %d\n",&tmp1,&tmp2) == EOF))
-	{
-		for(j=0;j<tmp2+1;j++) 
-		{
-			fgets(tmp,101,fichier_lvl);
-		}
-		nbr_lvl++;
-	}
-	fclose(fichier_lvl);
-
-	return nbr_lvl;
-}
-*/
-
 void enregistrer_lvl(LEVEL lvl)
 {
 	FILE* fichier_lvl = fopen("fichier_niveaux.txt","a");
@@ -265,7 +172,6 @@ void enregistrer_lvl(LEVEL lvl)
 	
 	int nbr_lvl = lecture_nbr_lvl();
 	
-	//~ fputc('\n',fichier_lvl);fputc(';',fichier_lvl);fputc(' ',fichier_lvl);fprintf(fichier_lvl,"%d",nbr_lvl + 1);fputc('\n',fichier_lvl);fputc('\n',fichier_lvl);
 	fputc(13,fichier_lvl);fputc(10,fichier_lvl);fputc(';',fichier_lvl);fputc(' ',fichier_lvl);fprintf(fichier_lvl,"%d",nbr_lvl + 1);fputc(13,fichier_lvl);fputc(10,fichier_lvl);fputc(13,fichier_lvl);fputc(10,fichier_lvl);
 	
 	int i,j;
@@ -304,56 +210,3 @@ void enregistrer_lvl(LEVEL lvl)
 	fclose(fichier_lvl);
 }
 
-/*
-void enregistrer_lvl(LEVEL lvl)
-{
-	FILE* fichier_lvl = fopen("fichier_niveaux.txt","a");
-	if(fichier_lvl == NULL) exit(-1);
-		
-	fprintf(fichier_lvl,"%d %d\n",lvl.width,lvl.height);
-	fprintf(fichier_lvl,"%d %d\n",lvl.joueur.x,lvl.joueur.y);
-	
-	int i,j;
-	
-	for(j=0;j<lvl.height;j++)
-	{
-		for(i=0;i<lvl.width;i++)
-		{
-			switch(lvl.T[i][j])
-			{
-				case VIDE:
-					fputc(' ',fichier_lvl);
-					break;
-				case MUR:
-					fputc('#',fichier_lvl);
-					break;
-				case CAISSE:
-					fputc('&',fichier_lvl);
-					break;
-				case JOUEUR:
-					fputc('@',fichier_lvl);
-					break;
-				case ARRIVE:
-					fputc('.',fichier_lvl);
-					break;
-				case JOUEUR_ARRIVE:
-					fputc('*',fichier_lvl);
-					break;
-				case CAISSE_ARRIVE:
-					fputc('+',fichier_lvl);
-					break;
-			}
-		}
-		fprintf(fichier_lvl,"\n");
-	}
-	
-	
-	fclose(fichier_lvl);
-}
-*/
-
-void efface_lvl()
-{
-	FILE* fichier_lvl = fopen("fichier_niveaux.txt","w+");
-	fclose(fichier_lvl);
-}

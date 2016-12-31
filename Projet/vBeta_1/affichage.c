@@ -10,6 +10,8 @@ void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 	int largeur = niveau.width*32 + 40;
 	int hauteur = niveau.height*32 + 120;
 	
+	if(largeur<340) largeur = 340;
+	
 	*ecran = SDL_SetVideoMode(largeur,hauteur,32,SDL_HWSURFACE);
 	SDL_Surface *vide = SDL_LoadBMP("parquet_32.bmp");
 	SDL_Surface *mur = SDL_LoadBMP("mur_haut_32.bmp");
@@ -261,53 +263,6 @@ void affiche_play_menu(SDL_Surface **ecran,int lvl_num)
 	
 	SDL_Flip(*ecran);
 }
-
-/*
-void affiche_main_menu(SDL_Surface **ecran)
-{
-	*ecran = SDL_SetVideoMode(540,440,32,SDL_HWSURFACE);
-	
-	SDL_Surface *titre = SDL_LoadBMP("titre.bmp");
-	SDL_Surface *jouer = SDL_LoadBMP("boutons_menu_jouer.bmp");
-	SDL_Surface *creer = SDL_LoadBMP("boutons_menu_creer_niveau.bmp");
-	
-	SDL_SetColorKey(jouer, SDL_SRCCOLORKEY, SDL_MapRGB(jouer->format, 255, 0, 0));
-	SDL_SetColorKey(creer, SDL_SRCCOLORKEY, SDL_MapRGB(creer->format, 255, 0, 0));
-	
-	SDL_Surface *fond = NULL;
-	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, (*ecran) -> w, (*ecran) -> h, 32, 0, 0, 0, 0);
-	SDL_FillRect(fond, NULL, SDL_MapRGB((*ecran)->format, COULEUR_FOND));
-	
-	SDL_Rect positionCase;
-	
-	positionCase.x = 0;
-	positionCase.y = 0;
-	
-	SDL_BlitSurface(fond,NULL,*ecran,&positionCase);
-
-    positionCase.x = 20;
-	positionCase.y = 20 * 1 + 120 * 0;
-	
-	SDL_BlitSurface(titre,NULL,*ecran,&positionCase);
-	
-	positionCase.x = 20 + 500/2 - 320/2;
-	positionCase.y = 20 * 2 + 120 * 1;
-	
-	SDL_BlitSurface(jouer,NULL,*ecran,&positionCase);
-	
-	positionCase.x = 20 + 500/2 - 320/2;
-	positionCase.y = 20 * 3 + 120 * 2;
-	
-	SDL_BlitSurface(creer,NULL,*ecran,&positionCase);
-    
-	SDL_Flip(*ecran);
-	
-	SDL_FreeSurface(fond);
-	SDL_FreeSurface(titre);
-	SDL_FreeSurface(jouer);
-	SDL_FreeSurface(creer);
-}
-*/
 
 void affiche_main_menu(SDL_Surface **ecran)
 {

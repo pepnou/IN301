@@ -22,27 +22,22 @@ void main_menu(SDL_Surface *ecran);
 void play_menu(SDL_Surface *ecran);
 void editor_menu(SDL_Surface *ecran);
 void play_mode(SDL_Surface *ecran,int num_lvl);
-void play_mode_invert(SDL_Surface *ecran,LEVEL lvl);
-void play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl);
+LEVEL play_mode_invert(SDL_Surface *ecran,LEVEL lvl);
+LEVEL play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl);
 
 LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);
 LEVEL deplacer_joueur_invert(LEVEL niveau,POS deplacement);
-Play_Event attendre_evenement();
-Play_Event attendre_evenement_invert();
+Play_Event attendre_evenement(LEVEL niveau);
+Play_Event attendre_evenement_invert(LEVEL niveau);
 TOUR action(TOUR coup,Play_Event PE);
 TOUR action_invert(TOUR coup,Play_Event PE);
 void modif_niveau(LEVEL niveau,SDL_Surface *ecran);
-void position_depart(LEVEL lvl,SDL_Surface *ecran);
 
 int lvl_correct(LEVEL lvl);
 int* contenu_lvl(LEVEL lvl);
 POS recherche_joueur(LEVEL lvl);
 int joueur_encadre(LEVEL lvl,int x,int y);
 int joueur_encadre_etape_2(LEVEL* lvl,int x,int y);
-
-//~ void changement_resolution(SDL_Surface **ecran);
-//~ void choix_resolution(SDL_Surface *ecran);
-//~ void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph);
 
 int main()
 {
@@ -52,17 +47,9 @@ int main()
 
 	TTF_Init();
 	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Init(SDL_INIT_AUDIO);
+	//SDL_Init(SDL_INIT_AUDIO);
 	
-	SDL_WM_SetCaption("Sokoban vAlpha2",NULL);
-	
-	ecran = SDL_SetVideoMode(600,600,32,SDL_HWSURFACE);
-	
-	//~ ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
-	//~ choix_resolution(ecran);
-	//~ ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
-	
-	//~ changement_resolution(&ecran);
+	SDL_WM_SetCaption("Sokoban vBeta1",NULL);
 	
 	main_menu(ecran);
 	
@@ -72,160 +59,6 @@ int main()
 	
 	exit(EXIT_SUCCESS);
 }
-
-/*
-void changement_resolution(SDL_Surface **ecran)
-{
-	int i,j;
-	FILE* fichier = NULL;
-	
-	if((fichier = fopen("taille_fenetre.txt","r")) == NULL)
-	{
-		*ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
-		choix_resolution(*ecran);
-		*ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
-		i=largeur_fenetre;j=hauteur_fenetre;
-		
-		fichier = fopen("taille_fenetre.txt","w+");
-		fprintf(fichier,"%d %d",i,j);
-		fclose(fichier);
-	}
-	else
-	{
-		fscanf(fichier,"%d %d",&i,&j);
-		largeur_fenetre=i;hauteur_fenetre=j;
-		*ecran = SDL_SetVideoMode(largeur_fenetre,hauteur_fenetre,32,SDL_HWSURFACE);
-		fclose(fichier);
-	}
-}
-
-void choix_resolution(SDL_Surface *ecran)
-{		
-	//~ int largeur_fenetre_tmp = largeur_fenetre;
-	//~ int hauteur_fenetre_tmp = hauteur_fenetre;
-	
-	int largeur_fenetre_tmp = 600;
-	int hauteur_fenetre_tmp = 600;
-	
-	affiche_resolution(ecran,largeur_fenetre_tmp,hauteur_fenetre_tmp);
-	
-	int continuer = 1;
-	
-	SDL_Event event;
-	
-	while(continuer)
-	{
-		SDL_WaitEvent(&event);
-		switch(event.type)
-		{
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_RETURN:
-						largeur_fenetre = largeur_fenetre_tmp;
-						hauteur_fenetre = hauteur_fenetre_tmp;
-						continuer = 0;
-						break;
-					case SDLK_ESCAPE:
-						exit(EXIT_SUCCESS);
-						break;
-				}
-				break;
-			case SDL_MOUSEBUTTONUP:
-				if(position_clic_encadre(0,largeur_fenetre/2,hauteur_fenetre/3,hauteur_fenetre*2/3,event))
-				{
-					if(largeur_fenetre_tmp >100) largeur_fenetre_tmp -= 50;
-				}
-				if(position_clic_encadre(largeur_fenetre/2,largeur_fenetre,hauteur_fenetre/3,hauteur_fenetre*2/3,event))
-				{
-					largeur_fenetre_tmp += 50;
-				}
-				if(position_clic_encadre(0,largeur_fenetre/2,hauteur_fenetre*2/3,hauteur_fenetre,event))
-				{
-					if(hauteur_fenetre_tmp >100) hauteur_fenetre_tmp -= 50;
-				}
-				if(position_clic_encadre(largeur_fenetre/2,largeur_fenetre,hauteur_fenetre*2/3,hauteur_fenetre,event))
-				{
-					hauteur_fenetre_tmp += 50;
-				}
-				
-				affiche_resolution(ecran,largeur_fenetre_tmp,hauteur_fenetre_tmp);
-				break;
-			}
-		}
-}
-
-void affiche_resolution(SDL_Surface *ecran,int tmpw,int tmph)
-{
-	SDL_Surface *fond = NULL;
-	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur_fenetre, hauteur_fenetre, 32, 0, 0, 0, 0);
-	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
-	SDL_Rect positionCase;
-	positionCase.x=0;
-	positionCase.y=0;
-	
-	SDL_BlitSurface(fond,NULL,ecran,&positionCase);
-	
-	SDL_Surface *texte = NULL;
-	
-	TTF_Font *police = NULL;
-
-	police = TTF_OpenFont("unispace_rg.ttf",30);
-
-	SDL_Color couleurblanche = {255,255,255};
-
-	SDL_Rect positionTexte;
-	
-	texte = TTF_RenderText_Blended(police,"-",couleurblanche);
-
-	positionTexte.x = largeur_fenetre/4 - 15;
-	positionTexte.y = hauteur_fenetre/3 + 10;
-
-	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-	
-	positionTexte.y = hauteur_fenetre*2/3 + 10;
-
-	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-		
-	texte = TTF_RenderText_Blended(police,"+",couleurblanche);
-
-	positionTexte.x = largeur_fenetre*3/4 - 15;
-	positionTexte.y = hauteur_fenetre/3 + 10;
-
-	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-	
-	positionTexte.y = hauteur_fenetre*2/3 + 10;
-
-	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-		
-	char Tmp[10] = "";
-	sprintf(Tmp,"%d",tmpw);	
-		
-	texte = TTF_RenderText_Blended(police,Tmp,couleurblanche);
-	
-	positionTexte.x = largeur_fenetre/2 - 35;
-	positionTexte.y = hauteur_fenetre/3 + 10;
-
-	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-	
-	sprintf(Tmp,"%d",tmph);	
-		
-	texte = TTF_RenderText_Blended(police,Tmp,couleurblanche);
-	
-	positionTexte.y = hauteur_fenetre*2/3 + 10;
-
-	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-	
-	texte = TTF_RenderText_Blended(police,"Resolution",couleurblanche);
-
-	positionTexte.x = largeur_fenetre/2 - 100;
-	positionTexte.y = 10;
-
-	SDL_BlitSurface(texte,NULL,ecran,&positionTexte);
-	
-	SDL_Flip(ecran);
-}
-*/
 
 void creation_lvl(SDL_Surface *ecran)
 {	
@@ -263,8 +96,7 @@ void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 						if(lvl_correct(niveau))
 						{
 							niveau.joueur = recherche_joueur(niveau);
-							//~ play_mode_invert(ecran,niveau);
-							play_mode_invert_auto(ecran,niveau);
+							enregistrer_lvl(niveau);
 							
 							continuer = 0;
 						}
@@ -272,23 +104,49 @@ void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 				}
 				break;				
 			case SDL_MOUSEBUTTONUP:
-				tmp_i = event.button.x/(largeur_fenetre/niveau.width);
-				tmp_j = event.button.y/(hauteur_fenetre/niveau.height);
-				
-				niveau.T[tmp_i][tmp_j] = (niveau.T[tmp_i][tmp_j] + 1 ) % 7;
-				
-				affichelvl(&ecran,niveau,2);
+				if((position_clic_encadre(20+8,20+119,20+9,20+50,event))&&(lvl_correct(niveau)))
+				{
+					niveau.joueur = recherche_joueur(niveau);
+					niveau = play_mode_invert_auto(ecran,niveau);
+					niveau.direction_joueur = 1;
+					affichelvl(&ecran,niveau,2);
+				}
+				if((position_clic_encadre(20+121,20+208,20+9,20+50,event))&&(lvl_correct(niveau)))
+				{
+					niveau.joueur = recherche_joueur(niveau);
+					niveau = play_mode_invert(ecran,niveau);
+					niveau.direction_joueur = 1;
+					affichelvl(&ecran,niveau,2);
+				}
+				if(position_clic_encadre(20+210,20+250,20+10,20+49,event))
+				{
+					if(lvl_correct(niveau))
+					{
+						niveau.joueur = recherche_joueur(niveau);
+						enregistrer_lvl(niveau);
+						
+						continuer = 0;
+					}
+				}
+				if(position_clic_encadre(20+252,20+291,20+10,20+49,event))
+				{
+					continuer = 0;
+				}
+				if(position_clic_encadre(20,20+32*niveau.width,100,100+32*niveau.height,event))
+				{
+					tmp_i = (event.button.x-20)/32;
+					tmp_j = (event.button.y-100)/32;
+					
+					niveau.T[tmp_i][tmp_j] = (niveau.T[tmp_i][tmp_j] + 1 ) % 7;
+					
+					affichelvl(&ecran,niveau,2);
+				}
 				break;
 			default:
 				break;
 		}
 	}
 }
-
-//~ void position_depart(LEVEL lvl,SDL_Surface *ecran)
-//~ {
-	//~ play_mode_invert(ecran,lvl);
-//~ }
 
 POS recherche_joueur(LEVEL lvl)
 {
@@ -401,27 +259,21 @@ void main_menu(SDL_Surface *ecran)
 					case SDLK_ESCAPE:
 						continuer = 0;
 						break;
-						
-					case SDLK_c:
-						efface_lvl();
-						break;
-						
 				}
 				break;
 			case SDL_QUIT:
 				continuer = 0;
 				break;
 			case SDL_MOUSEBUTTONUP:
-				if(encadrement(event.button.x,0,largeur_fenetre/2))
+				if(position_clic_encadre(110,429,160,279,event))
 				{
 					play_menu(ecran);
 					continuer = 0;
 				}
-				else
+				if(position_clic_encadre(110,429,300,419,event))
 				{
 					creation_lvl(ecran);
 					continuer = 0;
-					//editor_menu(ecran);
 				}
 				break;
 		}
@@ -450,7 +302,6 @@ void play_menu(SDL_Surface *ecran)
 		
 		int continuer = 1;
 		
-		
 		while(continuer)
 		{
 			SDL_WaitEvent(&event);
@@ -470,23 +321,30 @@ void play_menu(SDL_Surface *ecran)
 					}
 					break;
 				case SDL_MOUSEBUTTONUP:
-					if(encadrement(event.button.x,0,largeur_fenetre/2))
+					if(position_clic_encadre(35,104,197,236,event))
 					{
 						if(niveau_a_lire>1) niveau_a_lire --;
+						affiche_play_menu(&ecran,niveau_a_lire);
 					}
-					else
+					if(position_clic_encadre(335,375,198,237,event))
 					{
 						if(niveau_a_lire<NBR_NIVEAUX) niveau_a_lire ++;
+						affiche_play_menu(&ecran,niveau_a_lire);
 					}
-					
-					affiche_play_menu(&ecran,niveau_a_lire);
+					if(position_clic_encadre(150,189,281,320,event))
+					{
+						continuer = 0;
+						main_menu(ecran);
+					}
+					if(position_clic_encadre(250,289,281,320,event))
+					{
+						play_mode(ecran,niveau_a_lire);
+						continuer = 0;
+					}
 					break;
 			}
 		}
 	}
-	
-	
-	//~ play_mode(ecran,50);
 }
 
 void play_mode(SDL_Surface *ecran,int num_lvl)
@@ -501,12 +359,12 @@ void play_mode(SDL_Surface *ecran,int num_lvl)
 	
 	while((coup.continuer) && (!(victoire(coup.fait -> val))))
 	{
-		coup = action(coup,attendre_evenement());
+		coup = action(coup,attendre_evenement(coup.fait -> val));
 		affichelvl(&ecran,coup.fait -> val,0);
 	}
 }
 
-void play_mode_invert(SDL_Surface *ecran,LEVEL lvl)
+LEVEL play_mode_invert(SDL_Surface *ecran,LEVEL lvl)
 {	
 	TOUR coup;
 	Play_Event evenement;
@@ -517,13 +375,15 @@ void play_mode_invert(SDL_Surface *ecran,LEVEL lvl)
 	
 	while(coup.continuer)
 	{
-		evenement = attendre_evenement_invert();
+		evenement = attendre_evenement_invert(coup.fait -> val);
 		coup = action_invert(coup,evenement);
 		affichelvl(&ecran,coup.fait -> val,1);
 	}
+	if(evenement.event == E_CONFIRM) return (coup.fait -> val);
+	else return lvl;
 }
 
-void play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl)
+LEVEL play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl)
 {	
 	TOUR coup;
 	int tmp;
@@ -558,8 +418,7 @@ void play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl)
 		}
 		coup = action_invert(coup,evenement);
 	}
-	affichelvl(&ecran,coup.fait -> val,1);
-	attendre_clic_gauche();
+	return (coup.fait -> val);
 }
 
 int victoire(LEVEL niveau)
@@ -695,76 +554,123 @@ LEVEL deplacer_joueur_invert(LEVEL niveau,POS deplacement)
 	return niveau;
 }
 
-Play_Event attendre_evenement()
+Play_Event attendre_evenement(LEVEL niveau)
 {
 	Play_Event evenement;
 	evenement.event = E_MOVE;
 	
 	SDL_EnableKeyRepeat(10, 10);
 	
-	SDL_Event action;
+	SDL_Event event;
 	int continuer=1;
-	
+	int position_bandeau = niveau.width*16 + 20 - 150;
+	int x,y;
 	
 	while(continuer)
 	{
-		SDL_WaitEvent(&action);
-		if(action.type==SDL_KEYDOWN)
+		SDL_WaitEvent(&event);
+		switch(event.type)
 		{
-			switch(action.key.keysym.sym)
-			{
-				case SDLK_UP:
-					continuer = 0;
-					evenement.deplacement.y=-1;
-					evenement.deplacement.x=0;
-					break;
-				case SDLK_DOWN:
-					continuer = 0;
-					evenement.deplacement.y=1;
-					evenement.deplacement.x=0;
-					break;
-				case SDLK_RIGHT:
-					continuer = 0;
-					evenement.deplacement.x=1;
-					evenement.deplacement.y=0;
-					break;
-				case SDLK_LEFT:
-					continuer = 0;
-					evenement.deplacement.x=-1;
-					evenement.deplacement.y=0;
-					break;
-				case SDLK_u:
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_UP:
+						continuer = 0;
+						evenement.deplacement.y=-1;
+						evenement.deplacement.x=0;
+						break;
+					case SDLK_DOWN:
+						continuer = 0;
+						evenement.deplacement.y=1;
+						evenement.deplacement.x=0;
+						break;
+					case SDLK_RIGHT:
+						continuer = 0;
+						evenement.deplacement.x=1;
+						evenement.deplacement.y=0;
+						break;
+					case SDLK_LEFT:
+						continuer = 0;
+						evenement.deplacement.x=-1;
+						evenement.deplacement.y=0;
+						break;
+					case SDLK_u:
+						continuer = 0;
+						evenement.event = E_UNDO;
+						break;
+					case SDLK_r:
+						continuer = 0;
+						evenement.event = E_REDO;
+						break;
+					case SDLK_i:
+						continuer = 0;
+						evenement.event = E_INIT;
+						break;
+					case SDLK_p:
+						continuer = 0;
+						evenement.event = E_PREVIOUS;
+						break;
+					case SDLK_s:
+						continuer = 0;
+						evenement.event = E_NEXT;
+						break;
+					case SDLK_q: case SDLK_ESCAPE:
+						continuer = 0;
+						evenement.event = E_QUIT;
+						break;
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if(position_clic_encadre(position_bandeau + 10,position_bandeau + 49,20,80,event))
+				{
 					continuer = 0;
 					evenement.event = E_UNDO;
-					break;
-				case SDLK_r:
+				}
+				if(position_clic_encadre(position_bandeau + 58,position_bandeau + 97,20,80,event))
+				{
 					continuer = 0;
 					evenement.event = E_REDO;
-					break;
-				case SDLK_i:
-					continuer = 0;
-					evenement.event = E_INIT;
-					break;
-				case SDLK_p:
+				}
+				if(position_clic_encadre(position_bandeau + 106,position_bandeau + 145,20,80,event))
+				{
 					continuer = 0;
 					evenement.event = E_PREVIOUS;
-					break;
-				case SDLK_s:
+				}
+				if(position_clic_encadre(position_bandeau + 154,position_bandeau + 193,20,80,event))
+				{
 					continuer = 0;
 					evenement.event = E_NEXT;
-					break;
-				case SDLK_q: case SDLK_ESCAPE:
+				}
+				if(position_clic_encadre(position_bandeau + 202,position_bandeau + 241,20,80,event))
+				{
+					continuer = 0;
+					evenement.event = E_INIT;
+				}
+				if(position_clic_encadre(position_bandeau + 250,position_bandeau + 289,20,80,event))
+				{
 					continuer = 0;
 					evenement.event = E_QUIT;
-					break;
-			}
+				}
+				if(position_clic_encadre(20,niveau.width*32 + 20,100,niveau.height*32 + 100,event))
+				{
+					x = (event.button.x-20)/32;
+					y = (event.button.y-100)/32;
+					
+					if(((x-niveau.joueur.x) + (y-niveau.joueur.y) == -1)||((x-niveau.joueur.x) + (y-niveau.joueur.y) == 1))
+					{	
+						evenement.deplacement.x= x - niveau.joueur.x;
+						evenement.deplacement.y= y - niveau.joueur.y;
+						continuer = 0;
+					}
+				}
+				break;
 		}
 	}
 	
 	return evenement;
 }
 
-Play_Event attendre_evenement_invert()
+Play_Event attendre_evenement_invert(LEVEL niveau)
 {
 	Play_Event evenement;
 	evenement.event = E_MOVE;
@@ -843,7 +749,6 @@ TOUR action(TOUR coup,Play_Event PE)
 	{
 		case E_MOVE:
 			coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
-			//~ coup.fait = insere_debut(coup.fait,deplacer_joueur_invert(coup.fait -> val, PE.deplacement));
 			suppr_liste(coup.deplace);
 			coup.deplace = NULL;
 			break;
@@ -875,7 +780,6 @@ TOUR action_invert(TOUR coup,Play_Event PE)
 	switch(PE.event)
 	{
 		case E_MOVE:
-			//~ coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
 			coup.fait = insere_debut(coup.fait,deplacer_joueur_invert(coup.fait -> val, PE.deplacement));
 			suppr_liste(coup.deplace);
 			coup.deplace = NULL;
@@ -899,7 +803,6 @@ TOUR action_invert(TOUR coup,Play_Event PE)
 			coup.continuer = 0;
 			break;
 		case E_CONFIRM:
-			enregistrer_lvl(coup.fait -> val);
 			coup.continuer = 0;
 			break;
 	}
