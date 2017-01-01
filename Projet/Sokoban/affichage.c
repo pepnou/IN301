@@ -4,12 +4,51 @@
 #include "constantes.h"
 
 
+void affiche_entier(int entier,int x,int y,SDL_Surface *ecran)
+{
+	SDL_Rect position;
+	position.x = x;
+	position.y = y;
+	
+	TTF_Font *police = TTF_OpenFont("unispace_rg.ttf",30);
+	SDL_Color couleurnoire = {0,0,0};
+	
+	char Tmp[10] = "";
+	sprintf(Tmp,"%d",entier);
+	
+	SDL_Surface *surface_texte = TTF_RenderText_Blended(police,Tmp,couleurnoire);
+	
+	SDL_BlitSurface(surface_texte,NULL,ecran,&position);
+	
+	SDL_Flip(ecran);
+	
+	TTF_CloseFont(police);
+	SDL_FreeSurface(surface_texte);
+}
+
+void affiche_texte(char* texte,int x,int y,SDL_Surface *ecran)
+{
+	SDL_Rect position;
+	position.x = x;
+	position.y = y;
+	
+	TTF_Font *police = TTF_OpenFont("unispace_rg.ttf",30);
+	SDL_Color couleurnoire = {0,0,0};
+	
+	SDL_Surface *surface_texte = TTF_RenderText_Blended(police,texte,couleurnoire);
+	
+	SDL_BlitSurface(surface_texte,NULL,ecran,&position);
+	
+	SDL_Flip(ecran);
+	
+	TTF_CloseFont(police);
+	SDL_FreeSurface(surface_texte);
+}
 
 void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 {
 	int largeur = niveau.width*32 + 40;
 	int hauteur = niveau.height*32 + 120;
-	
 	if(largeur<340) largeur = 340;
 	
 	*ecran = SDL_SetVideoMode(largeur,hauteur,32,SDL_HWSURFACE);
@@ -21,6 +60,8 @@ void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 	
 	SDL_Surface *joueur = NULL;
 	SDL_Surface *bandeau = NULL;
+	
+	SDL_Surface *fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur, hauteur, 32, 0, 0, 0, 0);;
 	
 	switch(niveau.direction_joueur)
 	{
@@ -37,9 +78,7 @@ void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 			joueur = SDL_LoadBMP("perso1_bas.bmp");
 			break;
 	}
-	
-	
-	
+
 	switch(invert)
 	{
 		case 0:
@@ -52,11 +91,6 @@ void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 			bandeau = SDL_LoadBMP("interface_mode_creation.bmp");
 			break;
 	}
-	
-	
-	SDL_Surface *fond = NULL;
-	
-	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur, hauteur, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB((*ecran)->format, COULEUR_FOND));
 	
 	SDL_SetColorKey(joueur, SDL_SRCCOLORKEY, SDL_MapRGB(joueur->format, 255, 255, 0));
@@ -108,9 +142,6 @@ void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 				case CAISSE_ARRIVE:
 					SDL_BlitSurface(caisse_arrive,NULL,*ecran,&positionCase);
 					break;
-				default :
-					printf("you forgot to blit a surface");
-					break;
 			}
 		}
 	}
@@ -124,6 +155,7 @@ void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 	SDL_FreeSurface(arrive);
 	SDL_FreeSurface(caisse_arrive);
 	SDL_FreeSurface(fond);
+	SDL_FreeSurface(bandeau);
 }
 
 void affiche_play_menu(SDL_Surface **ecran,int lvl_num)
@@ -137,37 +169,18 @@ void affiche_play_menu(SDL_Surface **ecran,int lvl_num)
 	if(lvl_num == 0)
     {
 		menu = SDL_LoadBMP("boutons_menu_niveau_indisponible.bmp");
-		
 		*ecran = SDL_SetVideoMode(menu -> w,menu -> h,32,SDL_HWSURFACE);
-		
 		SDL_BlitSurface(menu,NULL,*ecran,&position);
 	}
-	
 	else
 	{
 		menu = SDL_LoadBMP("play_menu.bmp");
-		
 		*ecran = SDL_SetVideoMode(menu -> w,menu -> h,32,SDL_HWSURFACE);
-		
 		SDL_BlitSurface(menu,NULL,*ecran,&position);
-		
-		
-		SDL_Surface *texte = NULL;
-		
-		TTF_Font *police = TTF_OpenFont("unispace_rg.ttf",30);
-		SDL_Color couleurnoire = {0,0,0};
-		
-		char Tmp[10] = "";
-		sprintf(Tmp,"%d",lvl_num);
-		texte = TTF_RenderText_Blended(police,Tmp,couleurnoire);
-		
-		position.x = 152 + 50;
-		position.y = 202;
-
-		SDL_BlitSurface(texte,NULL,*ecran,&position);
+		affiche_entier(lvl_num,152+50,202,*ecran);
 	}
-	
 	SDL_Flip(*ecran);
+	SDL_FreeSurface(menu);
 }
 
 void affiche_main_menu(SDL_Surface **ecran)
@@ -182,6 +195,8 @@ void affiche_main_menu(SDL_Surface **ecran)
 	SDL_BlitSurface(menu,NULL,*ecran,&position);
 	
 	SDL_Flip(*ecran);
+	
+	SDL_FreeSurface(menu);
 }
 
 void affiche_menu_taille_lvl(SDL_Surface **ecran, int width, int height)
@@ -193,39 +208,15 @@ void affiche_menu_taille_lvl(SDL_Surface **ecran, int width, int height)
 	position.y=0;
 	
 	menu = SDL_LoadBMP("creation_menu.bmp");
-	
 	*ecran = SDL_SetVideoMode(menu -> w,menu -> h,32,SDL_HWSURFACE);
-	
 	SDL_BlitSurface(menu,NULL,*ecran,&position);
 	
-	
-	SDL_Surface *texte = NULL;
-	
-	TTF_Font *police = TTF_OpenFont("unispace_rg.ttf",30);
-	SDL_Color couleurnoire = {0,0,0};
-	
-	char Tmp[10] = "";
-	
-	sprintf(Tmp,"%d",width);
-	texte = TTF_RenderText_Blended(police,Tmp,couleurnoire);
-	
-	position.x = 153 + 50;
-	position.y = 200;
+	affiche_entier(width,153+50,200,*ecran);
+	affiche_entier(height,153+50,270,*ecran);
 
-	SDL_BlitSurface(texte,NULL,*ecran,&position);
-	
-	sprintf(Tmp,"%d",height);
-	texte = TTF_RenderText_Blended(police,Tmp,couleurnoire);
-	
-	position.y = 270;
-
-	SDL_BlitSurface(texte,NULL,*ecran,&position);
-	
 	SDL_Flip(*ecran);
+	SDL_FreeSurface(menu);
 }
-
-
-
 
 
 

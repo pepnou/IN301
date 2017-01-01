@@ -59,10 +59,10 @@ int main(int argc, char** argv)
 		
 	srand(time(NULL));
 	
-	SDL_Surface *ecran = NULL;
-
-	TTF_Init();
 	SDL_Init(SDL_INIT_VIDEO);
+	TTF_Init();
+	
+	SDL_Surface *ecran = NULL;
 	
 	SDL_WM_SetCaption("Sokoban vBeta1",NULL);
 	
@@ -70,6 +70,7 @@ int main(int argc, char** argv)
 
 	SDL_FreeSurface(ecran);
 	
+	TTF_Quit();
 	SDL_Quit();
 	
 	exit(EXIT_SUCCESS);
