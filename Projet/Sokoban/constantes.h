@@ -24,6 +24,7 @@
 
 extern char* fichier_a_lire;
 extern char* fichier_pour_ecrire;
+extern int NBR_NIVEAUX;
 
 #define largeur_max 56
 #define hauteur_max 30
