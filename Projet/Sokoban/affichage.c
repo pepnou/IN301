@@ -45,6 +45,127 @@ void affiche_texte(char* texte,int x,int y,SDL_Surface *ecran)
 	SDL_FreeSurface(surface_texte);
 }
 
+void affiche_image(char* nom_image,int x,int y,SDL_Surface *ecran)
+{
+	SDL_Rect positionCase;
+	
+	positionCase.x = x;
+	positionCase.y = y;
+	
+	SDL_Surface *image = SDL_LoadBMP(nom_image);
+	
+	SDL_BlitSurface(image,NULL,ecran,&positionCase);
+	
+	SDL_FreeSurface(image);
+}
+
+void affiche_image_2(char* nom_image,int x,int y,int rouge,int vert,int bleu,SDL_Surface *ecran)
+{
+	SDL_Rect positionCase;
+	
+	positionCase.x = x;
+	positionCase.y = y;
+	
+	SDL_Surface *image = SDL_LoadBMP(nom_image);
+	SDL_SetColorKey(image, SDL_SRCCOLORKEY, SDL_MapRGB(image->format, rouge, vert, bleu));
+	
+	SDL_BlitSurface(image,NULL,ecran,&positionCase);
+	
+	SDL_FreeSurface(image);
+}
+
+void affiche_fond(int rouge,int vert,int bleu,SDL_Surface *ecran)
+{
+	SDL_Rect positionCase;
+	
+	positionCase.x = 0;
+	positionCase.y = 0;
+	
+	SDL_Surface *fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);;
+	
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, rouge,vert,bleu));
+	
+	SDL_BlitSurface(fond,NULL,ecran,&positionCase);
+	
+	SDL_FreeSurface(fond);
+}
+
+char* selection_image_joueur(int direction_joueur)
+{
+	switch(direction_joueur)
+	{
+		case -2:
+			return "perso1_gauche.bmp";
+			break;
+		case -1:
+			return "perso1_haut.bmp";
+			break;
+		case 2:
+			return "perso1_droite.bmp";
+			break;
+		case 1:
+			return "perso1_bas.bmp";
+			break;
+	}
+	return "perso1_bas.bmp";
+}
+
+void affiche_interface(int invert,int x,int y,SDL_Surface *ecran)
+{
+	switch(invert)
+	{
+		case 0:
+			affiche_image_2("interface_mode_jeu.bmp",x,y,255,0,0,ecran);
+			break;
+		case 1:
+			affiche_image_2("interface_mode_jeu_invert.bmp",x,y,255,0,0,ecran);
+			break;
+		case 2:
+			affiche_image_2("interface_mode_creation.bmp",x,y,255,0,0,ecran);
+			break;
+	}
+}
+
+void affiche_grille_niveau(SDL_Surface *ecran,LEVEL niveau)
+{
+	int case_x, case_y, i, j;
+	
+	for(i=0;i<niveau.width;i++)
+    {
+		for(j=0;j<niveau.height;j++)
+		{
+			case_x=i*32 + 20;
+			case_y=j*32 + 100;
+			switch(niveau.T[i][j])
+			{
+				case VIDE:
+					affiche_image("parquet_32.bmp",case_x,case_y,ecran);
+					break;
+				case MUR:
+					affiche_image("mur_haut_32.bmp",case_x,case_y,ecran);
+					break;
+				case CAISSE:
+					affiche_image("caisse_2.bmp",case_x,case_y,ecran);
+					break;
+				case JOUEUR:
+					affiche_image("parquet_32.bmp",case_x,case_y,ecran);
+					affiche_image_2(selection_image_joueur(niveau.direction_joueur),case_x,case_y,255,255,0,ecran);
+					break;
+				case ARRIVE:
+					affiche_image("tapis.bmp",case_x,case_y,ecran);
+					break;
+				case JOUEUR_ARRIVE:
+					affiche_image("tapis.bmp",case_x,case_y,ecran);
+					affiche_image_2(selection_image_joueur(niveau.direction_joueur),case_x,case_y,255,255,0,ecran);
+					break;
+				case CAISSE_ARRIVE:
+					affiche_image("caisse_2_arrive.bmp",case_x,case_y,ecran);
+					break;
+			}
+		}
+	}
+}
+
 void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 {
 	int largeur = niveau.width*32 + 40;
@@ -52,110 +173,14 @@ void affichelvl(SDL_Surface **ecran,LEVEL niveau,int invert)
 	if(largeur<340) largeur = 340;
 	
 	*ecran = SDL_SetVideoMode(largeur,hauteur,32,SDL_HWSURFACE);
-	SDL_Surface *vide = SDL_LoadBMP("parquet_32.bmp");
-	SDL_Surface *mur = SDL_LoadBMP("mur_haut_32.bmp");
-	SDL_Surface *caisse = SDL_LoadBMP("caisse_2.bmp");
-	SDL_Surface *arrive = SDL_LoadBMP("tapis.bmp");
-	SDL_Surface *caisse_arrive = SDL_LoadBMP("caisse_2_arrive.bmp");
 	
-	SDL_Surface *joueur = NULL;
-	SDL_Surface *bandeau = NULL;
+	affiche_fond(COULEUR_FOND,*ecran);
 	
-	SDL_Surface *fond = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur, hauteur, 32, 0, 0, 0, 0);;
+	affiche_interface(invert,largeur/2 - 150,20,*ecran);
 	
-	switch(niveau.direction_joueur)
-	{
-		case -2:
-			joueur = SDL_LoadBMP("perso1_gauche.bmp");
-			break;
-		case -1:
-			joueur = SDL_LoadBMP("perso1_haut.bmp");
-			break;
-		case 2:
-			joueur = SDL_LoadBMP("perso1_droite.bmp");
-			break;
-		case 1:
-			joueur = SDL_LoadBMP("perso1_bas.bmp");
-			break;
-	}
-
-	switch(invert)
-	{
-		case 0:
-			bandeau = SDL_LoadBMP("interface_mode_jeu.bmp");
-			break;
-		case 1:
-			bandeau = SDL_LoadBMP("interface_mode_jeu_invert.bmp");
-			break;
-		case 2:
-			bandeau = SDL_LoadBMP("interface_mode_creation.bmp");
-			break;
-	}
-	SDL_FillRect(fond, NULL, SDL_MapRGB((*ecran)->format, COULEUR_FOND));
-	
-	SDL_SetColorKey(joueur, SDL_SRCCOLORKEY, SDL_MapRGB(joueur->format, 255, 255, 0));
-	SDL_SetColorKey(bandeau, SDL_SRCCOLORKEY, SDL_MapRGB(bandeau->format, 255, 0, 0));
-	
-	SDL_Rect positionCase;
-	
-	positionCase.x = 0;
-	positionCase.y = 0;
-	
-	SDL_BlitSurface(fond,NULL,*ecran,&positionCase);
-	
-	positionCase.x = largeur/2 - (bandeau -> w)/2;
-	positionCase.y = 20;
-	
-	SDL_BlitSurface(bandeau,NULL,*ecran,&positionCase);
-	
-	int i,j;
-	
-	for(i=0;i<niveau.width;i++)
-    {
-		for(j=0;j<niveau.height;j++)
-		{
-			positionCase.x=i*32 + 20;
-			positionCase.y=j*32 + 100;
-			
-			switch(niveau.T[i][j])
-			{
-				case VIDE:
-					SDL_BlitSurface(vide,NULL,*ecran,&positionCase);
-					break;
-				case MUR:
-					SDL_BlitSurface(mur,NULL,*ecran,&positionCase);
-					break;
-				case CAISSE:
-					SDL_BlitSurface(caisse,NULL,*ecran,&positionCase);
-					break;
-				case JOUEUR:
-					SDL_BlitSurface(vide,NULL,*ecran,&positionCase);
-					SDL_BlitSurface(joueur,NULL,*ecran,&positionCase);
-					break;
-				case ARRIVE:
-					SDL_BlitSurface(arrive,NULL,*ecran,&positionCase);
-					break;
-				case JOUEUR_ARRIVE:
-					SDL_BlitSurface(arrive,NULL,*ecran,&positionCase);
-					SDL_BlitSurface(joueur,NULL,*ecran,&positionCase);
-					break;
-				case CAISSE_ARRIVE:
-					SDL_BlitSurface(caisse_arrive,NULL,*ecran,&positionCase);
-					break;
-			}
-		}
-	}
+	affiche_grille_niveau(*ecran,niveau);
 	
 	SDL_Flip(*ecran);
-	
-	SDL_FreeSurface(vide);
-	SDL_FreeSurface(caisse);
-	SDL_FreeSurface(joueur);
-	SDL_FreeSurface(mur);
-	SDL_FreeSurface(arrive);
-	SDL_FreeSurface(caisse_arrive);
-	SDL_FreeSurface(fond);
-	SDL_FreeSurface(bandeau);
 }
 
 void affiche_play_menu(SDL_Surface **ecran,int lvl_num)
