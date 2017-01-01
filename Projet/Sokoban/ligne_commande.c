@@ -1,16 +1,21 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL/SDL_ttf.h>
+#include <string.h>
 #include "constantes.h"
 #include "lecture_ecriture.h"
 
 void lancement_option_1(int argc, char** argv,SDL_Surface *ecran)
-{
+{	
 	int lvl_a_lire = 1;
-	
 	fichier_a_lire = argv[1];
-	NBR_NIVEAUX = lecture_nbr_lvl(argv[1]);
 	
+	if(!(fopen(fichier_a_lire,"r")))
+	{
+		printf("le fichier que vous avez rentré n'existe pas\n");
+		exit(EXIT_FAILURE);
+	}
+	NBR_NIVEAUX = lecture_nbr_lvl(argv[1]);
 	if(NBR_NIVEAUX>=1)play_mode(ecran,lvl_a_lire);
 	else
 	{
@@ -26,14 +31,19 @@ void lancement_option_2(int argc, char** argv,SDL_Surface *ecran)
 	if(!(strcmp(&(argv[3][strlen(argv[3]) - strlen(extension_fichier)]),extension_fichier)))
 	{
 		fichier_a_lire = argv[3];
+		
+		if(!(fopen(fichier_a_lire,"r")))
+		{
+			printf("le fichier que vous avez rentré n'existe pas\n");
+			exit(EXIT_FAILURE);
+		}
 		NBR_NIVEAUX = lecture_nbr_lvl(argv[3]);
 		sscanf(argv[2],"%d",&lvl_a_lire);
 		
 		if(NBR_NIVEAUX>=lvl_a_lire)play_mode(ecran,lvl_a_lire);
 		else
 		{
-			affiche_play_menu(&ecran,0);
-			SDL_Delay(2000);
+			printf("le niveau que vous avez rentré n'existe pas\n");
 		}
 	}
 	else printf("le fichier passé en option ne posséde pas la bonne extension (.xsb)\n");
@@ -44,6 +54,8 @@ void lancement_option_3(int argc, char** argv,SDL_Surface *ecran)
 	if(!(strcmp(&(argv[2][strlen(argv[2]) - strlen(extension_fichier)]),extension_fichier)))
 	{
 		fichier_pour_ecrire = argv[2];
+		
+		creation_fichier(argv[2]);
 		
 		menu_taille_lvl(ecran);
 	}

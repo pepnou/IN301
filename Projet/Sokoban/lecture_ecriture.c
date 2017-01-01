@@ -4,6 +4,14 @@
 #include <ctype.h>
 #include "constantes.h"
 
+void creation_fichier(char* nom)
+{
+	FILE* tmp;
+	
+	tmp = fopen(nom,"a+");
+	
+	fclose(tmp);
+}
 
 LEVEL init_lvl(LEVEL niveau)
 {

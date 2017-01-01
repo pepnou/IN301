@@ -12,29 +12,25 @@
 #include "manipulation_liste.h"
 #include "ligne_commande.h"
 #include "verification_lvl.h"
-#include "deplacement.h"
+#include "actions.h"
 
 int NBR_NIVEAUX = 0;
 
-char* fichier_a_lire = "default.xsb";
-char* fichier_pour_ecrire = "default.xsb";
+char* fichier_a_lire = "./sauvegardes/default.xsb";
+char* fichier_pour_ecrire = "./sauvegardes/default.xsb";
 
 int victoire(LEVEL niveau);
+
+POS deplacement_aleatoire();
 
 void main_menu(SDL_Surface *ecran);
 void play_menu(SDL_Surface *ecran);
 void menu_taille_lvl(SDL_Surface *ecran);
 void creation_lvl(SDL_Surface *ecran,int width,int height);
+void modif_niveau(LEVEL niveau,SDL_Surface *ecran);
 void play_mode(SDL_Surface *ecran,int num_lvl);
 LEVEL play_mode_invert(SDL_Surface *ecran,LEVEL lvl);
 LEVEL play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl);
-POS deplacement_aleatoire();
-
-TOUR action(TOUR coup,Play_Event PE);
-TOUR action_invert(TOUR coup,Play_Event PE);
-void modif_niveau(LEVEL niveau,SDL_Surface *ecran);
-
-void creation_fichier(char* nom);
 
 int main(int argc, char** argv)
 {
@@ -59,19 +55,10 @@ int main(int argc, char** argv)
 	exit(EXIT_SUCCESS);
 }
 
-void creation_fichier(char* nom)
-{
-	FILE* tmp;
-	
-	tmp = fopen(nom,"a+");
-	
-	fclose(tmp);
-}
-
 void menu_taille_lvl(SDL_Surface *ecran)
 {
-	int width = 3;
-	int height = 3;
+	int width = 6;
+	int height = 6;
 	
 	SDL_Event event;
 		
@@ -100,7 +87,7 @@ void menu_taille_lvl(SDL_Surface *ecran)
 			case SDL_MOUSEBUTTONUP:
 				if(position_clic_encadre(65,104,197,236,event))
 				{
-					if(width > 3) width --;
+					if(width > 6) width --;
 					affiche_menu_taille_lvl(&ecran,width,height);
 				}
 				if(position_clic_encadre(335,374,198,237,event))
@@ -110,12 +97,12 @@ void menu_taille_lvl(SDL_Surface *ecran)
 				}
 				if(position_clic_encadre(65,104,267,306,event))
 				{
-					if(height > 3) height --;
+					if(height > 6) height --;
 					affiche_menu_taille_lvl(&ecran,width,height);
 				}
 				if(position_clic_encadre(335,374,268,307,event))
 				{
-					if(height < 30) height ++;
+					if(height < 25) height ++;
 					affiche_menu_taille_lvl(&ecran,width,height);
 				}
 				if(position_clic_encadre(150,189,351,390,event))
@@ -334,12 +321,14 @@ void play_mode(SDL_Surface *ecran,int num_lvl)
 	Play_Event evenement;
 	
 	affichelvl(&ecran,coup.fait -> val,0);
+	affiche_interface_bas((ecran->w)/2 - 160,(ecran->h) - 140,coup.num_level,coup.nbr_tour,ecran);
 	
 	while((coup.continuer) && (!(victoire(coup.fait -> val))))
 	{
 		evenement = attendre_evenement(coup.fait -> val,ecran);
 		coup = action(coup,evenement);
 		affichelvl(&ecran,coup.fait -> val,0);
+		affiche_interface_bas((ecran->w)/2 - 160,(ecran->h) - 140,coup.num_level,coup.nbr_tour,ecran);
 	}
 	if(evenement.event == E_QUIT) main_menu(ecran);
 	else if(coup.num_level < NBR_NIVEAUX) play_mode(ecran,coup.num_level + 1);
@@ -419,71 +408,4 @@ int victoire(LEVEL niveau)
 	}
 	return 1;
 }
-
-TOUR action(TOUR coup,Play_Event PE)
-{
-	switch(PE.event)
-	{
-		case E_MOVE:
-			coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
-			suppr_liste(coup.deplace);
-			coup.deplace = NULL;
-			break;
-		case E_UNDO:
-			if(coup.fait ->suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
-			break;
-		case E_REDO:
-			if(coup.deplace != NULL) coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
-			break;
-		case E_INIT:
-			while(coup.fait -> suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
-			break;
-		case E_PREVIOUS:
-			if(coup.num_level > 1) coup = init_tour(coup,coup.num_level-1);
-			break;
-		case E_NEXT:
-			if(coup.num_level < NBR_NIVEAUX) coup = init_tour(coup,coup.num_level+1);
-			break;
-		case E_QUIT:
-			coup.continuer = 0;
-			break;
-	}
-	return coup;
-}
-
-TOUR action_invert(TOUR coup,Play_Event PE)
-{
-	switch(PE.event)
-	{
-		case E_MOVE:
-			coup.fait = insere_debut(coup.fait,deplacer_joueur_invert(coup.fait -> val, PE.deplacement));
-			suppr_liste(coup.deplace);
-			coup.deplace = NULL;
-			break;
-		case E_UNDO:
-			if(coup.fait ->suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
-			break;
-		case E_REDO:
-			if(coup.deplace != NULL) coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
-			break;
-		case E_INIT:
-			while(coup.fait -> suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
-			break;
-		case E_PREVIOUS:
-			if(coup.num_level > 1) coup = init_tour(coup,coup.num_level-1);
-			break;
-		case E_NEXT:
-			if(coup.num_level < NBR_NIVEAUX) coup = init_tour(coup,coup.num_level+1);
-			break;
-		case E_QUIT:
-			coup.continuer = 0;
-			break;
-		case E_CONFIRM:
-			coup.continuer = 0;
-			break;
-	}
-	
-	return coup;
-}
-
 

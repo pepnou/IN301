@@ -22,6 +22,7 @@ TOUR init_tour(TOUR coup , int num_lvl)
 	coup.base_lvl = lecture_fichier(num_lvl);
 	coup.fait = insere_debut(coup.fait,coup.base_lvl);
 	coup.continuer = (victoire(coup.fait -> val) + 1) % 2;
+	coup.nbr_tour = 0;
 	return coup;
 }
 

@@ -1,4 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "constantes.h"
+#include "manipulation_liste.h"
 
 LEVEL deplacement_vers_VIDE(LEVEL niveau,POS deplacement)
 {
@@ -116,12 +119,11 @@ LEVEL deplacement_vers_ARRIVE(LEVEL niveau,POS deplacement)
 }
 
 LEVEL deplacer_joueur(LEVEL niveau,POS deplacement)
-{	
+{
 	switch(niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y])
 	{
 		case VIDE:
 			niveau = deplacement_vers_VIDE(niveau,deplacement);
-			
 			break;
 		case CAISSE:
 			niveau = deplacement_vers_CAISSE(niveau,deplacement);
@@ -246,5 +248,85 @@ LEVEL deplacer_joueur_invert(LEVEL niveau,POS deplacement)
 	niveau.direction_joueur = (-2)*deplacement.x - deplacement.y;
 	
 	return niveau;
+}
+
+
+
+TOUR action(TOUR coup,Play_Event PE)
+{
+	switch(PE.event)
+	{
+		case E_MOVE:
+			//if((coup.fait->val).T[(coup.fait->val).joueur.x + PE.deplacement.x][(coup.fait->val).joueur.y + PE.deplacement.y] != MUR)
+			//{
+				coup.nbr_tour++;
+				coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
+				suppr_liste(coup.deplace);
+				coup.deplace = NULL;
+			//}
+			break;
+		case E_UNDO:
+			if(coup.fait ->suiv != NULL)
+			{
+				coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
+				coup.nbr_tour--;
+			}
+			break;
+		case E_REDO:
+			if(coup.deplace != NULL)
+			{
+				coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
+				coup.nbr_tour++;
+			}
+			break;
+		case E_INIT:
+			coup.nbr_tour = 0;
+			while(coup.fait -> suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
+			break;
+		case E_PREVIOUS:
+			if(coup.num_level > 1) coup = init_tour(coup,coup.num_level-1);
+			break;
+		case E_NEXT:
+			if(coup.num_level < NBR_NIVEAUX) coup = init_tour(coup,coup.num_level+1);
+			break;
+		case E_QUIT:
+			coup.continuer = 0;
+			break;
+	}
+	return coup;
+}
+
+TOUR action_invert(TOUR coup,Play_Event PE)
+{
+	switch(PE.event)
+	{
+		case E_MOVE:
+			coup.fait = insere_debut(coup.fait,deplacer_joueur_invert(coup.fait -> val, PE.deplacement));
+			suppr_liste(coup.deplace);
+			coup.deplace = NULL;
+			break;
+		case E_UNDO:
+			if(coup.fait ->suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
+			break;
+		case E_REDO:
+			if(coup.deplace != NULL) coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
+			break;
+		case E_INIT:
+			while(coup.fait -> suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
+			break;
+		case E_PREVIOUS:
+			if(coup.num_level > 1) coup = init_tour(coup,coup.num_level-1);
+			break;
+		case E_NEXT:
+			if(coup.num_level < NBR_NIVEAUX) coup = init_tour(coup,coup.num_level+1);
+			break;
+		case E_QUIT:
+			coup.continuer = 0;
+			break;
+		case E_CONFIRM:
+			coup.continuer = 0;
+			break;
+	}
+	return coup;
 }
 

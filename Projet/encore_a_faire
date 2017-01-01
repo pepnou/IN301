@@ -1,0 +1,23 @@
+2.2 Interface de jeu d’un niveau
+	3. l’interface doit afficher, le nom du fichier, le numéro du niveau et le nombre de coups joués.
+3 Ce qui doit être rendu
+	Un fichier de rapport du projet, maximum trois pages, contenant :
+	— La description des structures de données utilisées.
+	— La description des algorithmes un peu compliqués.
+	— Les améliorations possibles.
+	— Les critiques sur votre code.
+	— Les éventuelles références à des livres ou site web.
+	— Toute autre information que vous jugerez pertinente.
+	Ce rapport sera de préférence rédigé en L A TEXet vous devrez en fournir à la fois le source et une version pdf.
+4 Notation du projet
+	Dans la notation du projet il sera très fortement tenu compte :
+	— du découpage pertinent en fichier ;
+	— de la longueur des fonctions (moins de 15 lignes sauf exception) ;
+	— du nomage pertinent des structures de données, des variables et des fonctions ;
+	— de la présentation du code. En particulier vous pouvez utiliser la commande indent : indent -linux fichier.c
+	pour aligner votre code proprement. L’idéal étant d’intégrer cette commande au Makefile ;
+	— de la gestion parcimonieuse de la mémoire. En particulier toute la mémoire devra être libérée avant de
+	 quitter le programme ;
+	— de la qualité du Makefile ;
+	— de la qualité des commentaires (peu nombreux, mais pertinents) ;
+	— du respect des rêgles énoncées dans la section 3 sur ce qui doit être rendu et comment il doit l'être.

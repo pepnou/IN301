@@ -66,6 +66,7 @@ struct tour
 	liste deplace;
 	int continuer;
 	int num_level;
+	int nbr_tour;
 	LEVEL base_lvl;
 };
 typedef struct tour TOUR;
