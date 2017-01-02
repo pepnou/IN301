@@ -47,44 +47,35 @@ int lecture_nbr_lvl()
 	return nbr_lvl;
 }
 
-LEVEL lecture_fichier(int num_lvl)
-{	
-	FILE* fichier_lvl = fopen(fichier_a_lire,"r");
-	if(fichier_lvl == NULL) exit(-1);
-		
-	int i,j,w_tmp,h_tmp,continuer;
-	LEVEL niveau;
-	
-	niveau = init_lvl(niveau);
-	
-	niveau.width = 0;
-		
-	char* tmp;
-	if(!(tmp=malloc(100 * sizeof(char)))) exit(EXIT_FAILURE);
-		
+void lecture_fichier_deplacement_vers_niveau(FILE** fichier_lvl,int num_lvl)
+{
 	int lvl_courant = 0;
 	
-	continuer = 1;
+	int continuer = 1;
 	char c = ' ';
 	
 	while(num_lvl != lvl_courant)
 	{
-		c = fgetc(fichier_lvl);
+		c = fgetc(*fichier_lvl);
 		if(c == ';') lvl_courant++;
 	}
 	
 	while(c != '\n')
 	{
-		c = fgetc(fichier_lvl);
+		c = fgetc(*fichier_lvl);
 	}
 	while((c != '#')&&(c != ' '))
 	{
-		c = fgetc(fichier_lvl);
+		c = fgetc(*fichier_lvl);
 	}
-	ungetc(c,fichier_lvl);
-	
-	i = 0;
-	j = 0;
+	ungetc(c,*fichier_lvl);
+}
+
+void lecture_fichier_grille(FILE* fichier_lvl,LEVEL* niveau,int num_lvl)
+{
+	char c = ' ';
+	int i = 0;
+	int j = 0;
 		
 	while((c != EOF)&&(c != ';'))
 	{
@@ -94,64 +85,88 @@ LEVEL lecture_fichier(int num_lvl)
 			switch(c)
 			{
 				case ' ':
-					niveau.T[i][j]=VIDE;
+					(*niveau).T[i][j]=VIDE;
 					break;
 				case '#':
-					niveau.T[i][j]=MUR;
+					(*niveau).T[i][j]=MUR;
 					break;
 				case '$':
-					niveau.T[i][j]=CAISSE;
+					(*niveau).T[i][j]=CAISSE;
 					break;
 				case '@':
-					niveau.T[i][j]=JOUEUR;
-					niveau.joueur.x = i;
-					niveau.joueur.y = j;
+					(*niveau).T[i][j]=JOUEUR;
+					(*niveau).joueur.x = i;
+					(*niveau).joueur.y = j;
 					break;
 				case '.':
-					niveau.T[i][j]=ARRIVE;
+					(*niveau).T[i][j]=ARRIVE;
 					break;
 				case '+':
-					niveau.T[i][j]=JOUEUR_ARRIVE;
+					(*niveau).T[i][j]=JOUEUR_ARRIVE;
 					break;
 				case '*':
-					niveau.T[i][j]=CAISSE_ARRIVE;
+					(*niveau).T[i][j]=CAISSE_ARRIVE;
 					break;
 				default:
 					i--;
 					break;
 			}
 			i++;
-			if(i>largeur_max-1) exit(EXIT_FAILURE);
+			if(i>largeur_max-1)
+			{
+				printf("le niveau %d est trop large pour etre affiché",num_lvl);
+				exit(EXIT_FAILURE);
+			}
 		}
-		
-		if(i>niveau.width)
+		if(i>(*niveau).width)
 		{
-			niveau.width = i;
+			(*niveau).width = i;
 		}
 		i = 0;
 		j++;
-		if(j>hauteur_max-1) exit(EXIT_FAILURE);
+		if(j>hauteur_max-1)
+		{
+			printf("le niveau %d est trop haut pour etre affiché",num_lvl);
+			exit(EXIT_FAILURE);
+		}
 		
 		c = fgetc(fichier_lvl);
 		if(c == ';') j -= 1;
 		else ungetc(c,fichier_lvl);
 	}
 		
-	niveau.height = j;
+	(*niveau).height = j;
+}
+
+LEVEL lecture_fichier(int num_lvl)
+{	
+	FILE* fichier_lvl = fopen(fichier_a_lire,"r");
+	if(fichier_lvl == NULL) exit(-1);
+		
+	int i,j;
+	LEVEL niveau = init_lvl(niveau);;
+	
+	niveau.width = 0;
+	
+	lecture_fichier_deplacement_vers_niveau(&fichier_lvl,num_lvl);
+	
+	lecture_fichier_grille(fichier_lvl,&niveau,num_lvl);
 	
 	fclose(fichier_lvl);
 	return niveau;
 }
 
-void enregistrer_lvl(LEVEL lvl)
+void enregistrer_lvl_en_tete(FILE** fichier_lvl)
 {
-	FILE* fichier_lvl = fopen(fichier_pour_ecrire,"a");
-	if(fichier_lvl == NULL) exit(-1);
-	
 	int nbr_lvl = lecture_nbr_lvl();
 	
-	fputc(13,fichier_lvl);fputc(10,fichier_lvl);fputc(';',fichier_lvl);fputc(' ',fichier_lvl);fprintf(fichier_lvl,"%d",nbr_lvl + 1);fputc(13,fichier_lvl);fputc(10,fichier_lvl);fputc(13,fichier_lvl);fputc(10,fichier_lvl);
-	
+	fputc('\r',*fichier_lvl);fputc('\n',*fichier_lvl);
+	fputc(';',*fichier_lvl);fputc(' ',*fichier_lvl);fprintf(*fichier_lvl,"%d",nbr_lvl + 1);fputc('\r',*fichier_lvl);fputc('\n',*fichier_lvl);
+	fputc('\r',*fichier_lvl);fputc('\n',*fichier_lvl);
+}
+
+void enregistrer_lvl_grille(FILE** fichier_lvl,LEVEL lvl)
+{
 	int i,j;
 	
 	for(j=0;j<lvl.height;j++)
@@ -161,30 +176,42 @@ void enregistrer_lvl(LEVEL lvl)
 			switch(lvl.T[i][j])
 			{
 				case VIDE:
-					fputc(' ',fichier_lvl);
+					fputc(' ',*fichier_lvl);
 					break;
 				case MUR:
-					fputc('#',fichier_lvl);
+					fputc('#',*fichier_lvl);
 					break;
 				case CAISSE:
-					fputc('$',fichier_lvl);
+					fputc('$',*fichier_lvl);
 					break;
 				case JOUEUR:
-					fputc('@',fichier_lvl);
+					fputc('@',*fichier_lvl);
 					break;
 				case ARRIVE:
-					fputc('.',fichier_lvl);
+					fputc('.',*fichier_lvl);
 					break;
 				case JOUEUR_ARRIVE:
-					fputc('+',fichier_lvl);
+					fputc('+',*fichier_lvl);
 					break;
 				case CAISSE_ARRIVE:
-					fputc('*',fichier_lvl);
+					fputc('*',*fichier_lvl);
 					break;
 			}
 		}
-		fprintf(fichier_lvl,"\n");
+		fprintf(*fichier_lvl,"\n");
 	}
+}
+
+void enregistrer_lvl(LEVEL lvl)
+{
+	FILE* fichier_lvl = fopen(fichier_pour_ecrire,"a");
+	
+	if(fichier_lvl == NULL) exit(-1);
+	
+	enregistrer_lvl_en_tete(&fichier_lvl);
+	
+	enregistrer_lvl_grille(&fichier_lvl,lvl);
+	
 	fclose(fichier_lvl);
 }
 
