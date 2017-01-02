@@ -3,6 +3,29 @@
 #include "constantes.h"
 #include "manipulation_liste.h"
 
+POS deplacement_aleatoire()
+{
+	int tmp = rand() % 4;
+	POS deplacement;
+	deplacement.x = 0;deplacement.y = 0;
+	switch(tmp)
+	{
+		case 0:
+			deplacement.y=-1;
+			break;
+		case 1:
+			deplacement.y=1;
+			break;
+		case 2:
+			deplacement.x=1;
+			break;
+		case 3:
+			deplacement.x=-1;
+			break;
+	}
+	return deplacement;
+}
+
 LEVEL deplacement_vers_VIDE(LEVEL niveau,POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
@@ -252,32 +275,55 @@ LEVEL deplacer_joueur_invert(LEVEL niveau,POS deplacement)
 
 
 
+TOUR action_deplacement(TOUR coup,Play_Event PE)
+{
+	coup.nbr_tour++;
+	coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
+	suppr_liste(coup.deplace);
+	coup.deplace = NULL;
+	if(egalite_position((coup.fait->val).joueur,(coup.fait->suiv->val).joueur)&&((coup.fait->val).direction_joueur == (coup.fait->suiv->val).direction_joueur))
+	{
+		coup.nbr_tour--;
+		suppr_debut(&(coup.fait));
+	}
+	
+	return coup;
+}
+
+TOUR action_UNDO(TOUR coup,Play_Event PE)
+{
+	if(coup.fait ->suiv != NULL)
+	{
+		coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
+		coup.nbr_tour--;
+	}
+		
+	return coup;
+}
+
+TOUR action_REDO(TOUR coup,Play_Event PE)
+{
+	if(coup.deplace != NULL)
+	{
+		coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
+		coup.nbr_tour++;
+	}
+		
+	return coup;
+}
+
 TOUR action(TOUR coup,Play_Event PE)
 {
 	switch(PE.event)
 	{
 		case E_MOVE:
-			//if((coup.fait->val).T[(coup.fait->val).joueur.x + PE.deplacement.x][(coup.fait->val).joueur.y + PE.deplacement.y] != MUR)
-			//{
-				coup.nbr_tour++;
-				coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
-				suppr_liste(coup.deplace);
-				coup.deplace = NULL;
-			//}
+			coup = action_deplacement(coup,PE);
 			break;
 		case E_UNDO:
-			if(coup.fait ->suiv != NULL)
-			{
-				coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
-				coup.nbr_tour--;
-			}
+			coup = action_UNDO(coup,PE);
 			break;
 		case E_REDO:
-			if(coup.deplace != NULL)
-			{
-				coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
-				coup.nbr_tour++;
-			}
+			coup = action_REDO(coup,PE);
 			break;
 		case E_INIT:
 			coup.nbr_tour = 0;
@@ -296,14 +342,24 @@ TOUR action(TOUR coup,Play_Event PE)
 	return coup;
 }
 
+TOUR action_deplacement_invert(TOUR coup,Play_Event PE)
+{
+	coup.fait = insere_debut(coup.fait,deplacer_joueur_invert(coup.fait -> val, PE.deplacement));
+	suppr_liste(coup.deplace);
+	coup.deplace = NULL;
+	if(egalite_position((coup.fait->val).joueur,(coup.fait->suiv->val).joueur)&&((coup.fait->val).direction_joueur == (coup.fait->suiv->val).direction_joueur))
+	{
+		suppr_debut(&(coup.fait));
+	}
+	return coup;
+}
+
 TOUR action_invert(TOUR coup,Play_Event PE)
 {
 	switch(PE.event)
 	{
 		case E_MOVE:
-			coup.fait = insere_debut(coup.fait,deplacer_joueur_invert(coup.fait -> val, PE.deplacement));
-			suppr_liste(coup.deplace);
-			coup.deplace = NULL;
+			coup = action_deplacement_invert(coup,PE);
 			break;
 		case E_UNDO:
 			if(coup.fait ->suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
@@ -330,3 +386,10 @@ TOUR action_invert(TOUR coup,Play_Event PE)
 	return coup;
 }
 
+
+
+int egalite_position(POS a,POS b)
+{
+	if((a.x == b.x)&&(a.y == b.y)) return 1;
+	return 0;
+}

@@ -14,13 +14,16 @@
 #define E_NEXT 5
 #define E_QUIT 6
 #define E_CONFIRM 7
+#define E_BOUTTON_1 8
+#define E_BOUTTON_2 9
+#define E_BOUTTON_3 10
+#define E_BOUTTON_4 11
+#define E_BOUTTON_5 12
+#define E_BOUTTON_6 13
 
 #define COULEUR_FOND 254,185,24
 
 #define extension_fichier ".xsb"
-
-//extern int largeur_fenetre;
-//extern int hauteur_fenetre;
 
 extern char* fichier_a_lire;
 extern char* fichier_pour_ecrire;

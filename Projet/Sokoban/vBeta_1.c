@@ -1,36 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <SDL.h>
-#include <SDL_ttf.h>
-#include <SDL/SDL_ttf.h>
-#include <time.h>
-#include <string.h>
-#include "constantes.h"
-#include "gestion_event.h"
-#include "affichage.h"
-#include "lecture_ecriture.h"
-#include "manipulation_liste.h"
-#include "ligne_commande.h"
-#include "verification_lvl.h"
-#include "actions.h"
-
-int NBR_NIVEAUX = 0;
-
-char* fichier_a_lire = "./sauvegardes/default.xsb";
-char* fichier_pour_ecrire = "./sauvegardes/default.xsb";
-
-int victoire(LEVEL niveau);
-
-POS deplacement_aleatoire();
-
-void main_menu(SDL_Surface *ecran);
-void play_menu(SDL_Surface *ecran);
-void menu_taille_lvl(SDL_Surface *ecran);
-void creation_lvl(SDL_Surface *ecran,int width,int height);
-void modif_niveau(LEVEL niveau,SDL_Surface *ecran);
-void play_mode(SDL_Surface *ecran,int num_lvl);
-LEVEL play_mode_invert(SDL_Surface *ecran,LEVEL lvl);
-LEVEL play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl);
+#include "Sokoban.h"
 
 int main(int argc, char** argv)
 {
@@ -60,7 +28,7 @@ void menu_taille_lvl(SDL_Surface *ecran)
 	int width = 6;
 	int height = 6;
 	
-	SDL_Event event;
+	Play_Event PE;
 		
 	affiche_menu_taille_lvl(&ecran,width,height);
 	
@@ -68,53 +36,32 @@ void menu_taille_lvl(SDL_Surface *ecran)
 	
 	while(continuer)
 	{
-		SDL_WaitEvent(&event);
-		switch(event.type)
+		PE = attendre_event_menu_taille_lvl();
+		switch(PE.event)
 		{
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_RETURN:
-						creation_lvl(ecran,width,height);
-						continuer = 0;
-						break;
-					case SDLK_ESCAPE:
-						continuer = 0;
-						main_menu(ecran);
-						break;
-				}
+			case E_BOUTTON_1:
+				if(width > 6) width --;
+				affiche_menu_taille_lvl(&ecran,width,height);
 				break;
-			case SDL_MOUSEBUTTONUP:
-				if(position_clic_encadre(65,104,197,236,event))
-				{
-					if(width > 6) width --;
-					affiche_menu_taille_lvl(&ecran,width,height);
-				}
-				if(position_clic_encadre(335,374,198,237,event))
-				{
-					if(width < 56) width ++;
-					affiche_menu_taille_lvl(&ecran,width,height);
-				}
-				if(position_clic_encadre(65,104,267,306,event))
-				{
-					if(height > 6) height --;
-					affiche_menu_taille_lvl(&ecran,width,height);
-				}
-				if(position_clic_encadre(335,374,268,307,event))
-				{
-					if(height < 25) height ++;
-					affiche_menu_taille_lvl(&ecran,width,height);
-				}
-				if(position_clic_encadre(150,189,351,390,event))
-				{
-					continuer = 0;
-					main_menu(ecran);
-				}
-				if(position_clic_encadre(250,289,351,390,event))
-				{
-					creation_lvl(ecran,width,height);
-					continuer = 0;
-				}
+			case E_BOUTTON_2:
+				if(width < 56) width ++;
+				affiche_menu_taille_lvl(&ecran,width,height);
+				break;
+			case E_BOUTTON_3:
+				if(height > 6) height --;
+				affiche_menu_taille_lvl(&ecran,width,height);
+				break;
+			case E_BOUTTON_4:
+				if(height < 25) height ++;
+				affiche_menu_taille_lvl(&ecran,width,height);
+				break;
+			case E_CONFIRM:
+				creation_lvl(ecran,width,height);
+				continuer = 0;
+				break;
+			case E_QUIT:
+				main_menu(ecran);
+				continuer = 0;
 				break;
 		}
 	}
@@ -135,75 +82,44 @@ void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 {
 	affichelvl(&ecran,niveau,2);
 	
-	SDL_Event event;
+	Play_Event PE;	
 	int continuer = 1;
 	int tmp_i,tmp_j;
-	
-	int position_bandeau = (ecran->w)/2 - 150;
-	
+		
 	while(continuer)
 	{
-		
-		SDL_WaitEvent(&event);
-		switch(event.type)
+		PE = attendre_event_modif_niveau((ecran->w)/2 - 150,niveau.width,niveau.height);
+		switch(PE.event)
 		{
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_ESCAPE:
-						continuer = 0;
-						break;
-					case SDLK_RETURN:
-						if(lvl_correct(niveau))
-						{
-							niveau.joueur = recherche_joueur(niveau);
-							enregistrer_lvl(niveau);
-							
-							continuer = 0;
-						}
-						break;
-				}
-				break;				
-			case SDL_MOUSEBUTTONUP:
-				if((position_clic_encadre(position_bandeau+8,position_bandeau+119,20+9,20+50,event))&&(lvl_correct(niveau)))
-				{
-					niveau.joueur = recherche_joueur(niveau);
-					niveau = play_mode_invert_auto(ecran,niveau);
-					niveau.direction_joueur = 1;
-					affichelvl(&ecran,niveau,2);
-				}
-				if((position_clic_encadre(position_bandeau+121,position_bandeau+208,20+9,20+50,event))&&(lvl_correct(niveau)))
-				{
-					niveau.joueur = recherche_joueur(niveau);
-					niveau = play_mode_invert(ecran,niveau);
-					niveau.direction_joueur = 1;
-					affichelvl(&ecran,niveau,2);
-				}
-				if(position_clic_encadre(position_bandeau+210,position_bandeau+250,20+10,20+49,event))
-				{
-					if(lvl_correct(niveau))
-					{
-						niveau.joueur = recherche_joueur(niveau);
-						enregistrer_lvl(niveau);
-						
-						continuer = 0;
-					}
-				}
-				if(position_clic_encadre(position_bandeau+252,position_bandeau+291,20+10,20+49,event))
-				{
-					continuer = 0;
-				}
-				if(position_clic_encadre(20,20+32*niveau.width,100,100+32*niveau.height,event))
-				{
-					tmp_i = (event.button.x-20)/32;
-					tmp_j = (event.button.y-100)/32;
-					
-					niveau.T[tmp_i][tmp_j] = (niveau.T[tmp_i][tmp_j] + 1 ) % 7;
-					
-					affichelvl(&ecran,niveau,2);
-				}
+			case E_BOUTTON_1:
+				if(!(lvl_correct(niveau))) break;
+				niveau.joueur = recherche_joueur(niveau);
+				niveau = play_mode_invert_auto(ecran,niveau);
+				niveau.direction_joueur = 1;
+				affichelvl(&ecran,niveau,2);
 				break;
-			default:
+			case E_BOUTTON_2:
+				if(!(lvl_correct(niveau))) break;
+				niveau.joueur = recherche_joueur(niveau);
+				niveau = play_mode_invert(ecran,niveau);
+				niveau.direction_joueur = 1;
+				affichelvl(&ecran,niveau,2);
+				break;
+			case E_BOUTTON_3:
+				tmp_i = (PE.deplacement.x-20)/32;
+				tmp_j = (PE.deplacement.y-100)/32;
+				niveau.T[tmp_i][tmp_j] = (niveau.T[tmp_i][tmp_j] + 1 ) % 7;
+				
+				affichelvl(&ecran,niveau,2);
+				break;
+			case E_CONFIRM:
+				if(!(lvl_correct(niveau))) break;
+				niveau.joueur = recherche_joueur(niveau);
+				enregistrer_lvl(niveau);
+				continuer = 0;
+				break;
+			case E_QUIT:
+				continuer = 0;
 				break;
 		}
 	}
@@ -212,37 +128,24 @@ void modif_niveau(LEVEL niveau,SDL_Surface *ecran)
 void main_menu(SDL_Surface *ecran)
 {
 	affiche_main_menu(&ecran);
-	
+	Play_Event PE;
 	int continuer = 1;
-	SDL_Event event;
 	
 	while(continuer)
 	{
-		SDL_WaitEvent(&event);
-		switch(event.type)
+		PE = attendre_event_main_menu();
+		switch(PE.event)
 		{
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_ESCAPE:
-						continuer = 0;
-						break;
-				}
-				break;
-			case SDL_QUIT:
+			case E_QUIT:
 				continuer = 0;
 				break;
-			case SDL_MOUSEBUTTONUP:
-				if(position_clic_encadre(110,429,160,279,event))
-				{
-					play_menu(ecran);
-					continuer = 0;
-				}
-				if(position_clic_encadre(110,429,300,419,event))
-				{
-					menu_taille_lvl(ecran);
-					continuer = 0;
-				}
+			case E_BOUTTON_1:
+				play_menu(ecran);
+				continuer = 0;
+				break;
+			case E_BOUTTON_2:
+				menu_taille_lvl(ecran);
+				continuer = 0;
 				break;
 		}
 	}
@@ -251,9 +154,10 @@ void main_menu(SDL_Surface *ecran)
 void play_menu(SDL_Surface *ecran)
 {
 	NBR_NIVEAUX = lecture_nbr_lvl();
-	SDL_Event event;
-	
+	int continuer = 1;
+	int niveau_a_lire = 1;
 	LEVEL lvl;
+	Play_Event PE;
 	
 	if(NBR_NIVEAUX == 0)
 	{
@@ -263,51 +167,27 @@ void play_menu(SDL_Surface *ecran)
 	}
 	else
 	{
-		int niveau_a_lire = 1;
-		
 		affiche_play_menu(&ecran,niveau_a_lire);
-		
-		int continuer = 1;
-		
 		while(continuer)
 		{
-			SDL_WaitEvent(&event);
-			switch(event.type)
+			PE = attendre_event_play_menu();
+			switch(PE.event)
 			{
-				case SDL_KEYDOWN:
-					switch(event.key.keysym.sym)
-					{
-						case SDLK_RETURN:
-							play_mode(ecran,niveau_a_lire);
-							continuer = 0;
-							break;
-						case SDLK_ESCAPE:
-							continuer = 0;
-							main_menu(ecran);
-							break;
-					}
+				case E_CONFIRM:
+					play_mode(ecran,niveau_a_lire);
+					continuer = 0;
 					break;
-				case SDL_MOUSEBUTTONUP:
-					if(position_clic_encadre(35,104,197,236,event))
-					{
-						if(niveau_a_lire>1) niveau_a_lire --;
-						affiche_play_menu(&ecran,niveau_a_lire);
-					}
-					if(position_clic_encadre(335,375,198,237,event))
-					{
-						if(niveau_a_lire<NBR_NIVEAUX) niveau_a_lire ++;
-						affiche_play_menu(&ecran,niveau_a_lire);
-					}
-					if(position_clic_encadre(150,189,281,320,event))
-					{
-						continuer = 0;
-						main_menu(ecran);
-					}
-					if(position_clic_encadre(250,289,281,320,event))
-					{
-						play_mode(ecran,niveau_a_lire);
-						continuer = 0;
-					}
+				case E_QUIT:
+					continuer = 0;
+					main_menu(ecran);
+					break;
+				case E_BOUTTON_1:
+					if(niveau_a_lire>1) niveau_a_lire --;
+					affiche_play_menu(&ecran,niveau_a_lire);
+					break;
+				case E_BOUTTON_2:
+					if(niveau_a_lire<NBR_NIVEAUX) niveau_a_lire ++;
+					affiche_play_menu(&ecran,niveau_a_lire);
 					break;
 			}
 		}
@@ -370,42 +250,5 @@ LEVEL play_mode_invert_auto(SDL_Surface *ecran,LEVEL lvl)
 		coup = action_invert(coup,evenement);
 	}
 	return (coup.fait -> val);
-}
-
-POS deplacement_aleatoire()
-{
-	int tmp = rand() % 4;
-	POS deplacement;
-	deplacement.x = 0;deplacement.y = 0;
-	switch(tmp)
-	{
-		case 0:
-			deplacement.y=-1;
-			break;
-		case 1:
-			deplacement.y=1;
-			break;
-		case 2:
-			deplacement.x=1;
-			break;
-		case 3:
-			deplacement.x=-1;
-			break;
-	}
-	return deplacement;
-}
-
-int victoire(LEVEL niveau)
-{
-	int i,j;
-	
-	for(i=1;i<niveau.width-1;i++)
-	{
-		for(j=1;j<niveau.height-1;j++)
-		{
-			if((niveau.T[i][j] == ARRIVE)||(niveau.T[i][j] == JOUEUR_ARRIVE))return 0;
-		}
-	}
-	return 1;
 }
 

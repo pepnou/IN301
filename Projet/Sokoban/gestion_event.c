@@ -3,9 +3,23 @@
 #include <SDL_ttf.h>
 #include <SDL/SDL_ttf.h>
 
+int victoire(LEVEL niveau)
+{
+	int i,j;
+	
+	for(i=1;i<niveau.width-1;i++)
+	{
+		for(j=1;j<niveau.height-1;j++)
+		{
+			if((niveau.T[i][j] == ARRIVE)||(niveau.T[i][j] == JOUEUR_ARRIVE))return 0;
+		}
+	}
+	return 1;
+}
+
 int encadrement(int x,int x1,int x2)
 {
-	if(((x>x1)&&(x<x2))||((x>x2)&&(x<x1))) return 1;
+	if(((x>=x1)&&(x<=x2))||((x>=x2)&&(x<=x1))) return 1;
 	
 	return 0;
 }
@@ -135,7 +149,7 @@ Play_Event attendre_evenement(LEVEL niveau,SDL_Surface *ecran)
 					x = (event.button.x-20)/32;
 					y = (event.button.y-100)/32;
 					
-					if(((x-niveau.joueur.x) + (y-niveau.joueur.y) == -1)||((x-niveau.joueur.x) + (y-niveau.joueur.y) == 1))
+					if(((y-niveau.joueur.y == 0)||(x-niveau.joueur.x == 0))&&(encadrement(x-niveau.joueur.x,-1,1))&&(encadrement(y-niveau.joueur.y,-1,1)))
 					{	
 						evenement.deplacement.x= x - niveau.joueur.x;
 						evenement.deplacement.y= y - niveau.joueur.y;
@@ -242,7 +256,7 @@ Play_Event attendre_evenement_invert(LEVEL niveau,SDL_Surface *ecran)
 					x = (event.button.x-20)/32;
 					y = (event.button.y-100)/32;
 					
-					if(((x-niveau.joueur.x) + (y-niveau.joueur.y) == -1)||((x-niveau.joueur.x) + (y-niveau.joueur.y) == 1))
+					if(((y-niveau.joueur.y == 0)||(x-niveau.joueur.x == 0))&&(encadrement(x-niveau.joueur.x,-1,1))&&(encadrement(y-niveau.joueur.y,-1,1)))
 					{	
 						evenement.deplacement.x= x - niveau.joueur.x;
 						evenement.deplacement.y= y - niveau.joueur.y;
@@ -255,3 +269,218 @@ Play_Event attendre_evenement_invert(LEVEL niveau,SDL_Surface *ecran)
 	
 	return evenement;
 }
+
+
+
+Play_Event attendre_event_menu_taille_lvl()
+{
+	Play_Event PE;
+	SDL_Event event;
+	int continuer = 1;
+	
+	while(continuer)
+	{
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_RETURN:
+						PE.event = E_CONFIRM;
+						continuer = 0;
+						break;
+					case SDLK_ESCAPE:
+						PE.event = E_QUIT;
+						continuer = 0;
+						break;
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if(position_clic_encadre(65,104,197,236,event))
+				{
+					PE.event = E_BOUTTON_1;
+					continuer = 0;
+				}
+				if(position_clic_encadre(335,374,198,237,event))
+				{
+					PE.event = E_BOUTTON_2;
+					continuer = 0;
+				}
+				if(position_clic_encadre(65,104,267,306,event))
+				{
+					PE.event = E_BOUTTON_3;
+					continuer = 0;
+				}
+				if(position_clic_encadre(335,374,268,307,event))
+				{
+					PE.event = E_BOUTTON_4;
+					continuer = 0;
+				}
+				if(position_clic_encadre(150,189,351,390,event))
+				{
+					PE.event = E_QUIT;
+					continuer = 0;
+				}
+				if(position_clic_encadre(250,289,351,390,event))
+				{
+					PE.event = E_CONFIRM;
+					continuer = 0;
+				}
+				break;
+		}
+	}
+	return PE;
+}
+
+Play_Event attendre_event_modif_niveau(int position_bandeau,int lvl_width,int lvl_height)
+{
+	Play_Event PE;
+	SDL_Event event;
+	int continuer = 1;
+	
+	while(continuer)
+	{
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_ESCAPE:
+						PE.event = E_QUIT;
+						continuer = 0;
+						break;
+					case SDLK_RETURN:
+						PE.event = E_CONFIRM;
+						continuer = 0;
+						break;
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if(position_clic_encadre(position_bandeau+8,position_bandeau+119,20+9,20+50,event))
+				{
+					PE.event = E_BOUTTON_1;
+					continuer = 0;
+				}
+				if(position_clic_encadre(position_bandeau+121,position_bandeau+208,20+9,20+50,event))
+				{
+					PE.event = E_BOUTTON_2;
+					continuer = 0;
+				}
+				if(position_clic_encadre(position_bandeau+210,position_bandeau+250,20+10,20+49,event))
+				{
+					PE.event = E_CONFIRM;
+					continuer = 0;
+				}
+				if(position_clic_encadre(position_bandeau+252,position_bandeau+291,20+10,20+49,event))
+				{
+					PE.event = E_QUIT;
+					continuer = 0;
+				}
+				if(position_clic_encadre(20,20+32*lvl_width,100,100+32*lvl_height,event))
+				{
+					PE.event = E_BOUTTON_3;
+					PE.deplacement.x = event.button.x;
+					PE.deplacement.y = event.button.y;
+					continuer = 0;
+				}
+				break;
+		}
+	}
+	return PE;
+}
+
+Play_Event attendre_event_main_menu()
+{
+	Play_Event PE;
+	SDL_Event event;
+	int continuer = 1;
+	
+	while(continuer)
+	{
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_ESCAPE:
+						PE.event = E_QUIT;
+						continuer = 0;
+						break;
+				}
+				break;
+			case SDL_QUIT:
+				PE.event = E_QUIT;
+				continuer = 0;
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if(position_clic_encadre(110,429,160,279,event))
+				{
+					PE.event = E_BOUTTON_1;
+					continuer = 0;
+				}
+				if(position_clic_encadre(110,429,300,419,event))
+				{
+					PE.event = E_BOUTTON_2;
+					continuer = 0;
+				}
+				break;
+		}
+	}
+	return PE;
+}
+
+Play_Event attendre_event_play_menu()
+{
+	Play_Event PE;
+	SDL_Event event;
+	int continuer = 1;
+	
+	while(continuer)
+	{
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_ESCAPE:
+						PE.event = E_QUIT;
+						continuer = 0;
+						break;
+					case SDLK_RETURN:
+						PE.event = E_CONFIRM;
+						continuer = 0;
+						break;
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if(position_clic_encadre(35,104,197,236,event))
+				{
+					PE.event = E_BOUTTON_1;
+					continuer = 0;
+				}
+				if(position_clic_encadre(335,375,198,237,event))
+				{
+					PE.event = E_BOUTTON_2;
+					continuer = 0;
+				}
+				if(position_clic_encadre(250,289,281,320,event))
+				{
+					PE.event = E_CONFIRM;
+					continuer = 0;
+				}
+				if(position_clic_encadre(150,189,281,320,event))
+				{
+					PE.event = E_QUIT;
+					continuer = 0;
+				}
+				break;
+		}
+	}
+	return PE;
+}
+
+
