@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 void gestion_ligne_commande(int argc, char** argv,SDL_Surface *ecran);
 void lancement_base(int argc,SDL_Surface *ecran);
 void lancement_option_1(int argc, char** argv,SDL_Surface *ecran);

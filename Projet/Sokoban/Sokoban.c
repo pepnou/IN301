@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 #include "Sokoban.h"
 
 int main(int argc, char **argv)
@@ -129,11 +131,7 @@ void modif_niveau(LEVEL niveau, SDL_Surface * ecran)
 			tmp_i = (PE.deplacement.x - 20) / 32;
 			tmp_j = (PE.deplacement.y - 100)
 			    / 32;
-			//niveau.T[tmp_i][tmp_j] = (niveau.T[tmp_i][tmp_j] + 1 ) % 7;
-			niveau.T[tmp_i]
-			    [tmp_j]
-			    = changement_case(niveau.T[tmp_i]
-					      [tmp_j]);
+			niveau.T[tmp_i][tmp_j] = changement_case(niveau.T[tmp_i][tmp_j]);
 			affichelvl(&ecran, niveau, 2);
 			break;
 		case E_CONFIRM:
@@ -266,7 +264,8 @@ LEVEL play_mode_invert_auto(SDL_Surface * ecran, LEVEL lvl)
 	coup = init_tour_invert(coup, lvl);
 
 	int i;
-
+	
+	//50 represente le nombre de coup joué par l'ordinateur
 	for (i = 0; i < 50; i++) {
 		evenement.deplacement = deplacement_aleatoire();
 		coup = action_invert(coup, evenement);

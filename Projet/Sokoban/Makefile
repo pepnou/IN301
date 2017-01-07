@@ -1,9 +1,11 @@
+#~ PEPIN Thibaut 
+
 all: Sokoban
 	
 
 test: clean all
 	./Sokoban -n 8 ./sauvegardes/sasquatch1.xsb
-	
+
 run: all
 	./Sokoban
 
@@ -18,7 +20,7 @@ gestion_event.o: constantes.h gestion_event.c
 
 affichage.o: constantes.h affichage.c
 	gcc -c `sdl-config --cflags` affichage.c
-	
+
 lecture_ecriture.o: constantes.h lecture_ecriture.c
 	gcc -c lecture_ecriture.c
 

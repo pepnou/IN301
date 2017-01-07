@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 SDL_Event attendre_clic_gauche();
 
 int encadrement(int x,int x1,int x2);

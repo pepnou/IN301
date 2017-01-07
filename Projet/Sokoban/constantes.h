@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 #define VIDE 0
 #define MUR 1
 #define CAISSE 2

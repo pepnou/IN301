@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL/SDL_ttf.h>
@@ -26,7 +28,8 @@ void lancement_option_1(int argc, char **argv, SDL_Surface * ecran)
 void lancement_option_2(int argc, char **argv, SDL_Surface * ecran)
 {
 	int lvl_a_lire = 1;
-
+	
+	//compare 'xsb' avec les 4 derniers caractères du nom de fichier passé en argument
 	if (!(strcmp(&(argv[3][strlen(argv[3]) - strlen(extension_fichier)]), extension_fichier))) {
 		fichier_a_lire = argv[3];
 

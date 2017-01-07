@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +11,7 @@ void creation_fichier(char *nom)
 	FILE *tmp;
 
 	tmp = fopen(nom, "a+");
-
+	//le mode d'ouverture 'a+' crée le fichier si il n'existe pas
 	fclose(tmp);
 }
 
@@ -52,13 +54,15 @@ void lecture_fichier_deplacement_vers_niveau(FILE ** fichier_lvl, int num_lvl)
 
 	int continuer = 1;
 	char c = ' ';
-
+	
+	//deplace le curseur de lecture au commentaire précedant le niveau souhaité
 	while (num_lvl != lvl_courant) {
 		c = fgetc(*fichier_lvl);
 		if (c == ';')
 			lvl_courant++;
 	}
-
+	
+	//deplace le curseur de lecture au debut du niveau
 	while (c != '\n') {
 		c = fgetc(*fichier_lvl);
 	}
@@ -97,6 +101,8 @@ void lecture_fichier_grille(FILE * fichier_lvl, LEVEL * niveau, int num_lvl)
 				break;
 			case '+':
 				(*niveau).T[i][j] = JOUEUR_ARRIVE;
+				(*niveau).joueur.x = i;
+				(*niveau).joueur.y = j;
 				break;
 			case '*':
 				(*niveau).T[i][j] = CAISSE_ARRIVE;

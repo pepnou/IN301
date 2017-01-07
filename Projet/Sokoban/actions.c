@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "constantes.h"
@@ -284,6 +286,7 @@ TOUR action_deplacement(TOUR coup, Play_Event PE)
 	coup.fait = insere_debut(coup.fait, deplacer_joueur(coup.fait->val, PE.deplacement));
 	suppr_liste(coup.deplace);
 	coup.deplace = NULL;
+	// si le joueur est à la meme position et regarde dans la meme direction que le tour precedant , le coup est jugé inutile et est effacé de l'historique
 	if (egalite_position((coup.fait->val).joueur, (coup.fait->suiv->val).joueur)
 	    && ((coup.fait->val).direction_joueur == (coup.fait->suiv->val).direction_joueur)) {
 		coup.nbr_tour--;

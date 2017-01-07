@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -61,6 +63,7 @@ void affiche_image(char *nom_image, int x, int y, SDL_Surface * ecran)
 	SDL_FreeSurface(image);
 }
 
+//affiche une image en rendant transparente une couleur particuliere
 void affiche_image_2(char *nom_image, int x, int y, int rouge, int vert, int bleu, SDL_Surface * ecran)
 {
 	SDL_Rect positionCase;

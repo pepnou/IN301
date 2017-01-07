@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 POS deplacement_aleatoire();
 
 LEVEL deplacer_joueur(LEVEL niveau,POS deplacement);

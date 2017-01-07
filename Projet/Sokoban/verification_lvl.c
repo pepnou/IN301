@@ -1,3 +1,5 @@
+// PEPIN Thibaut
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "constantes.h"
@@ -46,30 +48,6 @@ int nbr_joueur_correct(int *contenu)
 	return correct;
 }
 
-/*int nbr_arrive_correct(int* contenu)
-{
-	int correct = 1;
-	
-	if(contenu[ARRIVE] +  contenu[JOUEUR_ARRIVE] + contenu[CAISSE_ARRIVE] == 0)
-	{
-		printf("probleme : aucune zone de depot\n");
-		correct = 0;
-	}
-	return correct;
-}*/
-
-/*int nbr_caisse_arrive_correct(int* contenu)
-{
-	int correct = 1;
-	
-	if(contenu[ARRIVE] + contenu[JOUEUR_ARRIVE] > contenu[CAISSE])
-	{
-		printf("probleme sur le nombre de zone de depot et de caisse : %d depot(s) pour %d caisse\n",contenu[ARRIVE] + contenu[JOUEUR_ARRIVE] + contenu[CAISSE_ARRIVE],contenu[CAISSE] + contenu[CAISSE_ARRIVE]);
-		correct = 0;
-	}
-	return correct;
-}*/
-
 int joueur_encadre_etape_2(LEVEL * lvl, int x, int y)
 {
 	if ((*lvl).T[x][y] == MUR)
@@ -108,7 +86,6 @@ int lvl_correct(LEVEL lvl)
 	POS pos_j;
 
 	int *contenu = contenu_lvl(lvl);
-
-	//return nbr_joueur_correct(contenu)&nbr_arrive_correct(contenu)&nbr_caisse_arrive_correct(contenu)&joueur_encadre(lvl);
+	
 	return nbr_joueur_correct(contenu) & joueur_encadre(lvl);
 }
