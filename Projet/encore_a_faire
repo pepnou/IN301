@@ -6,12 +6,9 @@
 	— Les critiques sur votre code.
 	— Les éventuelles références à des livres ou site web.
 	— Toute autre information que vous jugerez pertinente.
-	Ce rapport sera de préférence rédigé en L A TEXet vous devrez en fournir à la fois le source et une version pdf.
+	Ce rapport sera de préférence rédigé en LATEX et vous devrez en fournir à la fois le source et une version pdf.
 4 Notation du projet
 	Dans la notation du projet il sera très fortement tenu compte :
-	— du découpage pertinent en fichier ;
-	— de la longueur des fonctions (moins de 15 lignes sauf exception) ;
-	— du nomage pertinent des structures de données, des variables et des fonctions ;
 	— de la présentation du code. En particulier vous pouvez utiliser la commande indent : indent -linux fichier.c
 	pour aligner votre code proprement. L’idéal étant d’intégrer cette commande au Makefile ;
 	— de la gestion parcimonieuse de la mémoire. En particulier toute la mémoire devra être libérée avant de

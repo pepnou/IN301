@@ -7,389 +7,395 @@ POS deplacement_aleatoire()
 {
 	int tmp = rand() % 4;
 	POS deplacement;
-	deplacement.x = 0;deplacement.y = 0;
-	switch(tmp)
-	{
-		case 0:
-			deplacement.y=-1;
-			break;
-		case 1:
-			deplacement.y=1;
-			break;
-		case 2:
-			deplacement.x=1;
-			break;
-		case 3:
-			deplacement.x=-1;
-			break;
+	deplacement.x = 0;
+	deplacement.y = 0;
+	switch (tmp) {
+	case 0:
+		deplacement.y = -1;
+		break;
+	case 1:
+		deplacement.y = 1;
+		break;
+	case 2:
+		deplacement.x = 1;
+		break;
+	case 3:
+		deplacement.x = -1;
+		break;
 	}
 	return deplacement;
 }
 
-LEVEL deplacement_vers_VIDE(LEVEL niveau,POS deplacement)
+LEVEL deplacement_vers_VIDE(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
-	niveau.joueur.x=niveau.joueur.x + deplacement.x;
-	niveau.joueur.y=niveau.joueur.y + deplacement.y;
-	
+	niveau.joueur.x = niveau.joueur.x + deplacement.x;
+	niveau.joueur.y = niveau.joueur.y + deplacement.y;
+
 	return niveau;
 }
 
-LEVEL deplacement_vers_CAISSE_1(LEVEL niveau,POS deplacement)
+LEVEL deplacement_vers_CAISSE_1(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
-	niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = CAISSE;
-	niveau.joueur.x=niveau.joueur.x + deplacement.x;
-	niveau.joueur.y=niveau.joueur.y + deplacement.y;
-	
+	niveau.T[niveau.joueur.x + 2 * deplacement.x][niveau.joueur.y + 2 * deplacement.y] = CAISSE;
+	niveau.joueur.x = niveau.joueur.x + deplacement.x;
+	niveau.joueur.y = niveau.joueur.y + deplacement.y;
+
 	return niveau;
 }
 
-LEVEL deplacement_vers_CAISSE_2(LEVEL niveau,POS deplacement)
+LEVEL deplacement_vers_CAISSE_2(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
-	niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = CAISSE_ARRIVE;
-	niveau.joueur.x=niveau.joueur.x + deplacement.x;
-	niveau.joueur.y=niveau.joueur.y + deplacement.y;
-	
+	niveau.T[niveau.joueur.x + 2 * deplacement.x][niveau.joueur.y + 2 * deplacement.y] = CAISSE_ARRIVE;
+	niveau.joueur.x = niveau.joueur.x + deplacement.x;
+	niveau.joueur.y = niveau.joueur.y + deplacement.y;
+
 	return niveau;
 }
 
-LEVEL deplacement_vers_CAISSE(LEVEL niveau,POS deplacement)
-{	
-	switch(niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y])
-	{
-		case VIDE:
-			niveau = deplacement_vers_CAISSE_1(niveau,deplacement);
-			break;
-		case ARRIVE:
-			niveau = deplacement_vers_CAISSE_2(niveau,deplacement);
-			break;
+LEVEL deplacement_vers_CAISSE(LEVEL niveau, POS deplacement)
+{
+	switch (niveau.T[niveau.joueur.x + 2 * deplacement.x][niveau.joueur.y + 2 * deplacement.y]) {
+	case VIDE:
+		niveau = deplacement_vers_CAISSE_1(niveau, deplacement);
+		break;
+	case ARRIVE:
+		niveau = deplacement_vers_CAISSE_2(niveau, deplacement);
+		break;
 	}
-		
+
 	return niveau;
 }
 
-LEVEL deplacement_vers_CAISSE_ARRIVE_1(LEVEL niveau,POS deplacement)
+LEVEL deplacement_vers_CAISSE_ARRIVE_1(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR_ARRIVE;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
-	niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = CAISSE;
-	niveau.joueur.x=niveau.joueur.x + deplacement.x;
-	niveau.joueur.y=niveau.joueur.y + deplacement.y;
-	
+	niveau.T[niveau.joueur.x + 2 * deplacement.x][niveau.joueur.y + 2 * deplacement.y] = CAISSE;
+	niveau.joueur.x = niveau.joueur.x + deplacement.x;
+	niveau.joueur.y = niveau.joueur.y + deplacement.y;
+
 	return niveau;
 }
 
-LEVEL deplacement_vers_CAISSE_ARRIVE_2(LEVEL niveau,POS deplacement)
+LEVEL deplacement_vers_CAISSE_ARRIVE_2(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR_ARRIVE;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
-	niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y] = CAISSE_ARRIVE;
-	niveau.joueur.x=niveau.joueur.x + deplacement.x;
-	niveau.joueur.y=niveau.joueur.y + deplacement.y;
-	
+	niveau.T[niveau.joueur.x + 2 * deplacement.x][niveau.joueur.y + 2 * deplacement.y] = CAISSE_ARRIVE;
+	niveau.joueur.x = niveau.joueur.x + deplacement.x;
+	niveau.joueur.y = niveau.joueur.y + deplacement.y;
+
 	return niveau;
 }
 
-LEVEL deplacement_vers_CAISSE_ARRIVE(LEVEL niveau,POS deplacement)
+LEVEL deplacement_vers_CAISSE_ARRIVE(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
-	switch(niveau.T[niveau.joueur.x + 2*deplacement.x][niveau.joueur.y + 2*deplacement.y])
-	{
-		case VIDE:
-			niveau = deplacement_vers_CAISSE_ARRIVE_1(niveau,deplacement);
-			break;
-		case ARRIVE:
-			niveau = deplacement_vers_CAISSE_ARRIVE_2(niveau,deplacement);
-			break;
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
+	switch (niveau.T[niveau.joueur.x + 2 * deplacement.x][niveau.joueur.y + 2 * deplacement.y]) {
+	case VIDE:
+		niveau = deplacement_vers_CAISSE_ARRIVE_1(niveau, deplacement);
+		break;
+	case ARRIVE:
+		niveau = deplacement_vers_CAISSE_ARRIVE_2(niveau, deplacement);
+		break;
 	}
-	
+
 	return niveau;
 }
 
-LEVEL deplacement_vers_ARRIVE(LEVEL niveau,POS deplacement)
+LEVEL deplacement_vers_ARRIVE(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR_ARRIVE;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
-	niveau.joueur.x=niveau.joueur.x + deplacement.x;
-	niveau.joueur.y=niveau.joueur.y + deplacement.y;
-	
+	niveau.joueur.x = niveau.joueur.x + deplacement.x;
+	niveau.joueur.y = niveau.joueur.y + deplacement.y;
+
 	return niveau;
 }
 
-LEVEL deplacer_joueur(LEVEL niveau,POS deplacement)
+LEVEL deplacer_joueur(LEVEL niveau, POS deplacement)
 {
-	switch(niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y])
-	{
-		case VIDE:
-			niveau = deplacement_vers_VIDE(niveau,deplacement);
-			break;
-		case CAISSE:
-			niveau = deplacement_vers_CAISSE(niveau,deplacement);
-			break;
-		case CAISSE_ARRIVE:
-			niveau = deplacement_vers_CAISSE_ARRIVE(niveau,deplacement);
-			break;
-		case ARRIVE:
-			niveau = deplacement_vers_ARRIVE(niveau,deplacement);
-			break;
+	switch (niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y]) {
+	case VIDE:
+		niveau = deplacement_vers_VIDE(niveau, deplacement);
+		break;
+	case CAISSE:
+		niveau = deplacement_vers_CAISSE(niveau, deplacement);
+		break;
+	case CAISSE_ARRIVE:
+		niveau = deplacement_vers_CAISSE_ARRIVE(niveau, deplacement);
+		break;
+	case ARRIVE:
+		niveau = deplacement_vers_ARRIVE(niveau, deplacement);
+		break;
 	}
-	niveau.direction_joueur = 2*deplacement.x + deplacement.y;
-	
+	niveau.direction_joueur = 2 * deplacement.x + deplacement.y;
+
 	return niveau;
 }
 
-
-
-LEVEL deplacement_invert_vers_VIDE_1(LEVEL niveau,POS deplacement)
+LEVEL deplacement_invert_vers_VIDE_1(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y] = VIDE;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = CAISSE + ANCIENNE_CASE;
-	
+
 	return niveau;
 }
 
-LEVEL deplacement_invert_vers_VIDE_2(LEVEL niveau,POS deplacement)
+LEVEL deplacement_invert_vers_VIDE_2(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y] = ARRIVE;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = CAISSE + ANCIENNE_CASE;
-	
+
 	return niveau;
 }
 
-LEVEL deplacement_invert_vers_VIDE(LEVEL niveau,POS deplacement)
+LEVEL deplacement_invert_vers_VIDE(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
-	
-	switch(niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y])
-	{
-		case CAISSE:
-			niveau = deplacement_invert_vers_VIDE_1(niveau,deplacement);
-			break;
-		case CAISSE_ARRIVE:
-			niveau = deplacement_invert_vers_VIDE_2(niveau,deplacement);
-			break;
+
+	switch (niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y]) {
+	case CAISSE:
+		niveau = deplacement_invert_vers_VIDE_1(niveau, deplacement);
+		break;
+	case CAISSE_ARRIVE:
+		niveau = deplacement_invert_vers_VIDE_2(niveau, deplacement);
+		break;
 	}
-	
-	niveau.joueur.x=niveau.joueur.x + deplacement.x;
-	niveau.joueur.y=niveau.joueur.y + deplacement.y;
-	
+
+	niveau.joueur.x = niveau.joueur.x + deplacement.x;
+	niveau.joueur.y = niveau.joueur.y + deplacement.y;
+
 	return niveau;
 }
 
-LEVEL deplacement_invert_vers_ARRIVE_1(LEVEL niveau,POS deplacement)
+LEVEL deplacement_invert_vers_ARRIVE_1(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y] = VIDE;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = CAISSE + ANCIENNE_CASE;
-	
+
 	return niveau;
 }
 
-LEVEL deplacement_invert_vers_ARRIVE_2(LEVEL niveau,POS deplacement)
+LEVEL deplacement_invert_vers_ARRIVE_2(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y] = ARRIVE;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = CAISSE + ANCIENNE_CASE;
-	
+
 	return niveau;
 }
 
-LEVEL deplacement_invert_vers_ARRIVE(LEVEL niveau,POS deplacement)
+LEVEL deplacement_invert_vers_ARRIVE(LEVEL niveau, POS deplacement)
 {
 	int ANCIENNE_CASE = VIDE;
-	if(niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE) ANCIENNE_CASE = ARRIVE;
-	
+	if (niveau.T[niveau.joueur.x][niveau.joueur.y] == JOUEUR_ARRIVE)
+		ANCIENNE_CASE = ARRIVE;
+
 	niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y] = JOUEUR_ARRIVE;
 	niveau.T[niveau.joueur.x][niveau.joueur.y] = ANCIENNE_CASE;
-	
-	switch(niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y])
-	{
-		case CAISSE:
-			niveau = deplacement_invert_vers_ARRIVE_1(niveau,deplacement);
-			break;
-		case CAISSE_ARRIVE:
-			niveau = deplacement_invert_vers_ARRIVE_2(niveau,deplacement);
-			break;
+
+	switch (niveau.T[niveau.joueur.x - deplacement.x][niveau.joueur.y - deplacement.y]) {
+	case CAISSE:
+		niveau = deplacement_invert_vers_ARRIVE_1(niveau, deplacement);
+		break;
+	case CAISSE_ARRIVE:
+		niveau = deplacement_invert_vers_ARRIVE_2(niveau, deplacement);
+		break;
 	}
-	
-	niveau.joueur.x=niveau.joueur.x + deplacement.x;
-	niveau.joueur.y=niveau.joueur.y + deplacement.y;
-	
+
+	niveau.joueur.x = niveau.joueur.x + deplacement.x;
+	niveau.joueur.y = niveau.joueur.y + deplacement.y;
+
 	return niveau;
 }
 
-LEVEL deplacer_joueur_invert(LEVEL niveau,POS deplacement)
-{	
-	switch(niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y])
-	{
-		case VIDE:
-			niveau = deplacement_invert_vers_VIDE(niveau,deplacement);
-			break;
-		case ARRIVE:
-			niveau = deplacement_invert_vers_ARRIVE(niveau,deplacement);
-			break;
+LEVEL deplacer_joueur_invert(LEVEL niveau, POS deplacement)
+{
+	switch (niveau.T[niveau.joueur.x + deplacement.x][niveau.joueur.y + deplacement.y]) {
+	case VIDE:
+		niveau = deplacement_invert_vers_VIDE(niveau, deplacement);
+		break;
+	case ARRIVE:
+		niveau = deplacement_invert_vers_ARRIVE(niveau, deplacement);
+		break;
 	}
-	niveau.direction_joueur = (-2)*deplacement.x - deplacement.y;
-	
+	niveau.direction_joueur = (-2) * deplacement.x - deplacement.y;
+
 	return niveau;
 }
 
-
-
-TOUR action_deplacement(TOUR coup,Play_Event PE)
+TOUR action_deplacement(TOUR coup, Play_Event PE)
 {
 	coup.nbr_tour++;
-	coup.fait = insere_debut(coup.fait,deplacer_joueur(coup.fait -> val, PE.deplacement));
+	coup.fait = insere_debut(coup.fait, deplacer_joueur(coup.fait->val, PE.deplacement));
 	suppr_liste(coup.deplace);
 	coup.deplace = NULL;
-	if(egalite_position((coup.fait->val).joueur,(coup.fait->suiv->val).joueur)&&((coup.fait->val).direction_joueur == (coup.fait->suiv->val).direction_joueur))
-	{
+	if (egalite_position((coup.fait->val).joueur, (coup.fait->suiv->val).joueur)
+	    && ((coup.fait->val).direction_joueur == (coup.fait->suiv->val).direction_joueur)) {
 		coup.nbr_tour--;
 		suppr_debut(&(coup.fait));
 	}
-	
+
 	return coup;
 }
 
-TOUR action_UNDO(TOUR coup,Play_Event PE)
+TOUR action_UNDO(TOUR coup, Play_Event PE)
 {
-	if(coup.fait ->suiv != NULL)
-	{
-		coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
+	if (coup.fait->suiv != NULL) {
+		coup.deplace = insere_debut(coup.deplace, suppr_debut(&(coup.fait)));
 		coup.nbr_tour--;
 	}
-		
+
 	return coup;
 }
 
-TOUR action_REDO(TOUR coup,Play_Event PE)
+TOUR action_REDO(TOUR coup, Play_Event PE)
 {
-	if(coup.deplace != NULL)
-	{
-		coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
+	if (coup.deplace != NULL) {
+		coup.fait = insere_debut(coup.fait, suppr_debut(&(coup.deplace)));
 		coup.nbr_tour++;
 	}
-		
+
 	return coup;
 }
 
-TOUR action(TOUR coup,Play_Event PE)
+TOUR action(TOUR coup, Play_Event PE)
 {
-	switch(PE.event)
-	{
-		case E_MOVE:
-			coup = action_deplacement(coup,PE);
-			break;
-		case E_UNDO:
-			coup = action_UNDO(coup,PE);
-			break;
-		case E_REDO:
-			coup = action_REDO(coup,PE);
-			break;
-		case E_INIT:
-			coup.nbr_tour = 0;
-			while(coup.fait -> suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
-			break;
-		case E_PREVIOUS:
-			if(coup.num_level > 1) coup = init_tour(coup,coup.num_level-1);
-			break;
-		case E_NEXT:
-			if(coup.num_level < NBR_NIVEAUX) coup = init_tour(coup,coup.num_level+1);
-			break;
-		case E_QUIT:
-			coup.continuer = 0;
-			break;
+	switch (PE.event) {
+	case E_MOVE:
+		coup = action_deplacement(coup, PE);
+		break;
+	case E_UNDO:
+		coup = action_UNDO(coup, PE);
+		break;
+	case E_REDO:
+		coup = action_REDO(coup, PE);
+		break;
+	case E_INIT:
+		coup.nbr_tour = 0;
+		while (coup.fait->suiv != NULL)
+			coup.deplace = insere_debut(coup.deplace, suppr_debut(&(coup.fait)));
+		break;
+	case E_PREVIOUS:
+		if (coup.num_level > 1)
+			coup = init_tour(coup, coup.num_level - 1);
+		break;
+	case E_NEXT:
+		if (coup.num_level < NBR_NIVEAUX)
+			coup = init_tour(coup, coup.num_level + 1);
+		break;
+	case E_QUIT:
+		coup.continuer = 0;
+		break;
 	}
 	return coup;
 }
 
-TOUR action_deplacement_invert(TOUR coup,Play_Event PE)
+TOUR action_deplacement_invert(TOUR coup, Play_Event PE)
 {
-	coup.fait = insere_debut(coup.fait,deplacer_joueur_invert(coup.fait -> val, PE.deplacement));
+	coup.fait = insere_debut(coup.fait, deplacer_joueur_invert(coup.fait->val, PE.deplacement));
 	suppr_liste(coup.deplace);
 	coup.deplace = NULL;
-	if(egalite_position((coup.fait->val).joueur,(coup.fait->suiv->val).joueur)&&((coup.fait->val).direction_joueur == (coup.fait->suiv->val).direction_joueur))
-	{
+	if (egalite_position((coup.fait->val).joueur, (coup.fait->suiv->val).joueur)
+	    && ((coup.fait->val).direction_joueur == (coup.fait->suiv->val).direction_joueur)) {
 		suppr_debut(&(coup.fait));
 	}
 	return coup;
 }
 
-TOUR action_invert(TOUR coup,Play_Event PE)
+TOUR action_invert(TOUR coup, Play_Event PE)
 {
-	switch(PE.event)
-	{
-		case E_MOVE:
-			coup = action_deplacement_invert(coup,PE);
-			break;
-		case E_UNDO:
-			if(coup.fait ->suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
-			break;
-		case E_REDO:
-			if(coup.deplace != NULL) coup.fait = insere_debut(coup.fait,suppr_debut(&(coup.deplace)));
-			break;
-		case E_INIT:
-			while(coup.fait -> suiv != NULL) coup.deplace = insere_debut(coup.deplace,suppr_debut(&(coup.fait)));
-			break;
-		case E_PREVIOUS:
-			if(coup.num_level > 1) coup = init_tour(coup,coup.num_level-1);
-			break;
-		case E_NEXT:
-			if(coup.num_level < NBR_NIVEAUX) coup = init_tour(coup,coup.num_level+1);
-			break;
-		case E_QUIT:
-			coup.continuer = 0;
-			break;
-		case E_CONFIRM:
-			coup.continuer = 0;
-			break;
+	switch (PE.event) {
+	case E_MOVE:
+		coup = action_deplacement_invert(coup, PE);
+		break;
+	case E_UNDO:
+		if (coup.fait->suiv != NULL)
+			coup.deplace = insere_debut(coup.deplace, suppr_debut(&(coup.fait)));
+		break;
+	case E_REDO:
+		if (coup.deplace != NULL)
+			coup.fait = insere_debut(coup.fait, suppr_debut(&(coup.deplace)));
+		break;
+	case E_INIT:
+		while (coup.fait->suiv != NULL)
+			coup.deplace = insere_debut(coup.deplace, suppr_debut(&(coup.fait)));
+		break;
+	case E_PREVIOUS:
+		if (coup.num_level > 1)
+			coup = init_tour(coup, coup.num_level - 1);
+		break;
+	case E_NEXT:
+		if (coup.num_level < NBR_NIVEAUX)
+			coup = init_tour(coup, coup.num_level + 1);
+		break;
+	case E_QUIT:
+		coup.continuer = 0;
+		break;
+	case E_CONFIRM:
+		coup.continuer = 0;
+		break;
 	}
 	return coup;
 }
 
-
-
-int egalite_position(POS a,POS b)
+int egalite_position(POS a, POS b)
 {
-	if((a.x == b.x)&&(a.y == b.y)) return 1;
+	if ((a.x == b.x) && (a.y == b.y))
+		return 1;
 	return 0;
 }

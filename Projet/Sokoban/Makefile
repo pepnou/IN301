@@ -1,6 +1,9 @@
 all: Sokoban
 	
 
+test: clean all
+	./Sokoban -n 8 ./sauvegardes/sasquatch1.xsb
+	
 run: all
 	./Sokoban
 
@@ -34,3 +37,6 @@ actions.o: constantes.h actions.c
 clean:
 	rm -f *.o
 	rm -f Sokoban
+
+alignement:
+	indent -linux -l 120 *.c
