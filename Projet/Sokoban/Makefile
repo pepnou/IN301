@@ -1,12 +1,12 @@
 #~ PEPIN Thibaut 
 
-all: Sokoban
+compil: Sokoban
 	
 
 test: clean all
 	./Sokoban -n 8 ./sauvegardes/sasquatch1.xsb
 
-run: all
+run: compil
 	./Sokoban
 
 Sokoban: gestion_event.o affichage.o lecture_ecriture.o actions.o manipulation_liste.o ligne_commande.o verification_lvl.o Sokoban.o

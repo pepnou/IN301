@@ -172,7 +172,7 @@ void affiche_grille_niveau(SDL_Surface * ecran, LEVEL niveau)
 void affiche_interface_bas(int x, int y, int num_lvl, int nbr_coup, SDL_Surface * ecran)
 {
 	affiche_image_2("./images/cadre_boutons_menu.bmp", x, y, 255, 0, 0, ecran);
-	if (strlen(fichier_a_lire) < 14) {
+	if(strcmp(fichier_a_lire,"./sauvegardes/") <= 0) {
 		printf("Le fichier ne doit pas être placé au bon endroit\n");
 		printf("Pour information , le fichier DOIT être placé dans ./sauvegarde\n");
 		exit(EXIT_FAILURE);
